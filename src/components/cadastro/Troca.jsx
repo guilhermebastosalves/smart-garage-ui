@@ -62,97 +62,73 @@ const Troca = () => {
         setTroca({ ...troca, automovelId: selectedOption ? selectedOption.value : "" });
     };
 
-    const retrieveCliente = useCallback(() => {
-        ClienteDataService.getAll()
-            .then(response => {
-                setCliente(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar clientes:", e);
-            });
+
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setLoading(true);
+        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
+        // Use Promise.all para esperar todas as chamadas essenciais terminarem
+        Promise.all([
+            ClienteDataService.getAll(),
+            FisicaDataService.getAll(),
+            JuridicaDataService.getAll(),
+            AutomovelDataService.getAll(),
+            ModeloDataService.getAll(),
+            MarcaDataService.getAll()
+        ]).then(([clientes, fisica, juridica, automoveis, modelos, marcas]) => {
+            setCliente(clientes.data);
+            setFisica(fisica.data);
+            setJuridica(juridica.data);
+            setAutomovel(automoveis.data);
+            setModelo(modelos.data);
+            setMarca(marcas.data);
+        }).catch((err) => {
+            console.error("Erro ao carregar dados:", err);
+            setLoading(false); // Garante que o loading não fica travado
+        }).finally(() => {
+            setLoading(false); // Esconde o loading quando tudo terminar
+            clearTimeout(timeout);
+        });
     }, []);
 
 
-    useEffect(() => {
-        retrieveCliente();
-    }, [retrieveCliente]);
 
-    const retrieveFisica = useCallback(() => {
-        FisicaDataService.getAll()
-            .then(response => {
-                setFisica(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar pessoas físicas:", e);
-            });
-    }, []);
+    // Mensagens de sucesso e erro
+    const [mensagemErro, setMensagemErro] = useState('');
+    const [erro, setErro] = useState(false);
+
+    const [mensagemSucesso, setMensagemSucesso] = useState('');
+    const [sucesso, setSucesso] = useState(false);
+
+    const [vazio, setVazio] = useState([]);
+    const [tamanho, setTamanho] = useState([]);
+    const [tipo, setTipo] = useState([]);
 
 
-    useEffect(() => {
-        retrieveFisica();
-    }, [retrieveFisica]);
+    const validateFields = () => {
+        let vazioErros = [];
+        let tamanhoErros = [];
+        let tipoErros = [];
 
-    const retrieveJuridica = useCallback(() => {
-        JuridicaDataService.getAll()
-            .then(response => {
-                setJuridica(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar pessoas físicas:", e);
-            });
-    }, []);
+        // Vazio
+        if (!troca.valor) vazioErros.push("valor");
+        if (!troca.data) vazioErros.push("data");
+        if (!troca.clienteId) vazioErros.push("clienteId");
+        if (!troca.automovelId) vazioErros.push("automovelId");
+        if (!troca.comissao) vazioErros.push("comissao");
+        if (!troca.forma_pagamento) vazioErros.push("forma_pagamento");
+        if (!troca.automovel_fornecido) vazioErros.push("automovel_fornecido");
 
-    useEffect(() => {
-        retrieveJuridica();
-    }, [retrieveJuridica]);
+        // Tipo
+        if (troca.valor && isNaN(troca.valor)) tipoErros.push("valor");
+        if (troca.comissao && isNaN(troca.comissao)) tipoErros.push("comissao");
+        if (troca.data && troca.data > new Date()) tipoErros.push("data");
 
-    const retrieveAutomovel = useCallback(() => {
-        AutomovelDataService.getAll()
-            .then(response => {
-                setAutomovel(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar automóveis:", e);
-            });
-    }, []);
 
-    useEffect(() => {
-        retrieveAutomovel();
-    }, [retrieveAutomovel]);
+        return { vazioErros, tamanhoErros, tipoErros };
+    };
 
-    const retrieveModelo = useCallback(() => {
-        ModeloDataService.getAll()
-            .then(response => {
-                setModelo(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar automóveis:", e);
-            });
-    }, []);
-
-    useEffect(() => {
-        retrieveModelo();
-    }, [retrieveModelo]);
-
-    const retrieveMarca = useCallback(() => {
-        MarcaDataService.getAll()
-            .then(response => {
-                setMarca(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar automóveis:", e);
-            });
-    }, []);
-
-    useEffect(() => {
-        retrieveMarca();
-    }, [retrieveMarca]);
 
 
     const optionsFornecedor = cliente.map((d) => {
@@ -199,39 +175,16 @@ const Troca = () => {
         // Prevents the default page refresh
         e.preventDefault();
 
-        // VERIFICAÇÃO - VAZIO
-        // let vazioErros = [];
+        const { vazioErros, tamanhoErros, tipoErros } = validateFields();
 
-        // if (!automovel.valor) {
-        //     vazioErros.push("valor");
-        // }
+        setVazio(vazioErros);
+        setTamanho(tamanhoErros);
+        setTipo(tipoErros);
 
-        // if (!automovel.ano_fabricacao) {
-        //     vazioErros.push("ano_fabricacao");
-        // }
-
-        // if (!automovel.ano_modelo) {
-        //     vazioErros.push("ano_modelo");
-        // }
-
-        // if (!automovel.renavam) {
-        //     vazioErros.push("renavam");
-        // }
-
-        // VERIFICAÇÃO - TIPO
-        // let tipoErros = [];
-
-        // if (isNaN(automovel.ano_fabricacao)) {
-        //     tipoErros.push("ano_fabricacao");
-        // }
-
-
-        // if (tipoErros.length > 0 || tamanhoErros.length > 0 || vazioErros > 0) {
-        //     setTamanho(tamanhoErros);
-        //     setTipo(tipoErros);
-        //     setVazio(vazioErros);
-        //     return;
-        // }
+        // Só continua se não houver erros
+        if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
+            return;
+        }
 
         var dataTroca = {
             comissao: troca.comissao,
@@ -271,20 +224,37 @@ const Troca = () => {
                         <div class="mb-3 col-md-3 ">
                             <label for="valor" class="form-label">Valor Diferença</label>
                             <input type="text" class="form-control" id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeTroca} />
-                            <div id="valorHelp" class="form-text">Informe o valor de diferença da troca.</div>
+                            {
+                                vazio.includes("valor") &&
+                                <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>
+                            }
+                            {
+                                tipo.includes("valor") &&
+                                <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>
+                            }
                         </div>
 
                         <div class="mb-3 col-md-3 ">
                             <label for="forma_pagamento" class="form-label">Forma de Pagamento</label>
                             <Select class="form-select" id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === troca.forma_pagamento)} onChange={(option) => setTroca({ ...troca, forma_pagamento: option.value })} options={optionsFormaPagamento} isClearable={true}>
                             </Select>
-                            <div id="formaPagementoHelp" class="form-text">Informe a forma de pagamento.</div>
+                            {
+                                vazio.includes("forma_pagamento") &&
+                                <div id="formapagamentohelp" class="form-text text-danger ms-1">Informe a forma de pagamento.</div>
+                            }
                         </div>
 
                         <div class="mb-3 col-md-3 ">
                             <label for="comissao" class="form-label">Comissão</label>
                             <input type="text" class="form-control" id="comissao" name="comissao" aria-describedby="comissaoHelp" onChange={handleInputChangeTroca} />
-                            <div id="comissaoHelp" class="form-text">Informe o valor de comissao.</div>
+                            {
+                                vazio.includes("comissao") &&
+                                <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>
+                            }
+                            {
+                                tipo.includes("comissao") &&
+                                <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>
+                            }
                         </div>
 
                         <div class="mb-3 col-md-3 ">
@@ -301,25 +271,44 @@ const Troca = () => {
                                 // onChange={handleInputChangeCompra}
                                 dateFormat="dd/MM/yyyy" // Formato da data
                             />
-
+                            {
+                                vazio.includes("data") &&
+                                <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>
+                            }
+                            {
+                                tipo.includes("data") &&
+                                <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>
+                            }
                         </div>
 
                         <div class="mb-3 col-md-3">
                             <label for="fornecedor" class="form-label">Fornecedor</label>
                             <Select isSearchable={true} class="form-select" id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === troca.clienteId) || null} isClearable={true}>
                             </Select>
+                            {
+                                vazio.includes("clienteId") &&
+                                <div id="valorHelp" class="form-text text-danger ms-1">Informe o proprietário.</div>
+                            }
                         </div>
 
                         <div class="mb-3 col-md-3">
                             <label for="automovel" class="form-label">Automóvel Recebido</label>
                             <Select isSearchable={true} class="form-select" id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === troca.automovelId) || null} isClearable={true}>
                             </Select>
+                            {
+                                vazio.includes("automovelId") &&
+                                <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel recebido.</div>
+                            }
                         </div>
 
                         <div class="mb-3 col-md-3">
                             <label for="automovel_fornecido" class="form-label">Automóvel Fornecido</label>
                             <Select isSearchable={true} class="form-select" id="automovel_fornecido" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setTroca({ ...troca, automovel_fornecido: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === troca.automovel_fornecido) || null} isClearable={true}>
                             </Select>
+                            {
+                                vazio.includes("automovel_fornecido") &&
+                                <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel fornecido.</div>
+                            }
                         </div>
 
                     </div >

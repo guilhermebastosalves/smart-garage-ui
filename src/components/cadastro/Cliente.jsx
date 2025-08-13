@@ -22,9 +22,6 @@ const Cliente = () => {
         { name: 'Pessoa Jurídica', value: 'juridica' }
     ];
 
-    const [checkedFisica, setCheckedFisica] = useState(false);
-    const [checkedJuridica, setCheckedJuridica] = useState(false);
-
     const [radioValue, setRadioValue] = useState('1');
 
     const [cliente, setCliente] = useState('');
@@ -176,8 +173,102 @@ const Cliente = () => {
         }
     ];
 
+
+    // NOVO ESTADO PARA O BOTÃO
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+
+    // Mensagens de sucesso e erro
+    const [mensagemErro, setMensagemErro] = useState('');
+    const [erro, setErro] = useState(false);
+
     const [mensagemSucesso, setMensagemSucesso] = useState('');
     const [sucesso, setSucesso] = useState(false);
+
+    const [vazio, setVazio] = useState([]);
+    const [tamanho, setTamanho] = useState([]);
+    const [tipo, setTipo] = useState([]);
+
+
+    const validateFieldsPessoaFisica = () => {
+        let vazioErros = [];
+        let tamanhoErros = [];
+        let tipoErros = [];
+
+        // Vazio
+        if (!cliente.nome) vazioErros.push("nome");
+        if (!cliente.data_cadastro) vazioErros.push("data_cadastro");
+        if (!cliente.email) vazioErros.push("email");
+        if (!cliente.telefone) vazioErros.push("telefone");
+
+        if (!fisica.cpf) vazioErros.push("cpf");
+        if (!fisica.rg) vazioErros.push("rg");
+
+        if (!endereco.cep) vazioErros.push("cep");
+        if (!endereco.logradouro) vazioErros.push("logradouro");
+        if (!endereco.bairro) vazioErros.push("bairro");
+        if (!endereco.numero) vazioErros.push("numero");
+
+        if (!cidade.nome) vazioErros.push("cidade");
+
+        if (!estado.uf) vazioErros.push("estado");
+
+
+        // Tamanho
+        if (cliente.telefone && (cliente.telefone.length !== 11 || isNaN(cliente.telefone))) tamanhoErros.push("telefone");
+
+        if (fisica.cpf && (fisica.cpf != '' && (fisica.cpf.length !== 11) || isNaN(fisica.cpf))) tamanhoErros.push("cpf");
+        if (fisica.rg && (fisica.rg != '' && (fisica.rg.length !== 9) || isNaN(fisica.rg))) tamanhoErros.push("rg");
+
+        if (endereco.cep && (endereco.cep != '' && (endereco.cep.length !== 8) || isNaN(endereco.cep))) tamanhoErros.push("cep");
+
+        // Tipo
+        if (endereco.numero && isNaN(endereco.numero)) tipoErros.push("numero");
+
+        if (cliente.data_cadastro && cliente.data_cadastro > new Date()) tipoErros.push("data_cadastro");
+
+        return { vazioErros, tamanhoErros, tipoErros };
+    };
+
+    const validateFieldsPessoaJuridica = () => {
+        let vazioErros = [];
+        let tamanhoErros = [];
+        let tipoErros = [];
+
+        // Vazio
+        if (!cliente.nome) vazioErros.push("nome");
+        if (!cliente.data_cadastro) vazioErros.push("data_cadastro");
+        if (!cliente.email) vazioErros.push("email");
+        if (!cliente.telefone) vazioErros.push("telefone");
+
+        if (!juridica.nome_responsavel) vazioErros.push("nome_responsavel");
+        if (!juridica.cnpj) vazioErros.push("cnpj");
+
+        if (!endereco.cep) vazioErros.push("cep");
+        if (!endereco.logradouro) vazioErros.push("logradouro");
+        if (!endereco.bairro) vazioErros.push("bairro");
+        if (!endereco.numero) vazioErros.push("numero");
+
+        if (!cidade.nome) vazioErros.push("cidade");
+
+        if (!estado.uf) vazioErros.push("estado");
+
+
+        // Tamanho
+        if (cliente.telefone && (cliente.telefone.length !== 11 || isNaN(cliente.telefone))) tamanhoErros.push("telefone");
+
+        if (juridica.cnpj && (juridica.cnpj != '' && (juridica.cnpj.length !== 14) || isNaN(juridica.cnpj))) tamanhoErros.push("cnpj");
+
+        if (endereco.cep && (endereco.cep != '' && (endereco.cep.length !== 8) || isNaN(endereco.cep))) tamanhoErros.push("cep");
+
+        // Tipo
+        if (endereco.numero && isNaN(endereco.numero)) tipoErros.push("numero");
+
+        if (cliente.data_cadastro && cliente.data_cadastro > new Date()) tipoErros.push("data_cadastro");
+
+
+        return { vazioErros, tamanhoErros, tipoErros };
+    };
 
 
     const saveCliente = async (e) => {
@@ -185,39 +276,17 @@ const Cliente = () => {
         // Prevents the default page refresh
         e.preventDefault();
 
-        // VERIFICAÇÃO - VAZIO
-        // let vazioErros = [];
+        const { vazioErros, tamanhoErros, tipoErros } = validateFieldsPessoaFisica();
 
-        // if (!automovel.valor) {
-        //     vazioErros.push("valor");
-        // }
+        setVazio(vazioErros);
+        setTamanho(tamanhoErros);
+        setTipo(tipoErros);
 
-        // if (!automovel.ano_fabricacao) {
-        //     vazioErros.push("ano_fabricacao");
-        // }
-
-        // if (!automovel.ano_modelo) {
-        //     vazioErros.push("ano_modelo");
-        // }
-
-        // if (!automovel.renavam) {
-        //     vazioErros.push("renavam");
-        // }
-
-        // VERIFICAÇÃO - TIPO
-        // let tipoErros = [];
-
-        // if (isNaN(automovel.ano_fabricacao)) {
-        //     tipoErros.push("ano_fabricacao");
-        // }
-
-
-        // if (tipoErros.length > 0 || tamanhoErros.length > 0 || vazioErros > 0) {
-        //     setTamanho(tamanhoErros);
-        //     setTipo(tipoErros);
-        //     setVazio(vazioErros);
-        //     return;
-        // }
+        // Só continua se não houver erros
+        if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
+            setIsSubmitting(false);
+            return;
+        }
 
         var dataCliente = {
             ativo: cliente.ativo,
@@ -300,39 +369,16 @@ const Cliente = () => {
         // Prevents the default page refresh
         e.preventDefault();
 
-        // VERIFICAÇÃO - VAZIO
-        // let vazioErros = [];
+        const { vazioErros, tamanhoErros, tipoErros } = validateFieldsPessoaJuridica();
 
-        // if (!automovel.valor) {
-        //     vazioErros.push("valor");
-        // }
+        setVazio(vazioErros);
+        setTamanho(tamanhoErros);
+        setTipo(tipoErros);
 
-        // if (!automovel.ano_fabricacao) {
-        //     vazioErros.push("ano_fabricacao");
-        // }
-
-        // if (!automovel.ano_modelo) {
-        //     vazioErros.push("ano_modelo");
-        // }
-
-        // if (!automovel.renavam) {
-        //     vazioErros.push("renavam");
-        // }
-
-        // VERIFICAÇÃO - TIPO
-        // let tipoErros = [];
-
-        // if (isNaN(automovel.ano_fabricacao)) {
-        //     tipoErros.push("ano_fabricacao");
-        // }
-
-
-        // if (tipoErros.length > 0 || tamanhoErros.length > 0 || vazioErros > 0) {
-        //     setTamanho(tamanhoErros);
-        //     setTipo(tipoErros);
-        //     setVazio(vazioErros);
-        //     return;
-        // }
+        // Só continua se não houver erros
+        if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
+            return;
+        }
 
         var dataCliente = {
             ativo: cliente.ativo,
@@ -427,44 +473,6 @@ const Cliente = () => {
                 }
 
                 <div className={`row mt-5 ${sucesso && "d-none"}`}>
-                    {/* <form action="">
-                        <div className="col-md-2 text-center">
-                            <label for="fisica">Pessoa Física</label><br />
-                            <input type="radio" name="opcao" id="fisica" value="fisica" onChange={() => { setOpcao('fisica') }} />
-                        </div>
-                        <div className="col-md-2 text-center">
-                            <label for="juridica">Pessoa Jurídica</label><br />
-                            <input type="radio" name="opcao" id="juridica" value="juridica" onChange={() => { setOpcao('juridica') }} />
-                        </div>
-                    </form> */}
-                    {/* <form action="">
-                        <div className="col-md-2 text-center">
-                            <ToggleButton
-                                className="mb-2"
-                                id="toggle-check"
-                                type="radio"
-                                name="opcao"
-                                variant="outline-primary"
-                                checked={checkedFisica}
-                                onChange={(e) => { setCheckedFisica(e.currentTarget.checked); setOpcao('fisica') }}
-                            >
-                                Checked
-                            </ToggleButton>
-                        </div>
-                        <div className="col-md-2 text-center">
-                            <ToggleButton
-                                className="mb-2"
-                                id="toggle-check"
-                                type="radio"
-                                name="opcao"
-                                variant="outline-primary"
-                                checked={checkedJuridica}
-                                onChange={(e) => { setCheckedJuridica(e.currentTarget.checked); setOpcao('juridica') }}
-                            >
-                                Checked
-                            </ToggleButton>
-                        </div>
-                    </form> */}
                     <ButtonGroup className="mb-2">
                         {radios.map((radio, idx) => (
                             <ToggleButton
@@ -485,93 +493,174 @@ const Cliente = () => {
                 </div>
 
                 {opcao === 'fisica' &&
-                    <form className={`mt-5 ${sucesso && "d-none"}`}>
-                        <div className="row">
-                            <div class="mb-3 col-md-3 ">
-                                <label for="valor" class="form-label">Nome</label>
-                                <input type="text" class="form-control" id="nome" name="nome" aria-describedby="nomeHelp" value={cliente.nome} onChange={handleInputChangeCliente} />
-                                <div id="nomeHelp" class="form-text">Informe o nome.</div>
+
+                    <form onSubmit={saveCliente} className={`mt-5 ${sucesso && "d-none"}`}>
+
+                        <fieldset className="mb-5">
+                            <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações do Cliente</legend>
+                            <div className="row g-3">
+                                <div class="col-md-4 ">
+                                    <label for="valor" class="form-label">Nome</label>
+                                    <input type="text" class="form-control" id="nome" name="nome" aria-describedby="nomeHelp" value={cliente.nome} onChange={handleInputChangeCliente} />
+                                    {
+                                        vazio.includes("nome") &&
+                                        <div id="nomehelp" class="form-text text-danger">Informe o nome.</div>
+                                    }
+                                </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="valor" class="form-label">Email</label>
+                                    <input type="text" class="form-control" id="email" name="email" aria-describedby="emailHelp" value={cliente.email} onChange={handleInputChangeCliente} />
+                                    {
+                                        vazio.includes("email") &&
+                                        <div id="emailhelp" class="form-text text-danger">Informe o email.</div>
+                                    }
+                                </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="telefone" class="form-label">Telefone</label>
+                                    <input type="text" class="form-control" id="telefone" name="telefone" aria-describedby="telefoneHelp" value={cliente.telefone} onChange={handleInputChangeCliente} />
+                                    {
+                                        vazio.includes("telefone") &&
+                                        <div id="telefonehelp" class="form-text text-danger">Informe o telefone.</div>
+                                    }
+                                    {
+                                        tamanho.includes("telefone") &&
+                                        <div id="telefonehelp" class="form-text text-danger">Telefone inválido.</div>
+                                    }
+                                </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="cpf" class="form-label">CPF</label>
+                                    <input type="text" class="form-control" id="cpf" name="cpf" aria-describedby="cpfeHelp" value={fisica.cpf} onChange={handleInputChangeFisica} />
+                                    {
+                                        vazio.includes("cpf") &&
+                                        <div id="cpfhelp" class="form-text text-danger">Informe o CPF.</div>
+                                    }
+                                    {
+                                        tamanho.includes("cpf") &&
+                                        <div id="cpfhelp" class="form-text text-danger">CPF inválido.</div>
+                                    }
+                                </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="rg" class="form-label">RG</label>
+                                    <input type="text" class="form-control" id="rg" name="rg" aria-describedby="rgHelp" value={fisica.rg} onChange={handleInputChangeFisica} />
+                                    {
+                                        vazio.includes("rg") &&
+                                        <div id="rghelp" class="form-text text-danger">Informe o RG.</div>
+                                    }
+                                    {
+                                        tamanho.includes("rg") &&
+                                        <div id="rghelp" class="form-text text-danger">RG inválido.</div>
+                                    }
+                                </div>
+                                <div class="col-md-4 ">
+                                    <label for="data" class="form-label">Data cadastro</label><br />
+                                    <DatePicker
+                                        style={{ width: "100%;" }}
+                                        className="form-control"
+                                        type="text"
+                                        aria-describedby="dataHelp"
+                                        id="data_cadastro"
+                                        name="data_cadastro"
+                                        selected={cliente.data_cadastro}
+                                        onChange={(date) => setCliente({ ...cliente, data_cadastro: date })}
+                                        dateFormat="dd/MM/yyyy" // Formato da data
+                                    />
+                                    {
+                                        vazio.includes("data_cadastro") &&
+                                        <div id="datahelp" class="form-text text-danger">Informe a data.</div>
+                                    }
+                                    {
+                                        tipo.includes("data_cadastro") &&
+                                        <div id="datacadastrohelp" class="form-text text-danger">Data inválida.</div>
+                                    }
+                                </div>
                             </div>
+                        </fieldset>
 
-                            <div class="mb-3 col-md-3 ">
-                                <label for="data" class="form-label">Data cadastro</label><br />
-                                <DatePicker
-                                    style={{ width: "100%;" }}
-                                    className="form-control"
-                                    type="text"
-                                    aria-describedby="dataHelp"
-                                    id="data_cadastro"
-                                    name="data_cadastro"
-                                    selected={cliente.data_cadastro}
-                                    onChange={(date) => setCliente({ ...cliente, data_cadastro: date })}
-                                    dateFormat="dd/MM/yyyy" // Formato da data
-                                />
+                        <fieldset className="mb-5">
+                            <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações de Endereço</legend>
+                            <div className="row g-3">
+                                <div class="col-md-4">
+                                    <label for="cep" class="form-label">CEP</label>
+                                    <input type="text" class="form-control" id="cep" name="cep" aria-describedby="cepHelp" value={endereco.cep} onChange={handleInputChangeEndereco} />
+                                    {
+                                        vazio.includes("cep") &&
+                                        <div id="cephelp" class="form-text text-danger">Informe o CEP.</div>
+                                    }
+                                    {
+                                        tamanho.includes("cep") &&
+                                        <div id="cephelp" class="form-text text-danger">CEP inválido.</div>
+                                    }
+                                </div>
 
+                                <div class="col-md-4">
+                                    <label for="cidade" class="form-label">Cidade</label>
+                                    <input type="text" class="form-control" id="cidade" name="cidade" aria-describedby="cidadeHelp" value={cidade.nome} onChange={handleInputChangeCidade} />
+                                    {
+                                        vazio.includes("cidade") &&
+                                        <div id="cidadehelp" class="form-text text-danger">Informe a cidade.</div>
+                                    }
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="uf" class="form-label">Estado</label>
+                                    <Select isSearchable={true} class="form-select" id="uf" name="uf" placeholder="Selecione o estado" options={optionsEstados} value={optionsEstados.find(option => option.value === estado.uf)} onChange={handleInputChangeEstado}>
+                                    </Select>
+                                    {
+                                        vazio.includes("estado") &&
+                                        <div id="estadohelp" class="form-text text-danger">Informe o estado.</div>
+                                    }
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="logradouro" class="form-label">Logradouro</label>
+                                    <input type="text" class="form-control" id="logradouro" name="logradouro" aria-describedby="logradourodeHelp" value={endereco.logradouro} onChange={handleInputChangeEndereco} />
+                                    {
+                                        vazio.includes("logradouro") &&
+                                        <div id="logradourohelp" class="form-text text-danger">Informe o logradouro.</div>
+                                    }
+                                </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="bairro" class="form-label">Bairro</label>
+                                    <input type="text" class="form-control" id="bairro" name="bairro" aria-describedby="bairroHelp" value={endereco.bairro} onChange={handleInputChangeEndereco} />
+                                    {
+                                        vazio.includes("bairro") &&
+                                        <div id="bairrohelp" class="form-text text-danger">Informe o bairro.</div>
+                                    }
+                                </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="numero" class="form-label">Número</label>
+                                    <input type="text" class="form-control" id="numero" name="numero" aria-describedby="numerodeHelp" value={endereco.numero} onChange={handleInputChangeEndereco} />
+                                    {
+                                        vazio.includes("numero") &&
+                                        <div id="numerohelp" class="form-text text-danger">Informe o número.</div>
+                                    }
+                                    {
+                                        tipo.includes("numero") &&
+                                        <div id="numerohelp" class="form-text text-danger">Número inválido.</div>
+                                    }
+                                </div>
                             </div>
+                        </fieldset>
 
-                            <div class="mb-3 col-md-3 ">
-                                <label for="valor" class="form-label">Email</label>
-                                <input type="text" class="form-control" id="email" name="email" aria-describedby="emailHelp" value={cliente.email} onChange={handleInputChangeCliente} />
-                                <div id="emailHelp" class="form-text">Informe o email.</div>
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="telefone" class="form-label">Telefone</label>
-                                <input type="text" class="form-control" id="telefone" name="telefone" aria-describedby="telefoneHelp" value={cliente.telefone} onChange={handleInputChangeCliente} />
-                                <div id="telefoneHelp" class="form-text">Informe o telefone.</div>
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="cpf" class="form-label">CPF</label>
-                                <input type="text" class="form-control" id="cpf" name="cpf" aria-describedby="cpfeHelp" value={fisica.cpf} onChange={handleInputChangeFisica} />
-                                <div id="cpfHelp" class="form-text">Informe o CPF.</div>
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="rg" class="form-label">RG</label>
-                                <input type="text" class="form-control" id="rg" name="rg" aria-describedby="rgHelp" value={fisica.rg} onChange={handleInputChangeFisica} />
-                                <div id="rgfHelp" class="form-text">Informe o RG.</div>
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="cep" class="form-label">CEP</label>
-                                <input type="text" class="form-control" id="cep" name="cep" aria-describedby="cepHelp" value={endereco.cep} onChange={handleInputChangeEndereco} />
-                                <div id="cepHelp" class="form-text">Informe o CEP.</div>
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="cidade" class="form-label">Cidade</label>
-                                <input type="text" class="form-control" id="cidade" name="cidade" aria-describedby="cidadeHelp" value={cidade.nome} onChange={handleInputChangeCidade} />
-                                <div id="cidadeHelp" class="form-text">Informe a cidade.</div>
-                            </div>
-
-                            <div class="mb-3 col-md-3">
-                                <label for="uf" class="form-label">Estado</label>
-                                <Select isSearchable={true} class="form-select" id="uf" name="uf" placeholder="Selecione o estado" options={optionsEstados} value={optionsEstados.find(option => option.value === estado.uf)} onChange={handleInputChangeEstado}>
-                                </Select>
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="logradouro" class="form-label">Logradouro</label>
-                                <input type="text" class="form-control" id="logradouro" name="logradouro" aria-describedby="logradourodeHelp" value={endereco.logradouro} onChange={handleInputChangeEndereco} />
-                                <div id="logradouroHelp" class="form-text">Informe o logradouro.</div>
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="bairro" class="form-label">Bairro</label>
-                                <input type="text" class="form-control" id="bairro" name="bairro" aria-describedby="bairroHelp" value={endereco.bairro} onChange={handleInputChangeEndereco} />
-                                <div id="bairroHelp" class="form-text">Informe o bairro.</div>
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="numero" class="form-label">Número</label>
-                                <input type="text" class="form-control" id="numero" name="numero" aria-describedby="numerodeHelp" value={endereco.numero} onChange={handleInputChangeEndereco} />
-                                <div id="numeroHelp" class="form-text">Informe o numero.</div>
-                            </div>
-
-                        </div >
-
-                        <button type="submit" onClick={saveCliente} class="btn btn-primary">Submit</button>
+                        {/* Botão de Submissão */}
+                        <div className="d-flex justify-content-end">
+                            <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
+                                {isSubmitting ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Salvando..
+                                    </>
+                                ) : (
+                                    "Cadastrar Automóvel"
+                                )}
+                            </button>
+                        </div>
 
                     </form >}
 
@@ -581,7 +670,7 @@ const Cliente = () => {
                             <div class="mb-3 col-md-3 ">
                                 <label for="valor" class="form-label">Nome</label>
                                 <input type="text" class="form-control" id="nome" name="nome" aria-describedby="nomeHelp" value={cliente.nome} onChange={handleInputChangeCliente} />
-                                <div id="nomeHelp" class="form-text">Informe o nome.</div>
+                                <div id="nomeHelp" class={`form-text ${vazio.includes("nome") && "text-danger"}`}> Informe o nome.</div>
                             </div>
 
                             <div class="mb-3 col-md-3 ">
@@ -597,73 +686,127 @@ const Cliente = () => {
                                     onChange={(date) => setCliente({ ...cliente, data_cadastro: date })}
                                     dateFormat="dd/MM/yyyy" // Formato da data
                                 />
-
+                                {
+                                    vazio.includes("data_cadastro") &&
+                                    <div id="datacadastrohelp" class="form-text text-danger">Informe a data de cadastro.</div>
+                                }
+                                {
+                                    tipo.includes("data_cadastro") &&
+                                    <div id="datacadastrohelp" class="form-text text-danger">Data inválida.</div>
+                                }
                             </div>
 
                             <div class="mb-3 col-md-3 ">
                                 <label for="valor" class="form-label">Email</label>
                                 <input type="text" class="form-control" id="email" name="email" aria-describedby="emailHelp" value={cliente.email} onChange={handleInputChangeCliente} />
-                                <div id="emailHelp" class="form-text">Informe o email.</div>
+                                {
+                                    vazio.includes("email") &&
+                                    <div id="emailhelp" class="form-text text-danger">Informe o email.</div>
+                                }
                             </div>
 
                             <div class="mb-3 col-md-3 ">
                                 <label for="telefone" class="form-label">Telefone</label>
                                 <input type="text" class="form-control" id="telefone" name="telefone" aria-describedby="telefoneHelp" value={cliente.telefone} onChange={handleInputChangeCliente} />
-                                <div id="telefoneHelp" class="form-text">Informe o telefone.</div>
+                                {
+                                    vazio.includes("telefone") &&
+                                    <div id="telefonehelp" class="form-text text-danger">Informe o telefone.</div>
+                                }
+                                {
+                                    tamanho.includes("telefone") &&
+                                    <div id="telefonehelp" class="form-text text-danger">Telefone inválido.</div>
+                                }
                             </div>
 
                             <div class="mb-3 col-md-3 ">
                                 <label for="cnpj" class="form-label">CNPJ</label>
                                 <input type="text" class="form-control" id="cpf" name="cnpj" aria-describedby="cnpjHelp" value={juridica.cnpj} onChange={handleInputChangeJuridica} />
-                                <div id="cnpjHelp" class="form-text">Informe o CNPJ.</div>
+                                {
+                                    vazio.includes("cnpj") &&
+                                    <div id="cnpjhelp" class="form-text text-danger">Informe o CNPJ.</div>
+                                }
+                                {
+                                    tamanho.includes("cnpj") &&
+                                    <div id="cnpjhelp" class="form-text text-danger">CNPJ inválido.</div>
+                                }
                             </div>
 
                             <div class="mb-3 col-md-3 ">
                                 <label for="razao_social" class="form-label">Razão Social</label>
                                 <input type="text" class="form-control" id="razao_social" name="razao_social" aria-describedby="razao_socialHelp" value={juridica.razao_social} onChange={handleInputChangeJuridica} />
-                                <div id="razao_socialHelp" class="form-text">Informe a razão social.</div>
+                                {/* <div id="razao_socialHelp" class="form-text">Informe a razão social.</div> */}
                             </div>
 
                             <div class="mb-3 col-md-3 ">
                                 <label for="nome_responsavel" class="form-label">Nome do responável</label>
                                 <input type="text" class="form-control" id="nome_responsavel" name="nome_responsavel" aria-describedby="nome_responsavelHelp" value={juridica.nome_responsavel} onChange={handleInputChangeJuridica} />
-                                <div id="nome_responsavelHelp" class="form-text">Informe o nome do responsável.</div>
+                                {
+                                    vazio.includes("nome_responsavel") &&
+                                    <div id="nome_responsavelhelp" class="form-text text-danger">Informe o nome do responsavel.</div>
+                                }
                             </div>
 
                             <div class="mb-3 col-md-3 ">
                                 <label for="cep" class="form-label">CEP</label>
                                 <input type="text" class="form-control" id="cep" name="cep" aria-describedby="cepHelp" value={endereco.cep} onChange={handleInputChangeEndereco} />
-                                <div id="cepHelp" class="form-text">Informe o CEP.</div>
+                                {
+                                    vazio.includes("cep") &&
+                                    <div id="cephelp" class="form-text text-danger">Informe o CEP.</div>
+                                }
+                                {
+                                    tamanho.includes("cep") &&
+                                    <div id="cphelp" class="form-text text-danger">CEP inválido.</div>
+                                }
                             </div>
 
                             <div class="mb-3 col-md-3 ">
                                 <label for="cidade" class="form-label">Cidade</label>
                                 <input type="text" class="form-control" id="cidade" name="cidade" aria-describedby="cidadeHelp" value={cidade.nome} onChange={handleInputChangeCidade} />
-                                <div id="cidadeHelp" class="form-text">Informe a cidade.</div>
+                                {
+                                    vazio.includes("cidade") &&
+                                    <div id="cidadehelp" class="form-text text-danger">Informe a cidade.</div>
+                                }
                             </div>
 
                             <div class="mb-3 col-md-3">
                                 <label for="uf" class="form-label">Estado</label>
                                 <Select isSearchable={true} class="form-select" id="uf" name="uf" placeholder="Selecione o estado" options={optionsEstados} value={optionsEstados.find(option => option.value === estado.uf)} onChange={handleInputChangeEstado}>
                                 </Select>
+                                {
+                                    vazio.includes("estado") &&
+                                    <div id="estadohelp" class="form-text text-danger">Informe o estado.</div>
+                                }
                             </div>
 
                             <div class="mb-3 col-md-3 ">
                                 <label for="logradouro" class="form-label">Logradouro</label>
                                 <input type="text" class="form-control" id="logradouro" name="logradouro" aria-describedby="logradourodeHelp" value={endereco.logradouro} onChange={handleInputChangeEndereco} />
-                                <div id="logradouroHelp" class="form-text">Informe o logradouro.</div>
+                                {
+                                    vazio.includes("logradouro") &&
+                                    <div id="logradourohelp" class="form-text text-danger">Informe o logradouro.</div>
+                                }
                             </div>
 
                             <div class="mb-3 col-md-3 ">
                                 <label for="bairro" class="form-label">Bairro</label>
                                 <input type="text" class="form-control" id="bairro" name="bairro" aria-describedby="bairroHelp" value={endereco.bairro} onChange={handleInputChangeEndereco} />
-                                <div id="bairroHelp" class="form-text">Informe o bairro.</div>
+                                {
+                                    vazio.includes("bairro") &&
+                                    <div id="bairrohelp" class="form-text text-danger">Informe o bairro.</div>
+                                }
                             </div>
 
                             <div class="mb-3 col-md-3 ">
                                 <label for="numero" class="form-label">Número</label>
                                 <input type="text" class="form-control" id="numero" name="numero" aria-describedby="numerodeHelp" value={endereco.numero} onChange={handleInputChangeEndereco} />
-                                <div id="numeroHelp" class="form-text">Informe o numero.</div>
+                                {
+                                    vazio.includes("numero") &&
+                                    <div id="numerohelp" class="form-text text-danger">Informe o número.</div>
+                                }
+                                {
+                                    tipo.includes("numero") &&
+                                    <div id="numerohelp" class="form-text text-danger">Númemro inválido.</div>
+                                }
                             </div>
 
                         </div >

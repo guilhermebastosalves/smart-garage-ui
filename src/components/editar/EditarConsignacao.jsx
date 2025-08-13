@@ -228,101 +228,11 @@ const EditarConsignacao = () => {
         // VERIFICAÇÃO - VAZIO
         let vazioErros = [];
 
-        // if (!automovel.valor) {
-        //     vazioErros.push("valor");
-        // }
-
-        // if (!automovel.ano_fabricacao) {
-        //     vazioErros.push("ano_fabricacao");
-        // }
-
-        // if (!automovel.ano_modelo) {
-        //     vazioErros.push("ano_modelo");
-        // }
-
-        // if (!automovel.renavam) {
-        //     vazioErros.push("renavam");
-        // }
-
-        // if (!automovel.placa) {
-        //     vazioErros.push("placa");
-        // }
-
-        // if (!automovel.origem) {
-        //     vazioErros.push("origem");
-        // }
-
-        // if (!automovel.valor) {
-        //     vazioErros.push("valor");
-        // }
-
-        // if (!automovel.km) {
-        //     vazioErros.push("km");
-        // }
-
-        // if (!automovel.combustivel) {
-        //     vazioErros.push("combustivel");
-        // }
-
-        // if (!automovel.cor) {
-        //     vazioErros.push("cor");
-        // }
-
-        // if (!modelo.modelo) {
-        //     vazioErros.push("modelo");
-        // }
-
-        // if (!marca.marca) {
-        //     vazioErros.push("marca");
-        // }
-
         // VERIFICAÇÃO - TAMANHO
         let tamanhoErros = [];
-
-        // if (automovel.renavam.length != 11 || isNaN(automovel.renavam)) {
-        //     tamanhoErros.push("renavam");
-        // }
-
-        // if (automovel.placa.length != 7) {
-        //     tamanhoErros.push("placa");
-        // }
-
         // // VERIFICAÇÃO - TIPO
         let tipoErros = [];
 
-        // if (isNaN(automovel.ano_fabricacao)) {
-        //     tipoErros.push("ano_fabricacao");
-        // }
-
-        // if (isNaN(automovel.ano_modelo)) {
-        //     tipoErros.push("ano_modelo");
-        // }
-
-        // if (isNaN(automovel.renavam)) {
-        //     tipoErros.push("renavam");
-        // }
-
-        // Verificação de duplicidade
-        // try {
-        //     const verificacao = await AutomovelDataService.duplicidade({
-        //         placa: automovel.placa,
-        //         renavam: automovel.renavam
-        //     })
-
-        //     if (verificacao.data.erro) {
-        //         setErro(verificacao.data.erro); // erro vindo do back
-        //         setMensagemErro(verificacao.data.mensagemErro);
-        //         return; // não continua
-        //     }
-
-        // } catch (erro) {
-
-        //     console.error("Erro na verificação de duplicidade:", erro);
-
-        //     setErro(erro.response.data.erro);
-        //     setMensagemErro(erro.response.data.mensagemErro);
-        //     return;
-        // }
 
         if (tipoErros.length > 0 || tamanhoErros.length > 0 || vazioErros > 0) {
             setTamanho(tamanhoErros);

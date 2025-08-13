@@ -19,6 +19,7 @@
 
 body {
     background-color: rgba(133, 184, 203, 0.05) !important;
+    box-sizing: border-box;
 }
 
 .pointer {
@@ -32,4 +33,15 @@ body {
 .card-hover:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Garante que a imagem do carro preencha o espaço sem distorcer */
+.card-img-top.car-image {
+    object-fit: cover;
+    height: 200px;
+    /* Altura fixa para a imagem, mas o card será flexível */
+}
+
+.card-form {
+    background-color: rgb(172, 192, 221) !important;
 }

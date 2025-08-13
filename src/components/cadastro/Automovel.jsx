@@ -5,10 +5,6 @@ import MarcaDataService from "../../services/marcaDataService";
 import ModeloDataService from "../../services/modeloDataService";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useCallback } from "react";
-import ClienteDataService from "../../services/clienteDataService";
-import Select from "react-select";
-import FisicaDataService from "../../services/fisicaDataService";
-import JuridicaDataService from "../../services/juridicaDataService";
 
 const Automovel = () => {
 
@@ -65,10 +61,6 @@ const Automovel = () => {
     };
 
 
-
-    // no bd o campo de ambos é 'nome', porém no form chamo os campos input de 'marca' e 'modelo',
-    // por isso aqui chamo por esses nomes
-
     const initialMarcaState = {
         id: null,
         marca: ""
@@ -85,12 +77,6 @@ const Automovel = () => {
     const [modelo, setModelo] = useState(initialModeloState);
 
     const [marca, setMarca] = useState(initialMarcaState);
-
-    const [cliente, setCliente] = useState([]);
-
-    const [fisica, setFisica] = useState([]);
-
-    const [juridica, setJuridica] = useState([]);
 
 
     // --- Event Handlers ---
@@ -109,6 +95,9 @@ const Automovel = () => {
         setMarca({ ...marca, [name]: value });
     };
 
+    // NOVO ESTADO PARA O BOTÃO
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     // Mensagens de sucesso e erro
     const [mensagemErro, setMensagemErro] = useState('');
     const [erro, setErro] = useState(false);
@@ -123,63 +112,36 @@ const Automovel = () => {
     const navigate = useNavigate();
 
 
-    const retrieveCliente = useCallback(() => {
-        ClienteDataService.getAll()
-            .then(response => {
-                setCliente(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar clientes:", e);
-            });
-    }, []);
+    const validateFields = () => {
+        let vazioErros = [];
+        let tamanhoErros = [];
+        let tipoErros = [];
 
+        // Vazio
+        if (!automovel.valor) vazioErros.push("valor");
+        if (!automovel.ano_fabricacao) vazioErros.push("ano_fabricacao");
+        if (!automovel.ano_modelo) vazioErros.push("ano_modelo");
+        if (!automovel.renavam) vazioErros.push("renavam");
+        if (!automovel.placa) vazioErros.push("placa");
+        if (!automovel.origem) vazioErros.push("origem");
+        if (!automovel.km) vazioErros.push("km");
+        if (!automovel.combustivel) vazioErros.push("combustivel");
+        if (!automovel.cor) vazioErros.push("cor");
+        if (!modelo.modelo) vazioErros.push("modelo");
+        if (!marca.marca) vazioErros.push("marca");
 
-    useEffect(() => {
-        retrieveCliente();
-    }, [retrieveCliente]);
+        // Tamanho
+        if (automovel.renavam && (automovel.renavam.length !== 11 || isNaN(automovel.renavam))) tamanhoErros.push("renavam");
+        if (automovel.placa && automovel.placa.length !== 7) tamanhoErros.push("placa");
 
-    const retrieveFisica = useCallback(() => {
-        FisicaDataService.getAll()
-            .then(response => {
-                setFisica(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar pessoas físicas:", e);
-            });
-    }, []);
+        // Tipo
+        if (automovel.ano_fabricacao && isNaN(automovel.ano_fabricacao)) tipoErros.push("ano_fabricacao");
+        if (automovel.ano_modelo && isNaN(automovel.ano_modelo)) tipoErros.push("ano_modelo");
+        if (automovel.valor && isNaN(automovel.valor)) tipoErros.push("valor");
+        if (automovel.km && isNaN(automovel.km)) tipoErros.push("km");
 
-
-    useEffect(() => {
-        retrieveFisica();
-    }, [retrieveFisica]);
-
-    const retrieveJuridica = useCallback(() => {
-        JuridicaDataService.getAll()
-            .then(response => {
-                setJuridica(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar pessoas físicas:", e);
-            });
-    }, []);
-
-
-    useEffect(() => {
-        retrieveJuridica();
-    }, [retrieveJuridica]);
-
-    const options = cliente.map((d) => {
-        const pessoaFisica = fisica.find(pessoa => pessoa.clienteId === d.id);
-        const pessoaJuridica = juridica.find(pessoa => pessoa.clienteId === d.id);
-
-        return {
-            value: d.id,
-            label: `nome: ${d.nome || ""} | ${pessoaJuridica ? pessoaJuridica?.razao_social + " |" : ""} ${pessoaFisica ? "cpf: " + pessoaFisica?.cpf + " |" : ""}  ${pessoaJuridica ? "cnpj: " + pessoaJuridica?.cnpj : ""}`
-        };
-    });
+        return { vazioErros, tamanhoErros, tipoErros };
+    };
 
 
     const saveAutomovel = async (e) => {
@@ -189,78 +151,19 @@ const Automovel = () => {
         setErro(false);
         setSucesso(false);
         setVazio([]);
+        setIsSubmitting(true); // Desabilita o botão
 
-        // VERIFICAÇÃO - VAZIO
-        let vazioErros = [];
 
-        if (!automovel.valor) {
-            vazioErros.push("valor");
-        }
+        const { vazioErros, tamanhoErros, tipoErros } = validateFields();
 
-        if (!automovel.ano_fabricacao) {
-            vazioErros.push("ano_fabricacao");
-        }
+        setVazio(vazioErros);
+        setTamanho(tamanhoErros);
+        setTipo(tipoErros);
 
-        if (!automovel.ano_modelo) {
-            vazioErros.push("ano_modelo");
-        }
-
-        if (!automovel.renavam) {
-            vazioErros.push("renavam");
-        }
-
-        if (!automovel.placa) {
-            vazioErros.push("placa");
-        }
-
-        if (!automovel.origem) {
-            vazioErros.push("origem");
-        }
-
-        if (!automovel.valor) {
-            vazioErros.push("valor");
-        }
-
-        if (!automovel.km) {
-            vazioErros.push("km");
-        }
-
-        if (!automovel.combustivel) {
-            vazioErros.push("combustivel");
-        }
-
-        if (!automovel.cor) {
-            vazioErros.push("cor");
-        }
-
-        if (!modelo.modelo) {
-            vazioErros.push("modelo");
-        }
-
-        if (!marca.marca) {
-            vazioErros.push("marca");
-        }
-
-        // VERIFICAÇÃO - TAMANHO
-        let tamanhoErros = [];
-
-        if (automovel.renavam.length != 11 || isNaN(automovel.renavam)) {
-            tamanhoErros.push("renavam");
-        }
-
-        if (automovel.placa.length != 7) {
-            tamanhoErros.push("placa");
-        }
-
-        // VERIFICAÇÃO - TIPO
-        let tipoErros = [];
-
-        if (isNaN(automovel.ano_fabricacao)) {
-            tipoErros.push("ano_fabricacao");
-        }
-
-        if (isNaN(automovel.ano_modelo)) {
-            tipoErros.push("ano_modelo");
+        // Só continua se não houver erros
+        if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
+            setIsSubmitting(false);
+            return;
         }
 
         // Verificação de duplicidade
@@ -283,15 +186,9 @@ const Automovel = () => {
             setErro(erro.response.data.erro);
             setMensagemErro(erro.response.data.mensagemErro);
             return;
+        } finally {
+            setIsSubmitting(false); // A mágica acontece aqui!
         }
-
-        if (tipoErros.length > 0 || tamanhoErros.length > 0 || vazioErros > 0) {
-            setTamanho(tamanhoErros);
-            setTipo(tipoErros);
-            setVazio(vazioErros);
-            return;
-        }
-
 
         // aqui crio os JSON's auxiliares, para ficar igual no bd, chamo os campos de nome
         var dataMarca = {
@@ -365,183 +262,438 @@ const Automovel = () => {
         }
     }
 
+    // Função auxiliar para checar se um campo tem erro e aplicar a classe
+    const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
+
+
+    // return (
+    //     <>
+    //         <Header />
+    //         <div className="container py-5">
+    //             {/* Cabeçalho da Página */}
+    //             <div className="mb-5">
+    //                 <h1 className="fw-bold">Cadastro de Automóvel</h1>
+    //                 <p className="text-muted fs-5">Preencha os dados para registrar um novo veículo no sistema.</p>
+    //             </div>
+
+    //             {/* Alertas */}
+    //             {erro && (
+    //                 <div className="alert alert-danger d-flex align-items-center" role="alert">
+    //                     <i className="bi bi-exclamation-triangle-fill me-2"></i>
+    //                     <div>{mensagemErro}</div>
+    //                 </div>
+    //             )}
+    //             {sucesso && (
+    //                 <div className="alert alert-success d-flex align-items-center" role="alert">
+    //                     <i className="bi bi-check-circle-fill me-2"></i>
+    //                     <div>{mensagemSucesso}</div>
+    //                 </div>
+    //             )}
+
+    //             {/* Formulário com NOVO Layout de Fieldset */}
+    //             <form onSubmit={saveAutomovel} className={sucesso ? "d-none" : ""} noValidate>
+
+    //                 <fieldset className="mb-5">
+    //                     <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações Principais</legend>
+    //                     <div className="row g-3">
+    //                         <div className="col-md-4">
+    //                             <label htmlFor="marca" className="form-label">Marca</label>
+    //                             <input type="text" className={`form-control ${hasError("marca") && "is-invalid"}`} id="marca" name="marca" onChange={handleInputChangeMarca} />
+    //                             {vazio.includes("marca") && <div className="invalid-feedback">Informe a marca.</div>}
+    //                         </div>
+    //                         <div className="col-md-4">
+    //                             <label htmlFor="modelo" className="form-label">Modelo</label>
+    //                             <input type="text" className={`form-control ${hasError("modelo") && "is-invalid"}`} id="modelo" name="modelo" onChange={handleInputChangeModelo} />
+    //                             {vazio.includes("modelo") && <div className="invalid-feedback">Informe o modelo.</div>}
+    //                         </div>
+    //                         {/* ... outros campos da seção ... */}
+    //                     </div>
+    //                 </fieldset>
+
+    //                 <fieldset className="mb-5">
+    //                     <legend className="h5 fw-bold mb-3 border-bottom pb-2">Documentação e Valores</legend>
+    //                     <div className="row g-3">
+    //                         <div className="col-md-4">
+    //                             <label htmlFor="placa" className="form-label">Placa</label>
+    //                             <input type="text" className={`form-control ${hasError("placa") && "is-invalid"}`} id="placa" name="placa" onChange={handleInputChangeAutomovel} />
+    //                             {vazio.includes("placa") && <div className="invalid-feedback">Informe a placa.</div>}
+    //                             {tamanho.includes("placa") && <div className="invalid-feedback">Placa inválida (deve ter 7 caracteres).</div>}
+    //                         </div>
+    //                         <div className="col-md-4">
+    //                             <label htmlFor="renavam" className="form-label">Renavam</label>
+    //                             <input type="text" className={`form-control ${hasError("renavam") && "is-invalid"}`} id="renavam" name="renavam" onChange={handleInputChangeAutomovel} />
+    //                             {vazio.includes("renavam") && <div className="invalid-feedback">Informe o Renavam.</div>}
+    //                             {tamanho.includes("renavam") && <div className="invalid-feedback">Renavam inválido (deve ter 11 dígitos).</div>}
+    //                         </div>
+    //                         <div className="col-md-4">
+    //                             <label htmlFor="valor" className="form-label">Valor (R$)</label>
+    //                             <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} />
+    //                             {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
+    //                             {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
+    //                         </div>
+    //                     </div>
+    //                 </fieldset>
+
+    //                 <fieldset className="mb-5">
+    //                     <legend className="h5 fw-bold mb-3 border-bottom pb-2">Detalhes Adicionais</legend>
+    //                     <div className="row g-3">
+    //                         {/* ... outros campos como km, combustivel, origem ... */}
+    //                     </div>
+    //                 </fieldset>
+
+    //                 {/* Botão de Submissão */}
+    //                 <div className="d-flex justify-content-end">
+    //                     <button type="submit" className="btn btn-primary btn-lg px-5" disabled={isSubmitting}>
+    //                         {isSubmitting ? (
+    //                             <>
+    //                                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    //                                 Salvando...
+    //                             </>
+    //                         ) : (
+    //                             "Cadastrar Automóvel"
+    //                         )}
+    //                     </button>
+    //                 </div>
+    //             </form>
+    //         </div>
+    //     </>
+    // );
+
+
+
 
     return (
         <>
             <Header />
-            <div className="container">
-                <h1>Cadastro</h1>
-                <p>Esta é a página de cadastro de automóveis.</p>
-            </div>
+            <div className="container py-5">
+                {/* Cabeçalho da Página */}
+                <div className="mb-4">
+                    <h1 className="fw-bold">Cadastro de Automóvel</h1>
+                    <p className="text-muted">Preencha os dados abaixo para registrar um novo veículo no sistema.</p>
+                </div>
 
-            <div className="container">
-                {
-                    erro &&
-
-                    <div class="alert alert-danger" role="alert">
-                        {mensagemErro}
+                {/* Alertas */}
+                {erro && (
+                    <div className="alert alert-danger d-flex align-items-center" role="alert">
+                        <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div>{mensagemErro}</div>
                     </div>
-
-                }
-                {
-                    sucesso &&
-
-                    <div class="alert alert-success" role="alert">
-                        {mensagemSucesso}
+                )}
+                {sucesso && (
+                    <div className="alert alert-success d-flex align-items-center" role="alert">
+                        <i className="bi bi-check-circle-fill me-2"></i>
+                        <div>{mensagemSucesso}</div>
                     </div>
+                )}
 
-                }
-                <form className={`mt-5 ${sucesso && "d-none"}`}>
-                    <div className="row">
+                {/* Formulário com Seções */}
+                <form onSubmit={saveAutomovel} className={sucesso ? "d-none" : ""}>
 
-                        <div class="mb-3 col-md-3">
-                            <label for="anofabricacao" class="form-label">Ano fabricação</label>
-                            <input type="text" class="form-control" id="anofabricacao" name="ano_fabricacao" aria-describedby="anofabricacaoHelp" onChange={handleInputChangeAutomovel} />
-                            <div id="anofabricacaoHelp" class="form-text">Informe o ano de fabricação.</div>
-                            {
-                                vazio.includes("ano_fabricacao") &&
-                                <div id="anoFabricacaoHelp" class="form-text text-danger">Informe o ano de fabricação.</div>
-                            }
-                            {
-                                tipo.includes("ano_fabricacao") &&
-                                <div id="anoFabricacaoHelp2" class="form-text text-danger">Ano de fabricação inválido.</div>
-                            }
+                    {/* Seção 1: Informações Principais */}
+
+                    <fieldset className="mb-5">
+                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações Principais</legend>
+                        <div className="row g-3">
+                            <div className="col-md-4">
+                                <label htmlFor="marca" className="form-label">Marca</label>
+                                <input type="text" className={`form-control ${hasError("marca") && "is-invalid"}`} id="marca" name="marca" onChange={handleInputChangeMarca} />
+                                {vazio.includes("marca") && <div className="invalid-feedback">Informe a marca.</div>}
+                            </div>
+                            <div className="col-md-4">
+                                <label htmlFor="modelo" className="form-label">Modelo</label>
+                                <input type="text" className={`form-control ${hasError("modelo") && "is-invalid"}`} id="modelo" name="modelo" onChange={handleInputChangeModelo} />
+                                {vazio.includes("modelo") && <div className="invalid-feedback">Informe o modelo.</div>}
+                            </div>
+                            <div className="col-md-4">
+                                <label htmlFor="cor" className="form-label">Cor</label>
+                                <input type="text" className={`form-control ${hasError("cor") && "is-invalid"}`} id="cor" name="cor" onChange={handleInputChangeAutomovel} />
+                                {vazio.includes("cor") && <div className="invalid-feedback">Informe a cor.</div>}
+                            </div>
+                            <div className="col-md-3">
+                                <label htmlFor="anofabricacao" className="form-label">Ano Fabricação</label>
+                                <input type="text" className={`form-control ${hasError("ano_fabricacao") && "is-invalid"}`} id="anofabricacao" name="ano_fabricacao" onChange={handleInputChangeAutomovel} />
+                                {vazio.includes("ano_fabricacao") && <div className="invalid-feedback">Informe o ano.</div>}
+                                {tipo.includes("ano_fabricacao") && <div className="invalid-feedback">Ano inválido.</div>}
+                            </div>
+                            <div className="col-md-3">
+                                <label htmlFor="anomodelo" className="form-label">Ano Modelo</label>
+                                <input type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} />
+                                {vazio.includes("ano_modelo") && <div className="invalid-feedback">Informe o ano.</div>}
+                                {tipo.includes("ano_modelo") && <div className="invalid-feedback">Ano inválido.</div>}
+                            </div>
                         </div>
+                    </fieldset>
 
-                        <div class="mb-3 col-md-3">
-                            <label for="anomodelo" class="form-label">Ano modelo</label>
-                            <input type="text" class="form-control" id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} />
-                            {
-                                vazio.includes("ano_modelo") &&
-                                <div id="anoModeloHelp" class="form-text text-danger">Informe o ano do modelo.</div>
-                            }
-                            {
-                                tipo.includes("ano_modelo") &&
-                                <div id="anoModeloHelp2" class="form-text text-danger">Ano do modelo inválido.</div>
-                            }
+
+                    {/* Seção 2: Documentação e Valores */}
+
+
+                    <fieldset className="mb-5">
+                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Documentação e Valores</legend>
+                        <div className="row g-3">
+                            <div className="col-md-4">
+                                <label htmlFor="placa" className="form-label">Placa</label>
+                                <input type="text" className={`form-control ${hasError("placa") && "is-invalid"}`} id="placa" name="placa" onChange={handleInputChangeAutomovel} />
+                                {vazio.includes("placa") && <div className="invalid-feedback">Informe a placa.</div>}
+                                {tamanho.includes("placa") && <div className="invalid-feedback">Placa inválida (deve ter 7 caracteres).</div>}
+                            </div>
+                            <div className="col-md-4">
+                                <label htmlFor="renavam" className="form-label">Renavam</label>
+                                <input type="text" className={`form-control ${hasError("renavam") && "is-invalid"}`} id="renavam" name="renavam" onChange={handleInputChangeAutomovel} />
+                                {vazio.includes("renavam") && <div className="invalid-feedback">Informe o Renavam.</div>}
+                                {tamanho.includes("renavam") && <div className="invalid-feedback">Renavam inválido (deve ter 11 dígitos numéricos).</div>}
+                            </div>
+                            <div className="col-md-4">
+                                <label htmlFor="valor" className="form-label">Valor (R$)</label>
+                                <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} />
+                                {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
+                                {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
+                            </div>
                         </div>
+                    </fieldset>
 
-                        <div class="mb-3 col-md-3">
-                            <label for="renavam" class="form-label">Renavam</label>
-                            <input type="text" class="form-control" id="renavam" name="renavam" onChange={handleInputChangeAutomovel} />
-                            {
-                                vazio.includes("renavam") &&
-                                <div id="renavamHelp" class="form-text text-danger">Informe o renavam.</div>
-                            }
-                            {
-                                tamanho.includes("renavam") &&
-                                <div id="renavamHelp2" class="form-text text-danger">Renavam inválido.</div>
-                            }
-                            {
-                                tipo.includes("renavam") &&
-                                <div id="renavamHelp3" class="form-text text-danger">Renavam inválido.</div>
-                            }
+
+                    {/* Seção 3: Detalhes Adicionais */}
+
+                    <fieldset className="mb-5">
+                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Detalhes Adicionais</legend>
+                        <div className="row g-3">
+                            <div className="col-md-4">
+                                <label htmlFor="km" className="form-label">Quilometragem</label>
+                                <input type="text" className={`form-control ${hasError("km") && "is-invalid"}`} id="km" name="km" onChange={handleInputChangeAutomovel} />
+                                {vazio.includes("km") && <div className="invalid-feedback">Informe a quilometragem.</div>}
+                                {tipo.includes("km") && <div className="invalid-feedback">Valor inválido.</div>}
+                            </div>
+                            <div className="col-md-4">
+                                <label htmlFor="combustivel" className="form-label">Combustível</label>
+                                <select className={`form-select ${hasError("combustivel") && "is-invalid"}`} id="combustivel" name="combustivel" onChange={handleInputChangeAutomovel}>
+                                    <option value="">Selecione...</option>
+                                    <option value="Diesel">Diesel</option>
+                                    <option value="Etanol">Etanol</option>
+                                    <option value="Flex">Flex</option>
+                                    <option value="Gasolina">Gasolina</option>
+                                </select>
+                                {vazio.includes("combustivel") && <div className="invalid-feedback">Informe o combustível.</div>}
+                            </div>
+                            <div className="col-md-4">
+                                <label htmlFor="origem" className="form-label">Origem do Veículo</label>
+                                <select className={`form-select ${hasError("origem") && "is-invalid"}`} id="origem" name="origem" value={automovel.origem} onChange={handleInputChangeAutomovel}>
+                                    <option value="">Selecione...</option>
+                                    <option value="Compra">Compra</option>
+                                    <option value="Consignacao">Consignação</option>
+                                    <option value="Troca">Troca</option>
+                                </select>
+                                {vazio.includes("origem") && <div className="invalid-feedback">Informe a origem.</div>}
+                            </div>
                         </div>
+                    </fieldset>
 
-                        <div class="mb-3 col-md-3">
-                            <label for="placa" class="form-label">Placa</label>
-                            <input type="text" class="form-control" id="placa" name="placa" onChange={handleInputChangeAutomovel} />
-                            {
-                                vazio.includes("placa") &&
-                                <div id="placaHelp" class="form-text text-danger">Informe a placa.</div>
-                            }
-                            {
-                                tamanho.includes("placa") &&
-                                <div id="placaHelp2" class="form-text text-danger">Placa inválida.</div>
-                            }
-                        </div>
 
-                        <div class="mb-3 col-md-3">
-                            <label for="valor" class="form-label">Valor</label>
-                            <input type="text" class="form-control" id="valor" name="valor" onChange={handleInputChangeAutomovel} />
-                            {
-                                vazio.includes("valor") &&
-                                <div id="valorHelp" class="form-text text-danger">Informe o valor.</div>
-                            }
-                        </div>
-
-                        <div class="mb-3 col-md-3">
-                            <label for="origem" class="form-label">Origem</label>
-                            <select class="form-select" id="origem" name="origem" value={automovel.origem} onChange={handleInputChangeAutomovel}>
-                                <option value="" >Selecione a origem</option>
-                                <option value="Compra">Compra</option>
-                                <option value="Consignacao">Consignação</option>
-                                <option value="Troca">Troca</option>
-                            </select>
-                            {
-                                vazio.includes("origem") &&
-                                <div id="origemHelp" class="form-text text-danger">Informe a origem.</div>
-                            }
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="km" class="form-label">Quilometragem</label>
-                            <input type="text" class="form-control" id="km" name="km" onChange={handleInputChangeAutomovel} />
-                            {
-                                vazio.includes("km") &&
-                                <div id="kmHelp" class="form-text text-danger">Informe a quilometragem.</div>
-                            }
-                        </div>
-
-                        <div class="mb-3 col-md-3">
-                            <label for="combustivel" class="form-label">Combustivel</label>
-                            <select class="form-select" id="combustivel" name="combustivel" onChange={handleInputChangeAutomovel}>
-                                <option selected>Selecione o combustível</option>
-                                <option value="Diesel">Diesel</option>
-                                <option value="Etanol">Etanol</option>
-                                <option value="Flex">Flex</option>
-                                <option value="Gasolina">Gasolina</option>
-                            </select>
-                            {
-                                vazio.includes("combustivel") &&
-                                <div id="combustivelHelp" class="form-text text-danger">Informe o combustivel.</div>
-                            }
-                        </div>
-
-                        <div class="mb-3 col-md-3">
-                            <label for="cor" class="form-label">Cor</label>
-                            <input type="text" class="form-control" id="cor" name="cor" onChange={handleInputChangeAutomovel} />
-                            {
-                                vazio.includes("cor") &&
-                                <div id="corHelp" class="form-text text-danger">Informe a cor.</div>
-                            }
-                        </div>
-
-                        <div class="mb-3 col-md-3">
-                            <label for="modelo" class="form-label">Modelo</label>
-                            <input type="text" class="form-control" id="modelo" name="modelo" onChange={handleInputChangeModelo} />
-                            {
-                                vazio.includes("modelo") &&
-                                <div id="modeloHelp" class="form-text text-danger">Informe o modelo.</div>
-                            }
-                        </div>
-
-                        <div class="mb-3 col-md-3">
-                            <label for="marca" class="form-label">Marca</label>
-                            <input type="text" class="form-control" id="marca" name="marca" onChange={handleInputChangeMarca} />
-                            {
-                                vazio.includes("marca") &&
-                                <div id="marcaHelp" class="form-text text-danger">Informe a marca.</div>
-                            }
-                        </div>
-
-                        {/* <div class="mb-3 form-check col-md-3 d-flex justify-content-start align-items-center">
-                            <input type="checkbox" class="form-check-input" id="ativo" value={true} name="ativo" onChange={handleInputChangeAutomovel} />
-                            <label class="form-check-label ms-2" for="ativo">Ativo</label>
-                        </div> */}
-                        {/* <div class="mb-3 col-md-3">
-                            <label for="proprietario" class="form-label">Proprietário</label>
-                            <Select isSearchable={true} class="form-select" id="proprietario" name="proprietario" placeholder="Selecione o proprietário" options={options}>
-                            </Select>
-                        </div> */}
-
+                    {/* Botão de Submissão */}
+                    <div className="d-flex justify-content-end">
+                        <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
+                            {isSubmitting ? (
+                                <>
+                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    Salvando..
+                                </>
+                            ) : (
+                                "Cadastrar Automóvel"
+                            )}
+                        </button>
                     </div>
-
-                    <button onClick={saveAutomovel} type="submit" class="btn btn-primary">Submit</button>
-
-                </form>
-            </div>
+                </form >
+            </div >
         </>
     );
+
+
+
+
+    // return (
+    //     <>
+    //         <Header />
+    //         <div className="container">
+    //             <h1>Cadastro</h1>
+    //             <p>Esta é a página de cadastro de automóveis.</p>
+    //         </div>
+
+    //         <div className="container">
+    //             {
+    //                 erro &&
+
+    //                 <div class="alert alert-danger" role="alert">
+    //                     {mensagemErro}
+    //                 </div>
+
+    //             }
+    //             {
+    //                 sucesso &&
+
+    //                 <div class="alert alert-success" role="alert">
+    //                     {mensagemSucesso}
+    //                 </div>
+
+    //             }
+    //             <form className={`mt-5 ${sucesso && "d-none"}`}>
+    //                 <div className="row">
+
+    //                     <div class="mb-3 col-md-3">
+    //                         <label for="anofabricacao" class="form-label">Ano fabricação</label>
+    //                         <input type="text" class="form-control" id="anofabricacao" name="ano_fabricacao" aria-describedby="anofabricacaoHelp" onChange={handleInputChangeAutomovel} />
+    //                         <div id="anofabricacaoHelp" class="form-text">Informe o ano de fabricação.</div>
+    //                         {
+    //                             vazio.includes("ano_fabricacao") &&
+    //                             <div id="anoFabricacaoHelp" class="form-text text-danger">Informe o ano de fabricação.</div>
+    //                         }
+    //                         {
+    //                             tipo.includes("ano_fabricacao") &&
+    //                             <div id="anoFabricacaoHelp2" class="form-text text-danger">Ano de fabricação inválido.</div>
+    //                         }
+    //                     </div>
+
+    //                     <div class="mb-3 col-md-3">
+    //                         <label for="anomodelo" class="form-label">Ano modelo</label>
+    //                         <input type="text" class="form-control" id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} />
+    //                         {
+    //                             vazio.includes("ano_modelo") &&
+    //                             <div id="anoModeloHelp" class="form-text text-danger">Informe o ano do modelo.</div>
+    //                         }
+    //                         {
+    //                             tipo.includes("ano_modelo") &&
+    //                             <div id="anoModeloHelp2" class="form-text text-danger">Ano do modelo inválido.</div>
+    //                         }
+    //                     </div>
+
+    //                     <div class="mb-3 col-md-3">
+    //                         <label for="renavam" class="form-label">Renavam</label>
+    //                         <input type="text" class="form-control" id="renavam" name="renavam" onChange={handleInputChangeAutomovel} />
+    //                         {
+    //                             vazio.includes("renavam") &&
+    //                             <div id="renavamHelp" class="form-text text-danger">Informe o renavam.</div>
+    //                         }
+    //                         {
+    //                             tamanho.includes("renavam") &&
+    //                             <div id="renavamHelp2" class="form-text text-danger">Renavam inválido.</div>
+    //                         }
+    //                         {
+    //                             tipo.includes("renavam") &&
+    //                             <div id="renavamHelp3" class="form-text text-danger">Renavam inválido.</div>
+    //                         }
+    //                     </div>
+
+    //                     <div class="mb-3 col-md-3">
+    //                         <label for="placa" class="form-label">Placa</label>
+    //                         <input type="text" class="form-control" id="placa" name="placa" onChange={handleInputChangeAutomovel} />
+    //                         {
+    //                             vazio.includes("placa") &&
+    //                             <div id="placaHelp" class="form-text text-danger">Informe a placa.</div>
+    //                         }
+    //                         {
+    //                             tamanho.includes("placa") &&
+    //                             <div id="placaHelp2" class="form-text text-danger">Placa inválida.</div>
+    //                         }
+    //                     </div>
+
+    //                     <div class="mb-3 col-md-3">
+    //                         <label for="valor" class="form-label">Valor</label>
+    //                         <input type="text" class="form-control" id="valor" name="valor" onChange={handleInputChangeAutomovel} />
+    //                         {
+    //                             vazio.includes("valor") &&
+    //                             <div id="valorHelp" class="form-text text-danger">Informe o valor.</div>
+    //                         }
+    //                         {
+    //                             tipo.includes("valor") &&
+    //                             <div id="valorHelp" class="form-text text-danger">Valor inválido.</div>
+    //                         }
+    //                     </div>
+
+    //                     <div class="mb-3 col-md-3">
+    //                         <label for="origem" class="form-label">Origem</label>
+    //                         <select class="form-select" id="origem" name="origem" value={automovel.origem} onChange={handleInputChangeAutomovel}>
+    //                             <option value="" >Selecione a origem</option>
+    //                             <option value="Compra">Compra</option>
+    //                             <option value="Consignacao">Consignação</option>
+    //                             <option value="Troca">Troca</option>
+    //                         </select>
+    //                         {
+    //                             vazio.includes("origem") &&
+    //                             <div id="origemHelp" class="form-text text-danger">Informe a origem.</div>
+    //                         }
+    //                     </div>
+    //                     <div class="mb-3 col-md-3">
+    //                         <label for="km" class="form-label">Quilometragem</label>
+    //                         <input type="text" class="form-control" id="km" name="km" onChange={handleInputChangeAutomovel} />
+    //                         {
+    //                             vazio.includes("km") &&
+    //                             <div id="kmHelp" class="form-text text-danger">Informe a quilometragem.</div>
+    //                         }
+    //                         {
+    //                             tipo.includes("km") &&
+    //                             <div id="kmHelp" class="form-text text-danger">Quilometragem inválida.</div>
+    //                         }
+    //                     </div>
+
+    //                     <div class="mb-3 col-md-3">
+    //                         <label for="combustivel" class="form-label">Combustivel</label>
+    //                         <select class="form-select" id="combustivel" name="combustivel" onChange={handleInputChangeAutomovel}>
+    //                             <option selected>Selecione o combustível</option>
+    //                             <option value="Diesel">Diesel</option>
+    //                             <option value="Etanol">Etanol</option>
+    //                             <option value="Flex">Flex</option>
+    //                             <option value="Gasolina">Gasolina</option>
+    //                         </select>
+    //                         {
+    //                             vazio.includes("combustivel") &&
+    //                             <div id="combustivelHelp" class="form-text text-danger">Informe o combustivel.</div>
+    //                         }
+    //                     </div>
+
+    //                     <div class="mb-3 col-md-3">
+    //                         <label for="cor" class="form-label">Cor</label>
+    //                         <input type="text" class="form-control" id="cor" name="cor" onChange={handleInputChangeAutomovel} />
+    //                         {
+    //                             vazio.includes("cor") &&
+    //                             <div id="corHelp" class="form-text text-danger">Informe a cor.</div>
+    //                         }
+    //                     </div>
+
+    //                     <div class="mb-3 col-md-3">
+    //                         <label for="modelo" class="form-label">Modelo</label>
+    //                         <input type="text" class="form-control" id="modelo" name="modelo" onChange={handleInputChangeModelo} />
+    //                         {
+    //                             vazio.includes("modelo") &&
+    //                             <div id="modeloHelp" class="form-text text-danger">Informe o modelo.</div>
+    //                         }
+    //                     </div>
+
+    //                     <div class="mb-3 col-md-3">
+    //                         <label for="marca" class="form-label">Marca</label>
+    //                         <input type="text" class="form-control" id="marca" name="marca" onChange={handleInputChangeMarca} />
+    //                         {
+    //                             vazio.includes("marca") &&
+    //                             <div id="marcaHelp" class="form-text text-danger">Informe a marca.</div>
+    //                         }
+    //                     </div>
+
+    //                     {/* <div class="mb-3 form-check col-md-3 d-flex justify-content-start align-items-center">
+    //                         <input type="checkbox" class="form-check-input" id="ativo" value={true} name="ativo" onChange={handleInputChangeAutomovel} />
+    //                         <label class="form-check-label ms-2" for="ativo">Ativo</label>
+    //                     </div> */}
+    //                     {/* <div class="mb-3 col-md-3">
+    //                         <label for="proprietario" class="form-label">Proprietário</label>
+    //                         <Select isSearchable={true} class="form-select" id="proprietario" name="proprietario" placeholder="Selecione o proprietário" options={options}>
+    //                         </Select>
+    //                     </div> */}
+
+    //                 </div>
+
+    //                 <button onClick={saveAutomovel} type="submit" class="btn btn-primary">Submit</button>
+
+    //             </form>
+    //         </div>
+    //     </>
+    // );
 }
 
 export default Automovel;

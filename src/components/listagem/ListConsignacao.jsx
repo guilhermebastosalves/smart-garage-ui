@@ -23,9 +23,6 @@ const Consignacoes = () => {
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
     const [marca, setMarca] = useState([]);
-    const [cliente, setCliente] = useState([]);
-    const [fisica, setFisica] = useState([]);
-    const [juridica, setJuridica] = useState([]);
 
     const [opcao, setOpcao] = useState('');
 
@@ -33,7 +30,6 @@ const Consignacoes = () => {
         const { value } = event.target;
         setOpcao(value);
     }
-
 
     const [loading, setLoading] = useState(true);
 
