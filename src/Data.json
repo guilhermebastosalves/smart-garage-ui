@@ -1,0 +1,77 @@
+[
+    {
+        "modelo": "Civic",
+        "marca": "Honda",
+        "ano": 2019
+    },
+    {
+        "modelo": "Corolla",
+        "marca": "Toyota",
+        "ano": 2021
+    },
+    {
+        "modelo": "Gol",
+        "marca": "Volkswagen",
+        "ano": 2015
+    },
+    {
+        "modelo": "Onix",
+        "marca": "Chevrolet",
+        "ano": 2020
+    },
+    {
+        "modelo": "HB20",
+        "marca": "Hyundai",
+        "ano": 2018
+    },
+    {
+        "modelo": "Focus",
+        "marca": "Ford",
+        "ano": 2017
+    },
+    {
+        "modelo": "Renegade",
+        "marca": "Jeep",
+        "ano": 2022
+    },
+    {
+        "modelo": "C3",
+        "marca": "Citroën",
+        "ano": 2016
+    },
+    {
+        "modelo": "Sandero",
+        "marca": "Renault",
+        "ano": 2019
+    },
+    {
+        "modelo": "208",
+        "marca": "Peugeot",
+        "ano": 2023
+    },
+    {
+        "modelo": "Fiesta",
+        "marca": "Ford",
+        "ano": 2014
+    },
+    {
+        "modelo": "Cruze",
+        "marca": "Chevrolet",
+        "ano": 2021
+    },
+    {
+        "modelo": "Ka",
+        "marca": "Ford",
+        "ano": 2020
+    },
+    {
+        "modelo": "T-Cross",
+        "marca": "Volkswagen",
+        "ano": 2022
+    },
+    {
+        "modelo": "Argo",
+        "marca": "Fiat",
+        "ano": 2018
+    }
+]

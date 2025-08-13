@@ -1,0 +1,35 @@
+.navbar-color {
+    /* background-color: rgba(1, 129, 233, 0.1); */
+
+    /* background-color: rgba(133, 184, 203, 0.3); */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.card-color {
+    /* background-color: rgba(1, 129, 233, 0.1) !important; */
+
+    background-color: rgba(133, 184, 203, 0) !important;
+
+}
+
+.card {
+    border: 1px solid rgba(0, 0, 0, 0.3) !important;
+
+}
+
+body {
+    background-color: rgba(133, 184, 203, 0.05) !important;
+}
+
+.pointer {
+    cursor: pointer !important;
+}
+
+.card-hover {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
