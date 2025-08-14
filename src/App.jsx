@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './components/Home'
-import Vendas from './components/Vendas'
+import Venda from './components/cadastro/Venda'
 import Gastos from './components/Gastos'
 import Troca from './components/cadastro/Troca'
 import Relatorios from './components/Relatorios'
@@ -26,7 +26,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/home" element={<Home />}></Route>
-            <Route path="/vendas" element={<Vendas />}></Route>
+            <Route path="/vendas" element={<Venda />}></Route>
             <Route path="/gastos" element={<Gastos />}></Route>
             <Route path="/troca" element={<Troca />}></Route>
             <Route path="/relatorios" element={<Relatorios />}></Route>

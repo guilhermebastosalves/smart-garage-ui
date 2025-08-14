@@ -174,6 +174,10 @@ const Compra = () => {
         }, 1500)
     }
 
+    // Função auxiliar para checar se um campo tem erro e aplicar a classe
+    const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
+
+
 
     return (
         <>
@@ -185,65 +189,68 @@ const Compra = () => {
 
             <div className="container">
                 <form className="mt-5">
-                    <div className="row">
-                        <div class="mb-3 col-md-3 ">
-                            <label for="valor" class="form-label">Valor</label>
-                            <input type="text" class="form-control" id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeCompra} />
-                            {
-                                vazio.includes("valor") &&
-                                <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>
-                            }
-                            {
-                                tipo.includes("valor") &&
-                                <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>
-                            }
-                        </div>
 
-                        <div class="mb-3 col-md-3 ">
-                            <label for="data" class="form-label">Data</label><br />
-                            <DatePicker
-                                style={{ width: "100%;" }}
-                                className="form-control"
-                                type="text"
-                                aria-describedby="dataHelp"
-                                id="data"
-                                name="data"
-                                selected={compra.data}
-                                onChange={(date) => setCompra({ ...compra, data: date })}
-                                // onChange={handleInputChangeCompra}
-                                dateFormat="dd/MM/yyyy" // Formato da data
-                            />
-                            {
-                                vazio.includes("data") &&
-                                <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>
-                            }
-                            {
-                                tipo.includes("data") &&
-                                <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>
-                            }
-                        </div>
+                    <fieldset className="mb-5">
+                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações da Compra</legend>
+                        <div className="row g-3">
+                            <div class="col-md-3">
+                                <label for="valor" class="form-label">Valor</label>
+                                <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeCompra} />
+                                {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>
+                                }
+                                {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>
+                                }
+                            </div>
 
-                        <div class="mb-3 col-md-3">
-                            <label for="fornecedor" class="form-label">Fornecedor</label>
-                            <Select isSearchable={true} class="form-select" id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === compra.clienteId) || null} isClearable={true}>
-                            </Select>
-                            {
-                                vazio.includes("clienteId") &&
-                                <div id="valorHelp" class="form-text text-danger ms-1">Informe o proprietário.</div>
-                            }
-                        </div>
+                            <div class="col-md-3">
+                                <label for="fornecedor" className="form-label">Fornecedor</label>
+                                <Select isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === compra.clienteId) || null} isClearable={true}>
+                                </Select>
+                                {
+                                    vazio.includes("clienteId") &&
+                                    <div className="invalid-feedback">Informe o proprietário.</div>
+                                }
+                            </div>
 
-                        <div class="mb-3 col-md-3">
-                            <label for="automovel" class="form-label">Automóvel</label>
-                            <Select isSearchable={true} class="form-select" id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === compra.automovelId) || null} isClearable={true}>
-                            </Select>
-                            {
-                                vazio.includes("automovelId") &&
-                                <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel.</div>
-                            }
-                        </div>
+                            <div class="col-md-3">
+                                <label for="automovel" class="form-label">Automóvel</label>
+                                <Select isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === compra.automovelId) || null} isClearable={true}>
+                                </Select>
+                                {
+                                    vazio.includes("automovelId") &&
+                                    <div className="invalid-feedback">Informe o automóvel.</div>
+                                }
+                            </div>
 
-                    </div >
+                            <div class="col-md-3">
+                                <label for="data" class="form-label">Data</label><br />
+                                <DatePicker
+
+                                    className={`form-control date-picker ${hasError("data") && "is-invalid"}`}
+                                    type="text"
+                                    aria-describedby="dataHelp"
+                                    id="data"
+                                    name="data"
+                                    selected={compra.data}
+                                    onChange={(date) => setCompra({ ...compra, data: date })}
+                                    // onChange={handleInputChangeCompra}
+                                    dateFormat="dd/MM/yyyy" // Formato da data
+                                />
+                                {
+                                    vazio.includes("data") &&
+                                    <div className="invalid-feedback">Informe a data.</div>
+                                }
+                                {
+                                    tipo.includes("data") &&
+                                    <div className="invalid-feedback">Data inválida.</div>
+                                }
+                            </div>
+                        </div>
+                    </fieldset>
+
+
+
+
 
                     <button type="submit" onClick={saveCompra} class="btn btn-primary">Submit</button>
 

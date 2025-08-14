@@ -45,3 +45,7 @@ body {
 .card-form {
     background-color: rgb(172, 192, 221) !important;
 }
+
+.date-picker {
+    width: 300px;
+}

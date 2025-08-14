@@ -17,6 +17,21 @@ const Cliente = () => {
 
     const navigate = useNavigate();
 
+    const [modeloNegocio, setModeloNegocio] = useState(null);
+
+    useEffect(() => {
+
+        const venda = localStorage.getItem("Venda");
+
+        if (venda) {
+            setModeloNegocio(JSON.parse(venda));
+            localStorage.removeItem("Venda"); // Opcional: apaga após usar
+        }
+    }, []);
+
+    console.log(modeloNegocio?.negocio);
+
+
     const radios = [
         { name: 'Pessoa Física', value: 'fisica' },
         { name: 'Pessoa Jurídica', value: 'juridica' }
@@ -197,7 +212,7 @@ const Cliente = () => {
 
         // Vazio
         if (!cliente.nome) vazioErros.push("nome");
-        if (!cliente.data_cadastro) vazioErros.push("data_cadastro");
+        if (!cliente.data_cadastro) vazioErros.push("data");
         if (!cliente.email) vazioErros.push("email");
         if (!cliente.telefone) vazioErros.push("telefone");
 
@@ -237,7 +252,7 @@ const Cliente = () => {
 
         // Vazio
         if (!cliente.nome) vazioErros.push("nome");
-        if (!cliente.data_cadastro) vazioErros.push("data_cadastro");
+        if (!cliente.data_cadastro) vazioErros.push("data");
         if (!cliente.email) vazioErros.push("email");
         if (!cliente.telefone) vazioErros.push("telefone");
 
@@ -359,6 +374,7 @@ const Cliente = () => {
         setMensagemSucesso("Cliente cadastrado com sucesso!");
 
         setTimeout(() => {
+
             navigate('/cadastro/automoveis', { state: { clienteId: clienteResp.data.id } });
         }, 1500);
 
@@ -449,10 +465,18 @@ const Cliente = () => {
         setEndereco(enderecoResp.data);
 
         setTimeout(() => {
-            navigate('/cadastro/automoveis', { state: { clienteId: clienteJuridicaResp.data.id } });
+            if (modeloNegocio?.negocio === "Venda") {
+                navigate('/vendas', { state: { clienteId: clienteJuridicaResp.data.id } });
+            }
+            else {
+                navigate('/cadastro/automoveis', { state: { clienteId: clienteJuridicaResp.data.id } });
+            }
         }, 1500);
 
     }
+
+    // Função auxiliar para checar se um campo tem erro e aplicar a classe
+    const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
 
     return (
@@ -501,65 +525,41 @@ const Cliente = () => {
                             <div className="row g-3">
                                 <div class="col-md-4 ">
                                     <label for="valor" class="form-label">Nome</label>
-                                    <input type="text" class="form-control" id="nome" name="nome" aria-describedby="nomeHelp" value={cliente.nome} onChange={handleInputChangeCliente} />
-                                    {
-                                        vazio.includes("nome") &&
-                                        <div id="nomehelp" class="form-text text-danger">Informe o nome.</div>
-                                    }
+                                    <input type="text" className={`form-control ${hasError("nome") && "is-invalid"}`} id="nome" name="nome" aria-describedby="nomeHelp" value={cliente.nome} onChange={handleInputChangeCliente} />
+                                    {vazio.includes("nome") && <div className="invalid-feedback">Informe o nome.</div>}
                                 </div>
 
                                 <div class="col-md-4 ">
                                     <label for="valor" class="form-label">Email</label>
-                                    <input type="text" class="form-control" id="email" name="email" aria-describedby="emailHelp" value={cliente.email} onChange={handleInputChangeCliente} />
-                                    {
-                                        vazio.includes("email") &&
-                                        <div id="emailhelp" class="form-text text-danger">Informe o email.</div>
-                                    }
+                                    <input type="text" className={`form-control ${hasError("email") && "is-invalid"}`} id="email" name="email" aria-describedby="emailHelp" value={cliente.email} onChange={handleInputChangeCliente} />
+                                    {vazio.includes("email") && <div className="invalid-feedback">Informe o email.</div>}
                                 </div>
 
                                 <div class="col-md-4 ">
                                     <label for="telefone" class="form-label">Telefone</label>
-                                    <input type="text" class="form-control" id="telefone" name="telefone" aria-describedby="telefoneHelp" value={cliente.telefone} onChange={handleInputChangeCliente} />
-                                    {
-                                        vazio.includes("telefone") &&
-                                        <div id="telefonehelp" class="form-text text-danger">Informe o telefone.</div>
-                                    }
-                                    {
-                                        tamanho.includes("telefone") &&
-                                        <div id="telefonehelp" class="form-text text-danger">Telefone inválido.</div>
-                                    }
+                                    <input type="text" className={`form-control ${hasError("telefone") && "is-invalid"}`} id="telefone" name="telefone" aria-describedby="telefoneHelp" value={cliente.telefone} onChange={handleInputChangeCliente} />
+                                    {vazio.includes("telefone") && <div className="invalid-feedback">Informe o telefone.</div>}
+                                    {tamanho.includes("telefone") && <div className="invalid-feedback">Telefone inválido.</div>}
                                 </div>
 
                                 <div class="col-md-4 ">
                                     <label for="cpf" class="form-label">CPF</label>
-                                    <input type="text" class="form-control" id="cpf" name="cpf" aria-describedby="cpfeHelp" value={fisica.cpf} onChange={handleInputChangeFisica} />
-                                    {
-                                        vazio.includes("cpf") &&
-                                        <div id="cpfhelp" class="form-text text-danger">Informe o CPF.</div>
-                                    }
-                                    {
-                                        tamanho.includes("cpf") &&
-                                        <div id="cpfhelp" class="form-text text-danger">CPF inválido.</div>
-                                    }
+                                    <input type="text" className={`form-control ${hasError("cpf") && "is-invalid"}`} id="cpf" name="cpf" aria-describedby="cpfeHelp" value={fisica.cpf} onChange={handleInputChangeFisica} />
+                                    {vazio.includes("cpf") && <div className="invalid-feedback">Informe o CPF.</div>}
+                                    {tamanho.includes("cpf") && <div className="invalid-feedback">CPF inválidO (deve ter 11 caracteres numéricos).</div>}
                                 </div>
 
                                 <div class="col-md-4 ">
                                     <label for="rg" class="form-label">RG</label>
-                                    <input type="text" class="form-control" id="rg" name="rg" aria-describedby="rgHelp" value={fisica.rg} onChange={handleInputChangeFisica} />
-                                    {
-                                        vazio.includes("rg") &&
-                                        <div id="rghelp" class="form-text text-danger">Informe o RG.</div>
-                                    }
-                                    {
-                                        tamanho.includes("rg") &&
-                                        <div id="rghelp" class="form-text text-danger">RG inválido.</div>
-                                    }
+                                    <input type="text" className={`form-control ${hasError("rg") && "is-invalid"}`} id="rg" name="rg" aria-describedby="rgHelp" value={fisica.rg} onChange={handleInputChangeFisica} />
+                                    {vazio.includes("rg") && <div className="invalid-feedback">Informe o RG.</div>}
+                                    {tamanho.includes("rg") && <div className="invalid-feedback">RG inválido (deve ter 9 caracteres numéricos).</div>}
                                 </div>
                                 <div class="col-md-4 ">
                                     <label for="data" class="form-label">Data cadastro</label><br />
                                     <DatePicker
                                         style={{ width: "100%;" }}
-                                        className="form-control"
+                                        className={`form-control ${hasError("data") && "is-invalid"}`}
                                         type="text"
                                         aria-describedby="dataHelp"
                                         id="data_cadastro"
@@ -568,14 +568,9 @@ const Cliente = () => {
                                         onChange={(date) => setCliente({ ...cliente, data_cadastro: date })}
                                         dateFormat="dd/MM/yyyy" // Formato da data
                                     />
-                                    {
-                                        vazio.includes("data_cadastro") &&
-                                        <div id="datahelp" class="form-text text-danger">Informe a data.</div>
-                                    }
-                                    {
-                                        tipo.includes("data_cadastro") &&
-                                        <div id="datacadastrohelp" class="form-text text-danger">Data inválida.</div>
-                                    }
+                                    {vazio.includes("data") && <div className="invalid-feedback">Informe a data de cadastro.</div>}
+                                    {tipo.includes("data") && <div className="invalid-feedback">Data inválida.</div>}
+
                                 </div>
                             </div>
                         </fieldset>
@@ -585,71 +580,49 @@ const Cliente = () => {
                             <div className="row g-3">
                                 <div class="col-md-4">
                                     <label for="cep" class="form-label">CEP</label>
-                                    <input type="text" class="form-control" id="cep" name="cep" aria-describedby="cepHelp" value={endereco.cep} onChange={handleInputChangeEndereco} />
-                                    {
-                                        vazio.includes("cep") &&
-                                        <div id="cephelp" class="form-text text-danger">Informe o CEP.</div>
-                                    }
-                                    {
-                                        tamanho.includes("cep") &&
-                                        <div id="cephelp" class="form-text text-danger">CEP inválido.</div>
-                                    }
+                                    <input type="text" className={`form-control ${hasError("cep") && "is-invalid"}`} id="cep" name="cep" aria-describedby="cepHelp" value={endereco.cep} onChange={handleInputChangeEndereco} />
+                                    {vazio.includes("cep") && <div className="invalid-feedback">Informe o CEP.</div>}
+                                    {tamanho.includes("cep") && <div className="invalid-feedback">CEP inválido (deve ter 8 caracteres numéricos).</div>}
                                 </div>
 
                                 <div class="col-md-4">
                                     <label for="cidade" class="form-label">Cidade</label>
-                                    <input type="text" class="form-control" id="cidade" name="cidade" aria-describedby="cidadeHelp" value={cidade.nome} onChange={handleInputChangeCidade} />
-                                    {
-                                        vazio.includes("cidade") &&
-                                        <div id="cidadehelp" class="form-text text-danger">Informe a cidade.</div>
-                                    }
+                                    <input type="text" className={`form-control ${hasError("cidade") && "is-invalid"}`} id="cidade" name="cidade" aria-describedby="cidadeHelp" value={cidade.nome} onChange={handleInputChangeCidade} />
+                                    {vazio.includes("cidade") && <div className="invalid-feedback">Informe a cidade.</div>}
                                 </div>
 
                                 <div class="col-md-4">
                                     <label for="uf" class="form-label">Estado</label>
-                                    <Select isSearchable={true} class="form-select" id="uf" name="uf" placeholder="Selecione o estado" options={optionsEstados} value={optionsEstados.find(option => option.value === estado.uf)} onChange={handleInputChangeEstado}>
+                                    <Select isSearchable={true} isClearable={true} className={`${hasError("estado") && "is-invalid"}`} id="uf" name="uf" placeholder="Selecione o estado" options={optionsEstados} value={optionsEstados.find(option => option.value === estado.uf)} onChange={handleInputChangeEstado}>
                                     </Select>
-                                    {
-                                        vazio.includes("estado") &&
-                                        <div id="estadohelp" class="form-text text-danger">Informe o estado.</div>
-                                    }
+                                    {vazio.includes("estado") && <div className="invalid-feedback">Informe o estado.</div>}
                                 </div>
+
 
                                 <div class="col-md-4">
                                     <label for="logradouro" class="form-label">Logradouro</label>
-                                    <input type="text" class="form-control" id="logradouro" name="logradouro" aria-describedby="logradourodeHelp" value={endereco.logradouro} onChange={handleInputChangeEndereco} />
-                                    {
-                                        vazio.includes("logradouro") &&
-                                        <div id="logradourohelp" class="form-text text-danger">Informe o logradouro.</div>
-                                    }
+                                    <input type="text" className={`form-control ${hasError("logradouro") && "is-invalid"}`} id="logradouro" name="logradouro" aria-describedby="logradourodeHelp" value={endereco.logradouro} onChange={handleInputChangeEndereco} />
+                                    {vazio.includes("logradouro") && <div className="invalid-feedback">Informe o logradouro.</div>}
                                 </div>
 
                                 <div class="col-md-4 ">
                                     <label for="bairro" class="form-label">Bairro</label>
-                                    <input type="text" class="form-control" id="bairro" name="bairro" aria-describedby="bairroHelp" value={endereco.bairro} onChange={handleInputChangeEndereco} />
-                                    {
-                                        vazio.includes("bairro") &&
-                                        <div id="bairrohelp" class="form-text text-danger">Informe o bairro.</div>
-                                    }
+                                    <input type="text" className={`form-control ${hasError("bairro") && "is-invalid"}`} id="bairro" name="bairro" aria-describedby="bairroHelp" value={endereco.bairro} onChange={handleInputChangeEndereco} />
+                                    {vazio.includes("bairro") && <div className="invalid-feedback">Informe o bairro.</div>}
                                 </div>
 
                                 <div class="col-md-4 ">
                                     <label for="numero" class="form-label">Número</label>
-                                    <input type="text" class="form-control" id="numero" name="numero" aria-describedby="numerodeHelp" value={endereco.numero} onChange={handleInputChangeEndereco} />
-                                    {
-                                        vazio.includes("numero") &&
-                                        <div id="numerohelp" class="form-text text-danger">Informe o número.</div>
-                                    }
-                                    {
-                                        tipo.includes("numero") &&
-                                        <div id="numerohelp" class="form-text text-danger">Número inválido.</div>
-                                    }
+                                    <input type="text" className={`form-control ${hasError("numero") && "is-invalid"}`} id="numero" name="numero" aria-describedby="numerodeHelp" value={endereco.numero} onChange={handleInputChangeEndereco} />
+                                    {vazio.includes("numero") && <div className="invalid-feedback">Informe o número.</div>}
+                                    {tipo.includes("numero") && <div className="invalid-feedback">Número inválido.</div>}
                                 </div>
+
                             </div>
                         </fieldset>
 
                         {/* Botão de Submissão */}
-                        <div className="d-flex justify-content-end">
+                        <div className="d-flex justify-content-end pb-3">
                             <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
                                 {isSubmitting ? (
                                     <>
@@ -665,153 +638,133 @@ const Cliente = () => {
                     </form >}
 
                 {opcao === 'juridica' &&
-                    <form className={`mt-5 ${sucesso && "d-none"}`}>
-                        <div className="row">
-                            <div class="mb-3 col-md-3 ">
-                                <label for="valor" class="form-label">Nome</label>
-                                <input type="text" class="form-control" id="nome" name="nome" aria-describedby="nomeHelp" value={cliente.nome} onChange={handleInputChangeCliente} />
-                                <div id="nomeHelp" class={`form-text ${vazio.includes("nome") && "text-danger"}`}> Informe o nome.</div>
+                    <form onSubmit={saveClienteJuridica} className={`mt-5 ${sucesso && "d-none"}`}>
+
+                        <fieldset className="mb-5">
+                            <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações do Cliente</legend>
+                            <div className="row g-3">
+                                <div class="col-md-4 ">
+                                    <label for="valor" class="form-label">Nome</label>
+                                    <input type="text" className={`form-control ${hasError("nome") && "is-invalid"}`} id="nome" name="nome" aria-describedby="nomeHelp" value={cliente.nome} onChange={handleInputChangeCliente} />
+                                    {vazio.includes("nome") && <div className="invalid-feedback">Informe o nome.</div>}
+
+                                </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="valor" class="form-label">Email</label>
+                                    <input type="text" className={`form-control ${hasError("email") && "is-invalid"}`} id="email" name="email" aria-describedby="emailHelp" value={cliente.email} onChange={handleInputChangeCliente} />
+
+                                    {vazio.includes("email") && <div className="invalid-feedback">Informe o email.</div>}
+                                </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="telefone" class="form-label">Telefone</label>
+                                    <input type="text" className={`form-control ${hasError("telefone") && "is-invalid"}`} id="telefone" name="telefone" aria-describedby="telefoneHelp" value={cliente.telefone} onChange={handleInputChangeCliente} />
+
+                                    {vazio.includes("telefone") && <div className="invalid-feedback">Informe o telefone.</div>}
+                                    {tamanho.includes("telefone") && <div className="invalid-feedback">Telefone inválido.</div>}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="cnpj" class="form-label">CNPJ</label>
+                                    <input type="text" className={`form-control ${hasError("cnpj") && "is-invalid"}`} id="cpf" name="cnpj" aria-describedby="cnpjHelp" value={juridica.cnpj} onChange={handleInputChangeJuridica} />
+
+                                    {vazio.includes("cnpj") && <div className="invalid-feedback">Informe o CNPJ.</div>}
+                                    {tamanho.includes("cnpj") && <div className="invalid-feedback">CNPJ inválido (deve ter 14 caracteres numéricos).</div>}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="razao_social" class="form-label">Razão Social</label>
+                                    <input type="text" class="form-control" id="razao_social" name="razao_social" aria-describedby="razao_socialHelp" value={juridica.razao_social} onChange={handleInputChangeJuridica} />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="nome_responsavel" class="form-label">Nome do responsável</label>
+                                    <input type="text" className={`form-control ${hasError("nome_responsavel") && "is-invalid"}`} id="nome_responsavel" name="nome_responsavel" aria-describedby="nome_responsavelHelp" value={juridica.nome_responsavel} onChange={handleInputChangeJuridica} />
+
+                                    {vazio.includes("nome_responsavel") && <div className="invalid-feedback">Informe o nome do responsável.</div>}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="data" class="form-label">Data cadastro</label><br />
+                                    <DatePicker
+                                        style={{ width: "100%;" }}
+                                        className={`form-control ${hasError("data") && "is-invalid"}`}
+                                        type="text"
+                                        aria-describedby="dataHelp"
+                                        id="data_cadastro"
+                                        name="data_cadastro"
+                                        selected={cliente.data_cadastro}
+                                        onChange={(date) => setCliente({ ...cliente, data_cadastro: date })}
+                                        dateFormat="dd/MM/yyyy" // Formato da data
+                                    />
+
+                                    {vazio.includes("data") && <div className="invalid-feedback">Informe a data.</div>}
+                                    {tipo.includes("data") && <div className="invalid-feedback">Data inválida.</div>}
+                                </div>
                             </div>
+                        </fieldset>
 
-                            <div class="mb-3 col-md-3 ">
-                                <label for="data" class="form-label">Data cadastro</label><br />
-                                <DatePicker
-                                    style={{ width: "100%;" }}
-                                    className="form-control"
-                                    type="text"
-                                    aria-describedby="dataHelp"
-                                    id="data_cadastro"
-                                    name="data_cadastro"
-                                    selected={cliente.data_cadastro}
-                                    onChange={(date) => setCliente({ ...cliente, data_cadastro: date })}
-                                    dateFormat="dd/MM/yyyy" // Formato da data
-                                />
-                                {
-                                    vazio.includes("data_cadastro") &&
-                                    <div id="datacadastrohelp" class="form-text text-danger">Informe a data de cadastro.</div>
-                                }
-                                {
-                                    tipo.includes("data_cadastro") &&
-                                    <div id="datacadastrohelp" class="form-text text-danger">Data inválida.</div>
-                                }
+
+                        <fieldset className="mb-5">
+                            <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações de Endereço</legend>
+                            <div className="row g-3">
+                                <div class="col-md-4">
+                                    <label for="cep" class="form-label">CEP</label>
+                                    <input type="text" className={`form-control ${hasError("cep") && "is-invalid"}`} id="cep" name="cep" aria-describedby="cepHelp" value={endereco.cep} onChange={handleInputChangeEndereco} />
+
+                                    {vazio.includes("cep") && <div className="invalid-feedback">Informe o CEP.</div>}
+                                    {tamanho.includes("cep") && <div className="invalid-feedback">CEP inválido (deve ter 8 caracteres numéricos).</div>}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="cidade" class="form-label">Cidade</label>
+                                    <input type="text" className={`form-control ${hasError("cidade") && "is-invalid"}`} id="cidade" name="cidade" aria-describedby="cidadeHelp" value={cidade.nome} onChange={handleInputChangeCidade} />
+                                    {vazio.includes("cidade") && <div className="invalid-feedback">Informe a cidade.</div>}
+
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="uf" class="form-label">Estado</label>
+                                    <Select isSearchable={true} className={`${hasError("estado") && "is-invalid"}`} id="uf" name="uf" placeholder="Selecione o estado" options={optionsEstados} value={optionsEstados.find(option => option.value === estado.uf)} onChange={handleInputChangeEstado}>
+                                    </Select>
+
+                                    {vazio.includes("estado") && <div className="invalid-feedback">Informe o estado.</div>}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="logradouro" class="form-label">Logradouro</label>
+                                    <input type="text" className={`form-control ${hasError("logradouro") && "is-invalid"}`} id="logradouro" name="logradouro" aria-describedby="logradourodeHelp" value={endereco.logradouro} onChange={handleInputChangeEndereco} />
+                                    {vazio.includes("logradouro") && <div className="invalid-feedback">Informe o logradouro.</div>}
+                                </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="bairro" class="form-label">Bairro</label>
+                                    <input type="text" className={`form-control ${hasError("bairro") && "is-invalid"}`} id="bairro" name="bairro" aria-describedby="bairroHelp" value={endereco.bairro} onChange={handleInputChangeEndereco} />
+                                    {vazio.includes("bairro") && <div className="invalid-feedback">Informe o bairro.</div>}
+                                </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="numero" class="form-label">Número</label>
+                                    <input type="text" className={`form-control ${hasError("numero") && "is-invalid"}`} id="numero" name="numero" aria-describedby="numerodeHelp" value={endereco.numero} onChange={handleInputChangeEndereco} />
+
+                                    {vazio.includes("numero") && <div className="invalid-feedback">Informe o número.</div>}
+                                    {tipo.includes("numero") && <div className="invalid-feedback">Número inválido.</div>}
+                                </div>
                             </div>
+                        </fieldset>
 
-                            <div class="mb-3 col-md-3 ">
-                                <label for="valor" class="form-label">Email</label>
-                                <input type="text" class="form-control" id="email" name="email" aria-describedby="emailHelp" value={cliente.email} onChange={handleInputChangeCliente} />
-                                {
-                                    vazio.includes("email") &&
-                                    <div id="emailhelp" class="form-text text-danger">Informe o email.</div>
-                                }
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="telefone" class="form-label">Telefone</label>
-                                <input type="text" class="form-control" id="telefone" name="telefone" aria-describedby="telefoneHelp" value={cliente.telefone} onChange={handleInputChangeCliente} />
-                                {
-                                    vazio.includes("telefone") &&
-                                    <div id="telefonehelp" class="form-text text-danger">Informe o telefone.</div>
-                                }
-                                {
-                                    tamanho.includes("telefone") &&
-                                    <div id="telefonehelp" class="form-text text-danger">Telefone inválido.</div>
-                                }
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="cnpj" class="form-label">CNPJ</label>
-                                <input type="text" class="form-control" id="cpf" name="cnpj" aria-describedby="cnpjHelp" value={juridica.cnpj} onChange={handleInputChangeJuridica} />
-                                {
-                                    vazio.includes("cnpj") &&
-                                    <div id="cnpjhelp" class="form-text text-danger">Informe o CNPJ.</div>
-                                }
-                                {
-                                    tamanho.includes("cnpj") &&
-                                    <div id="cnpjhelp" class="form-text text-danger">CNPJ inválido.</div>
-                                }
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="razao_social" class="form-label">Razão Social</label>
-                                <input type="text" class="form-control" id="razao_social" name="razao_social" aria-describedby="razao_socialHelp" value={juridica.razao_social} onChange={handleInputChangeJuridica} />
-                                {/* <div id="razao_socialHelp" class="form-text">Informe a razão social.</div> */}
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="nome_responsavel" class="form-label">Nome do responável</label>
-                                <input type="text" class="form-control" id="nome_responsavel" name="nome_responsavel" aria-describedby="nome_responsavelHelp" value={juridica.nome_responsavel} onChange={handleInputChangeJuridica} />
-                                {
-                                    vazio.includes("nome_responsavel") &&
-                                    <div id="nome_responsavelhelp" class="form-text text-danger">Informe o nome do responsavel.</div>
-                                }
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="cep" class="form-label">CEP</label>
-                                <input type="text" class="form-control" id="cep" name="cep" aria-describedby="cepHelp" value={endereco.cep} onChange={handleInputChangeEndereco} />
-                                {
-                                    vazio.includes("cep") &&
-                                    <div id="cephelp" class="form-text text-danger">Informe o CEP.</div>
-                                }
-                                {
-                                    tamanho.includes("cep") &&
-                                    <div id="cphelp" class="form-text text-danger">CEP inválido.</div>
-                                }
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="cidade" class="form-label">Cidade</label>
-                                <input type="text" class="form-control" id="cidade" name="cidade" aria-describedby="cidadeHelp" value={cidade.nome} onChange={handleInputChangeCidade} />
-                                {
-                                    vazio.includes("cidade") &&
-                                    <div id="cidadehelp" class="form-text text-danger">Informe a cidade.</div>
-                                }
-                            </div>
-
-                            <div class="mb-3 col-md-3">
-                                <label for="uf" class="form-label">Estado</label>
-                                <Select isSearchable={true} class="form-select" id="uf" name="uf" placeholder="Selecione o estado" options={optionsEstados} value={optionsEstados.find(option => option.value === estado.uf)} onChange={handleInputChangeEstado}>
-                                </Select>
-                                {
-                                    vazio.includes("estado") &&
-                                    <div id="estadohelp" class="form-text text-danger">Informe o estado.</div>
-                                }
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="logradouro" class="form-label">Logradouro</label>
-                                <input type="text" class="form-control" id="logradouro" name="logradouro" aria-describedby="logradourodeHelp" value={endereco.logradouro} onChange={handleInputChangeEndereco} />
-                                {
-                                    vazio.includes("logradouro") &&
-                                    <div id="logradourohelp" class="form-text text-danger">Informe o logradouro.</div>
-                                }
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="bairro" class="form-label">Bairro</label>
-                                <input type="text" class="form-control" id="bairro" name="bairro" aria-describedby="bairroHelp" value={endereco.bairro} onChange={handleInputChangeEndereco} />
-                                {
-                                    vazio.includes("bairro") &&
-                                    <div id="bairrohelp" class="form-text text-danger">Informe o bairro.</div>
-                                }
-                            </div>
-
-                            <div class="mb-3 col-md-3 ">
-                                <label for="numero" class="form-label">Número</label>
-                                <input type="text" class="form-control" id="numero" name="numero" aria-describedby="numerodeHelp" value={endereco.numero} onChange={handleInputChangeEndereco} />
-                                {
-                                    vazio.includes("numero") &&
-                                    <div id="numerohelp" class="form-text text-danger">Informe o número.</div>
-                                }
-                                {
-                                    tipo.includes("numero") &&
-                                    <div id="numerohelp" class="form-text text-danger">Númemro inválido.</div>
-                                }
-                            </div>
-
-                        </div >
-
-                        <button type="submit" onClick={saveClienteJuridica} class="btn btn-primary">Submit</button>
+                        {/* Botão de Submissão */}
+                        <div className="d-flex justify-content-end pb-3">
+                            <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
+                                {isSubmitting ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Salvando..
+                                    </>
+                                ) : (
+                                    "Cadastrar Automóvel"
+                                )}
+                            </button>
+                        </div>
 
                     </form >}
             </div >

@@ -4,12 +4,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import AutomovelDataService from "../services/automovelDataService";
 import React from "react";
 import { useCallback, useState } from "react";
+import ModalVenda from "./modais/ModalVenda";
 
 const Detalhes = () => {
+
+    const vendaLocalStorage = { negocio: "Venda" };
 
     const { id } = useParams();
     const [automovel, setAutomovel] = useState({});
     const [loading, setLoading] = useState(true);
+
+    const [showModal, setShowModal] = useState(false);
 
     const navigate = useNavigate();
 
@@ -101,7 +106,7 @@ const Detalhes = () => {
                                 <button onClick={() => navigate(`/editar-automovel/${automovel.id}`)} className="btn btn-primary btn-lg px-4 me-md-2">
                                     <i className="bi bi-pencil-fill me-2"></i>Editar
                                 </button>
-                                <button className="btn btn-outline-secondary btn-lg px-4 me-md-2">
+                                <button onClick={() => setShowModal(true)} className="btn btn-outline-secondary btn-lg px-4 me-md-2">
                                     <i className="bi bi-tag-fill me-2"></i>Vender
                                 </button>
                                 <button onClick={() => navigate(`/estoque`)} className="btn btn-outline-secondary btn-lg px-4">
@@ -111,6 +116,14 @@ const Detalhes = () => {
                         </div>
                     </div>
                 </div>
+
+                <ModalVenda
+                    show={showModal}
+                    onHide={() => setShowModal(false)}
+                    venda={vendaLocalStorage}
+                    automovelId={automovel && automovel.id}
+                />
+
             </div>
         </>
     );
