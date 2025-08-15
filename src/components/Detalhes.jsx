@@ -5,6 +5,8 @@ import AutomovelDataService from "../services/automovelDataService";
 import React from "react";
 import { useCallback, useState } from "react";
 import ModalVenda from "./modais/ModalVenda";
+import ModeloDataService from "../services/modeloDataService";
+import MarcaDataService from "../services/marcaDataService";
 
 const Detalhes = () => {
 
@@ -12,6 +14,8 @@ const Detalhes = () => {
 
     const { id } = useParams();
     const [automovel, setAutomovel] = useState({});
+    const [marca, setMarca] = useState([]);
+    const [modelo, setModelo] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const [showModal, setShowModal] = useState(false);
@@ -34,6 +38,20 @@ const Detalhes = () => {
     useEffect(() => {
         consulta();
     }, [consulta]);
+
+    useEffect(() => {
+        setLoading(true);
+        // Carrega todos os dados em paralelo para melhor performance
+        Promise.all([
+            MarcaDataService.getAll(),
+            ModeloDataService.getAll(),
+        ]).then(([marcasRes, modelosRes]) => {
+            setMarca(marcasRes.data);
+            setModelo(modelosRes.data);
+        }).catch(e => {
+            console.error("Erro ao carregar dados do estoque:", e);
+        })
+    }, []);
 
 
     if (loading) {
@@ -62,6 +80,9 @@ const Detalhes = () => {
         );
     }
 
+    const marcaNome = marca.find(m => m.id === automovel?.id);
+    const modeloNome = modelo.find(m => m.marcaId === marcaNome?.id);
+
     return (
         <>
             <Header />
@@ -70,7 +91,7 @@ const Detalhes = () => {
                     {/* Coluna da Imagem */}
                     <div className="col-lg-7">
                         <img
-                            src={automovel.imageUrl || '/fotos/gol.jpg'}
+                            src={automovel.imagem !== null ? `http://localhost:3000/${automovel.imagem}` : "/fotos/no-photos.png"}
                             alt="Imagem do Veículo"
                             className="img-fluid rounded shadow-lg w-100"
                             style={{ objectFit: 'cover', maxHeight: '500px' }}
@@ -80,7 +101,7 @@ const Detalhes = () => {
                     {/* Coluna das Informações */}
                     <div className="col-lg-5">
                         <div className="p-3">
-                            <h1 className="display-5 fw-bold">{`Volkswagen Gol`}</h1> {/* Exemplo, idealmente viria do DB */}
+                            <h1 className="display-5 fw-bold">{`${marcaNome?.nome} ${modeloNome?.nome}`}</h1> {/* Exemplo, idealmente viria do DB */}
                             <p className="lead text-muted">ID do Veículo: {automovel && automovel.id}</p>
 
                             <h2 className="text-primary my-4">{automovel && automovel.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h2>

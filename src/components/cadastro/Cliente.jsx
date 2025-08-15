@@ -374,8 +374,12 @@ const Cliente = () => {
         setMensagemSucesso("Cliente cadastrado com sucesso!");
 
         setTimeout(() => {
-
-            navigate('/cadastro/automoveis', { state: { clienteId: clienteResp.data.id } });
+            if (modeloNegocio?.negocio === "Venda") {
+                navigate('/vendas', { state: { clienteId: clienteResp.data.id } });
+            }
+            else {
+                navigate('/cadastro/automoveis', { state: { clienteId: clienteResp.data.id } });
+            }
         }, 1500);
 
     }

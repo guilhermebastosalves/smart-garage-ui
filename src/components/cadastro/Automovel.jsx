@@ -57,7 +57,8 @@ const Automovel = () => {
         placa: "",
         renavam: "",
         valor: "",
-        marcaId: ""
+        marcaId: "",
+        imagem: ""
     };
 
 
@@ -209,19 +210,35 @@ const Automovel = () => {
             marcaId: marcaResp?.data.id
         }
 
-        var data = {
-            ano_fabricacao: automovel.ano_fabricacao,
-            ano_modelo: automovel.ano_modelo,
-            ativo: automovel.ativo,
-            cor: automovel.cor,
-            combustivel: automovel.combustivel,
-            km: automovel.km,
-            origem: automovel.origem,
-            placa: automovel.placa,
-            renavam: automovel.renavam,
-            valor: automovel.valor,
-            marcaId: marcaResp?.data.id
-        }
+        // var data = {
+        //     ano_fabricacao: automovel.ano_fabricacao,
+        //     ano_modelo: automovel.ano_modelo,
+        //     ativo: automovel.ativo,
+        //     cor: automovel.cor,
+        //     combustivel: automovel.combustivel,
+        //     km: automovel.km,
+        //     origem: automovel.origem,
+        //     placa: automovel.placa,
+        //     renavam: automovel.renavam,
+        //     valor: automovel.valor,
+        //     marcaId: marcaResp?.data.id,
+        //     imagem: automovel.imagem
+        // }
+
+        const formData = new FormData();
+
+        formData.append("ano_fabricacao", automovel.ano_fabricacao);
+        formData.append("ano_modelo", automovel.ano_modelo);
+        formData.append("ativo", automovel.ativo);
+        formData.append("cor", automovel.cor);
+        formData.append("combustivel", automovel.combustivel);
+        formData.append("km", automovel.km);
+        formData.append("origem", automovel.origem);
+        formData.append("placa", automovel.placa);
+        formData.append("renavam", automovel.renavam);
+        formData.append("valor", automovel.valor);
+        formData.append("marcaId", marcaResp?.data.id);
+        formData.append("file", automovel.file); // importante: nome "file" igual ao backend
 
         const modeloResp = await ModeloDataService.create(dataModelo)
             .catch(e => {
@@ -230,9 +247,11 @@ const Automovel = () => {
 
         setModelo(modeloResp.data);
 
-        console.log("Dados enviados para automóvel:", data);
+        // console.log("Dados enviados para automóvel:", data);
 
-        const automovelResp = await AutomovelDataService.create(data)
+        const automovelResp = await AutomovelDataService.create(formData, {
+            headers: { "Content-type": "multipart/form-data" }
+        })
             .catch(e => {
                 // console.error("Erro ao cadastrar automovel:", e);
                 console.error("Erro ao cadastrar automovel:", e.response?.data || e.message);
@@ -290,7 +309,7 @@ const Automovel = () => {
                 )}
 
                 {/* Formulário com Seções */}
-                <form onSubmit={saveAutomovel} className={sucesso ? "d-none" : ""}>
+                <form onSubmit={saveAutomovel} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
                     {/* Seção 1: Informações Principais */}
 
@@ -323,6 +342,23 @@ const Automovel = () => {
                                 <input type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} />
                                 {vazio.includes("ano_modelo") && <div className="invalid-feedback">Informe o ano.</div>}
                                 {tipo.includes("ano_modelo") && <div className="invalid-feedback">Ano inválido.</div>}
+                            </div>
+                            <div className="col-md-4">
+                                <label htmlFor="foto" className="form-label">Foto do Veículo</label>
+                                <input
+                                    type="file"
+                                    className="form-control"
+                                    id="foto"
+                                    name="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            setAutomovel({ ...automovel, file });
+                                            // ou só file.name, dependendo do backend
+                                        }
+                                    }}
+                                />
                             </div>
                         </div>
                     </fieldset>

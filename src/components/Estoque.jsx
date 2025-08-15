@@ -137,7 +137,19 @@ const Estoque = () => {
                         <div key={auto.id} className="col">
                             <div className="card h-100 card-hover">
                                 {/* Imagem do Carro */}
-                                <img src={auto.imageUrl || "/fotos/gol.jpg"} className="card-img-top car-image" alt={`${marca2?.nome} ${modelo2?.nome}`} />
+
+                                {/* <img src={auto.imagem !== null ? `http://localhost:3000/${auto.imagem}` : "/fotos/no-photos.png"} className={`card-img-top car-image ${auto.imagem === null ? "img-pequena" : ""}`} alt={`${marca2?.nome} ${modelo2?.nome}`} /> */}
+                                {auto.imagem ? (
+                                    <img
+                                        src={`http://localhost:3000/${auto.imagem}`}
+                                        className="card-img-top car-image"
+                                        alt={`${marca2?.nome} ${modelo2?.nome}`}
+                                    />
+                                ) : (
+                                    <div className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
+                                        <i class="bi bi-camera fs-1"></i>
+                                    </div>
+                                )}
 
                                 <div className="card-body d-flex flex-column">
                                     <h5 className="card-title">{marca2?.nome} {modelo2?.nome}</h5>

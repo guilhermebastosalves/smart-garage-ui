@@ -10,8 +10,8 @@ class AutomovelDataService {
         return http.get(`api/automovel/${id}`);
     }
 
-    create(data) {
-        return http.post("/api/automovel", data);
+    create(data, config) {
+        return http.post("/api/automovel", data, config);
     }
 
     duplicidade(data) {
