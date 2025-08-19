@@ -10,6 +10,9 @@ class AutomovelDataService {
         return http.get(`api/automovel/${id}`);
     }
 
+    getByAtivo() {
+        return http.get(`api/automovel/ativo`);
+    }
     create(data, config) {
         return http.post("/api/automovel", data, config);
     }

@@ -12,24 +12,50 @@ import EnderecoDataService from "../../services/enderecoDataService";
 import { useNavigate } from "react-router-dom";
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import { ButtonGroup } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 
 const Cliente = () => {
 
     const navigate = useNavigate();
+
+    const consignacao = { negocio: "Consignacao" };
+    const compra = { negocio: "Compra" };
+
+    const location = useLocation();
+    const fisicaId = location.state?.fisicaId;
+    const clienteId = location.state?.clienteId;
+
+    const [cliente, setCliente] = useState('');
+    const [fisica, setFisica] = useState('');
+    const [juridica, setJuridica] = useState('');
+    const [endereco, setEndereco] = useState('');
+    const [cidade, setCidade] = useState('');
+    const [estado, setEstado] = useState('');
+    const [opcao, setOpcao] = useState('');
+
 
     const [modeloNegocio, setModeloNegocio] = useState(null);
 
     useEffect(() => {
 
         const venda = localStorage.getItem("Venda");
+        const consignacao = localStorage.getItem("Consignacao");
+        const compra = localStorage.getItem("Compra");
 
         if (venda) {
             setModeloNegocio(JSON.parse(venda));
             localStorage.removeItem("Venda"); // Opcional: apaga após usar
         }
-    }, []);
 
-    console.log(modeloNegocio?.negocio);
+        if (consignacao) {
+            setModeloNegocio(JSON.parse(consignacao));
+            localStorage.removeItem("Consignacao"); // Opcional: apaga após usar
+        }
+        if (compra) {
+            setModeloNegocio(JSON.parse(compra));
+            localStorage.removeItem("Consignacao"); // Opcional: apaga após usar
+        }
+    }, []);
 
 
     const radios = [
@@ -39,13 +65,6 @@ const Cliente = () => {
 
     const [radioValue, setRadioValue] = useState('1');
 
-    const [cliente, setCliente] = useState('');
-    const [fisica, setFisica] = useState('');
-    const [juridica, setJuridica] = useState('');
-    const [endereco, setEndereco] = useState('');
-    const [cidade, setCidade] = useState('');
-    const [estado, setEstado] = useState('');
-    const [opcao, setOpcao] = useState('');
 
 
     const handleInputChangeCliente = event => {
@@ -377,6 +396,14 @@ const Cliente = () => {
             if (modeloNegocio?.negocio === "Venda") {
                 navigate('/vendas', { state: { clienteId: clienteResp.data.id } });
             }
+            if (modeloNegocio?.negocio === "Consignacao") {
+                localStorage.setItem("Consignacao", JSON.stringify(consignacao));
+                navigate('/consignacao', { state: { clienteId: clienteResp.data.id } });
+            }
+            if (modeloNegocio?.negocio === "Compra") {
+                localStorage.setItem("Compra", JSON.stringify(compra));
+                navigate('/compra', { state: { clienteId: clienteResp.data.id } });
+            }
             else {
                 navigate('/cadastro/automoveis', { state: { clienteId: clienteResp.data.id } });
             }
@@ -471,6 +498,9 @@ const Cliente = () => {
         setTimeout(() => {
             if (modeloNegocio?.negocio === "Venda") {
                 navigate('/vendas', { state: { clienteId: clienteJuridicaResp.data.id } });
+            }
+            if (modeloNegocio?.negocio === "Consignacao") {
+                navigate('/consignacao', { state: { clienteId: clienteJuridicaResp.data.id } });
             }
             else {
                 navigate('/cadastro/automoveis', { state: { clienteId: clienteJuridicaResp.data.id } });

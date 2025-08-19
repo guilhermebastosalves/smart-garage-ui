@@ -6,6 +6,10 @@ class ClienteDataService {
         return http.get('/api/cliente');
     }
 
+    getById(id) {
+        return http.get(`/api/cliente/${id}`);
+    }
+
     create(data) {
         return http.post('/api/cliente', data);
     }

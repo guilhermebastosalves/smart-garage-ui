@@ -1,14 +1,18 @@
-import { Modal, Button } from 'react-bootstrap';
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from 'react';
+import { Modal, Button, Form } from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import FisicaDataService from '../../services/fisicaDataService';
 
 function ModalCompra({ show, onHide, compra }) {
     const navigate = useNavigate();
+    const [identificacao, setId] = useState('');
+    const [cadastro, setCadastro] = useState(false);
 
-    const handleRedirect = (path) => {
+
+    const handleRedirect = (path, state) => {
         localStorage.setItem("Compra", JSON.stringify(compra));
         onHide(); // Fecha o modal
-        navigate(path);
+        navigate(path, { state });
     };
 
     useEffect(() => {
@@ -31,24 +35,74 @@ function ModalCompra({ show, onHide, compra }) {
         return null;
     }
 
+    const buscaCliente = async (identificacao) => {
+
+        try {
+            const fisicaResp = await FisicaDataService.getByCpf(identificacao);
+
+            const fisicaId = fisicaResp?.data?.[0]?.id;
+            const clienteId = fisicaResp?.data?.[0]?.clienteId;
+
+            if (fisicaId && clienteId) {
+                handleRedirect('/compra', { fisicaId: fisicaId, clienteId: clienteId })
+            } else {
+                // alert('Proprietário não encontrado. Verifique o CPF/CNPJ ou cadastre um novo cliente.');
+                setCadastro(true);
+            }
+        } catch (e) {
+            console.log("Erro na busca de pessoas físicas:", e);
+        }
+    }
+
+    // Função para lidar com o envio do formulário
+    const handleSubmit = (event) => {
+        event.preventDefault(); // Previne que a página recarregue
+        if (identificacao.trim()) { // Verifica se o ID não está vazio
+            buscaCliente(identificacao);
+        } else {
+            alert('Por favor, informe um CPF ou CNPJ.');
+        }
+    };
+
     return (
         <Modal show={show} onHide={onHide} backdrop="static" keyboard={false}>
             <Modal.Header closeButton>
                 <Modal.Title>Registro de Compra</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                O proprietário do automóvel já está cadastrado no sistema?
+                <Form className={cadastro ? "d-none" : ""} onSubmit={handleSubmit}>
+                    <Form.Group>
+                        <Form.Label htmlFor="cpfCnpj">Informe o CPF ou CNPJ do comprador.</Form.Label>
+                        <Form.Control
+                            id="cpfCnpj"
+                            type="text"
+                            value={identificacao} // Controla o valor do input
+                            onChange={(e) => setId(e.target.value)}
+
+                            autoFocus // Foca no campo ao abrir o modal
+                        />
+                    </Form.Group>
+                    {/* O botão dentro de um form com type="submit" aciona o onSubmit do form */}
+                    <Button variant="primary" type="submit" className="mt-3 me-2">
+                        Buscar
+                    </Button>
+                    <Button variant="outline-secondary" type="submit" className="mt-3" onClick={() => handleRedirect('/cliente')}>
+                        O cliente não possui cadastro
+                    </Button>
+                </Form>
+                {
+                    cadastro &&
+                    <>
+                        <p>Cliente não encontrado. Verifique o CPF/CNPJ ou cadastre um novo cliente.</p>
+                        <Button variant='primary' onClick={() => { setCadastro(false) }}>Tentar novamente</Button>
+                        <Button variant='outline-secondary' onClick={() => handleRedirect('/cliente')}>Cadastrar proprietário</Button>
+                    </>
+                }
             </Modal.Body>
             <Modal.Footer className="g-0">
-                <Button variant="primary" onClick={() => handleRedirect('/cadastro/automoveis')}>
-                    Sim, já está!
-                </Button>
-                <Button variant="secondary" onClick={() => handleRedirect('/cliente')}>
-                    Não, preciso cadastrá-lo!
-                </Button>
-                <Button variant="dark" onClick={onHide}>
+                {/* <Button variant="dark" onClick={onHide}>
                     Voltar
-                </Button>
+                </Button> */}
             </Modal.Footer>
         </Modal>
     );

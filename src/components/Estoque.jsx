@@ -23,6 +23,7 @@ const Estoque = () => {
         setLoading(true);
         // Carrega todos os dados em paralelo para melhor performance
         Promise.all([
+            // AutomovelDataService.getByAtivo(),
             AutomovelDataService.getAll(),
             MarcaDataService.getAll(),
             ModeloDataService.getAll(),
