@@ -19,18 +19,22 @@ const Compra = () => {
     const location = useLocation();
     const clienteId = location.state?.clienteId;
     const fisicaId = location.state?.fisicaId;
+    const juridicaId = location.state?.juridicaId;
 
-    useEffect(() => {
-        Promise.all([
-            ClienteDataService.getById(clienteId),
-            FisicaDataService.getById(fisicaId),
-        ]).then(([cliente, fisica]) => {
-            setCliente(cliente.data);
-            setFisica(fisica.data)
-        }).catch(e => {
-            console.error("Erro ao carregar dados do estoque:", e);
-        })
-    }, []);
+    // useEffect(() => {
+    //     Promise.all([
+    //         ClienteDataService.getById(clienteId),
+    //         FisicaDataService.getById(fisicaId),
+    //         JuridicaDataService.getById(juridicaId),
+    //     ]).then(([cliente, fisica, juridica]) => {
+    //         setCliente(cliente.data);
+    //         setFisica(fisica.data)
+    //         setJuridica(juridica.data)
+    //     }).catch(e => {
+    //         console.error("Erro ao carregar dados:", e);
+    //     })
+    // }, []);
+
 
     const [modeloNegocio, setModeloNegocio] = useState(null);
 
@@ -204,7 +208,6 @@ const Compra = () => {
         if (!compra.valor) vazioErros.push("valor");
         if (!compra.data) vazioErros.push("data");
         if (!compra.clienteId) vazioErros.push("clienteId");
-        if (!compra.automovelId) vazioErros.push("automovelId");
 
         if (!automovel.valor) vazioErros.push("valor");
         if (!automovel.ano_fabricacao) vazioErros.push("ano_fabricacao");
@@ -272,6 +275,7 @@ const Compra = () => {
         setTipo([]);
         setIsSubmitting(true); // Desabilita o botão
 
+
         const { vazioErros, tamanhoErros, tipoErros } = validateFields();
 
         setVazio(vazioErros);
@@ -285,6 +289,7 @@ const Compra = () => {
         }
 
         try {
+
             // --- ETAPA 1: Verificação de duplicidade ---
             const verificacao = await AutomovelDataService.duplicidade({
                 placa: automovel.placa,
@@ -292,6 +297,7 @@ const Compra = () => {
             })
 
             if (verificacao.data.erro) {
+
                 setErro(verificacao.data.erro); // erro vindo do back
                 setMensagemErro(verificacao.data.mensagemErro);
                 // return; // não continua
@@ -356,7 +362,7 @@ const Compra = () => {
                 valor: compra.valor,
                 data: compra.data,
                 clienteId: compra.clienteId,
-                automovelId: compra.automovelId
+                automovelId: automovelResp?.data.id
             }
 
             const compraResp = await CompraDataService.create(dataCompra)
@@ -562,7 +568,7 @@ const Compra = () => {
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações da Compra</legend>
                         <div className="row g-3">
                             <div class="col-md-3">
-                                <label for="valor" class="form-label">Valor</label>
+                                <label for="valor" class="form-label">Valor da Compra (R$)</label>
                                 <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeCompra} />
                                 {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>
                                 }

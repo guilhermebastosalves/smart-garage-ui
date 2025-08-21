@@ -19,18 +19,21 @@ const Consignacao = () => {
     const location = useLocation();
     const clienteId = location.state?.clienteId;
     const fisicaId = location.state?.fisicaId;
+    const juridicaId = location.state?.juridicaId;
 
-    useEffect(() => {
-        Promise.all([
-            ClienteDataService.getById(clienteId),
-            FisicaDataService.getById(fisicaId),
-        ]).then(([cliente, fisica]) => {
-            setCliente(cliente.data);
-            setFisica(fisica.data)
-        }).catch(e => {
-            console.error("Erro ao carregar dados do estoque:", e);
-        })
-    }, []);
+    // useEffect(() => {
+    //     Promise.all([
+    //         ClienteDataService.getById(clienteId),
+    //         FisicaDataService.getById(fisicaId),
+    //         JuridicaDataService.getById(juridicaId),
+    //     ]).then(([cliente, fisica, juridica]) => {
+    //         setCliente(cliente.data);
+    //         setFisica(fisica.data)
+    //         setJuridica(juridica.data)
+    //     }).catch(e => {
+    //         console.error("Erro ao carregar dados:", e);
+    //     })
+    // }, []);
 
 
     const [modeloNegocio, setModeloNegocio] = useState(null);
@@ -101,7 +104,6 @@ const Consignacao = () => {
     const [cliente, setCliente] = useState([]);
     const [fisica, setFisica] = useState([]);
     const [juridica, setJuridica] = useState([]);
-
 
 
     const initialConsignacaoState = {
@@ -393,7 +395,7 @@ const Consignacao = () => {
 
             if (automovel.origem === "Troca") {
                 setTimeout(() => {
-                    navigate('/troca', { state: { automovelId: automovelResp.data.id, clienteId: clienteId } });
+                    navigate('/listagem/trocas');
                 }, 1500);
             }
         } catch (error) {

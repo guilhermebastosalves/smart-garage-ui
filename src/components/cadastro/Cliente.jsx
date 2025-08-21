@@ -20,6 +20,7 @@ const Cliente = () => {
 
     const consignacao = { negocio: "Consignacao" };
     const compra = { negocio: "Compra" };
+    const troca = { negocio: "Troca" };
 
     const location = useLocation();
     const fisicaId = location.state?.fisicaId;
@@ -31,7 +32,7 @@ const Cliente = () => {
     const [endereco, setEndereco] = useState('');
     const [cidade, setCidade] = useState('');
     const [estado, setEstado] = useState('');
-    const [opcao, setOpcao] = useState('');
+    const [opcao, setOpcao] = useState('fisica');
 
 
     const [modeloNegocio, setModeloNegocio] = useState(null);
@@ -41,6 +42,7 @@ const Cliente = () => {
         const venda = localStorage.getItem("Venda");
         const consignacao = localStorage.getItem("Consignacao");
         const compra = localStorage.getItem("Compra");
+        const troca = localStorage.getItem("Troca");
 
         if (venda) {
             setModeloNegocio(JSON.parse(venda));
@@ -51,9 +53,13 @@ const Cliente = () => {
             setModeloNegocio(JSON.parse(consignacao));
             localStorage.removeItem("Consignacao"); // Opcional: apaga após usar
         }
+        if (troca) {
+            setModeloNegocio(JSON.parse(troca));
+            localStorage.removeItem("Troca"); // Opcional: apaga após usar
+        }
         if (compra) {
             setModeloNegocio(JSON.parse(compra));
-            localStorage.removeItem("Consignacao"); // Opcional: apaga após usar
+            localStorage.removeItem("Compra"); // Opcional: apaga após usar
         }
     }, []);
 
@@ -63,7 +69,7 @@ const Cliente = () => {
         { name: 'Pessoa Jurídica', value: 'juridica' }
     ];
 
-    const [radioValue, setRadioValue] = useState('1');
+    const [radioValue, setRadioValue] = useState('fisica');
 
 
 
@@ -309,6 +315,12 @@ const Cliente = () => {
 
         // Prevents the default page refresh
         e.preventDefault();
+        setErro(false);
+        setSucesso(false);
+        setVazio([]);
+        setTamanho([]);
+        setTipo([]);
+        setIsSubmitting(true); // Desabilita o botão
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFieldsPessoaFisica();
 
@@ -322,99 +334,127 @@ const Cliente = () => {
             return;
         }
 
-        var dataCliente = {
-            ativo: cliente.ativo,
-            data_cadastro: cliente.data_cadastro,
-            nome: cliente.nome,
-            email: cliente.email,
-            telefone: cliente.telefone
-        }
 
-        const clienteResp = await ClienteDataService.create(dataCliente)
-            .catch(e => {
-                console.error("Erro ao criar cliente:", e);
-            });
+        try {
+            // --- ETAPA 1: Verificação de duplicidade ---
+            const verificacao = await FisicaDataService.duplicidade({
+                rg: fisica.rg,
+                cpf: fisica.cpf
+            })
 
-        setCliente(clienteResp.data);
-
-        var dataFisica = {
-            cpf: fisica.cpf,
-            rg: fisica.rg,
-            clienteId: clienteResp?.data.id
-        }
-
-        const fisicaResp = await FisicaDataService.create(dataFisica)
-            .catch(e => {
-                console.error("Erro ao criar pessoa fisica:", e);
-            });
-
-        setFisica(fisicaResp.data);
-
-        var dataEstado = {
-            uf: estado.uf
-        }
-
-        const estadoResp = await EstadoDataService.create(dataEstado)
-            .catch(e => {
-                console.error("Erro ao criar estado:", e);
-            });
-
-        setEstado(estadoResp.data);
-
-        var dataCidade = {
-            nome: cidade.nome,
-            estadoId: estadoResp?.data.id
-        }
-
-        const cidadeResp = await CidadeDataService.create(dataCidade)
-            .catch(e => {
-                console.error("Erro ao criar cidade:", e);
-            });
-
-        setCidade(cidadeResp.data);
-
-        var dataEndereco = {
-            bairro: endereco.bairro,
-            cep: endereco.cep,
-            logradouro: endereco.logradouro,
-            numero: endereco.numero,
-            clienteId: clienteResp?.data.id,
-            cidadeId: cidadeResp?.data.id
-        }
-
-        const enderecoResp = await EnderecoDataService.create(dataEndereco)
-            .catch(e => {
-                console.error("Erro ao criar endereco:", e);
-            });
-
-        setEndereco(enderecoResp.data);
-
-        setSucesso(true);
-        setMensagemSucesso("Cliente cadastrado com sucesso!");
-
-        setTimeout(() => {
-            if (modeloNegocio?.negocio === "Venda") {
-                navigate('/vendas', { state: { clienteId: clienteResp.data.id } });
+            if (verificacao.data.erro) {
+                setErro(verificacao.data.erro); // erro vindo do back
+                setMensagemErro(verificacao.data.mensagemErro);
+                // return; // não continua
+                throw new Error(verificacao.data.mensagemErro);
             }
-            if (modeloNegocio?.negocio === "Consignacao") {
-                localStorage.setItem("Consignacao", JSON.stringify(consignacao));
-                navigate('/consignacao', { state: { clienteId: clienteResp.data.id } });
-            }
-            if (modeloNegocio?.negocio === "Compra") {
-                localStorage.setItem("Compra", JSON.stringify(compra));
-                navigate('/compra', { state: { clienteId: clienteResp.data.id } });
-            }
-            else {
-                navigate('/cadastro/automoveis', { state: { clienteId: clienteResp.data.id } });
-            }
-        }, 1500);
 
+            var dataCliente = {
+                ativo: cliente.ativo,
+                data_cadastro: cliente.data_cadastro,
+                nome: cliente.nome,
+                email: cliente.email,
+                telefone: cliente.telefone
+            }
+
+            const clienteResp = await ClienteDataService.create(dataCliente)
+                .catch(e => {
+                    console.error("Erro ao criar cliente:", e);
+                });
+
+            setCliente(clienteResp.data);
+
+            var dataFisica = {
+                cpf: fisica.cpf,
+                rg: fisica.rg,
+                clienteId: clienteResp?.data.id
+            }
+
+            const fisicaResp = await FisicaDataService.create(dataFisica)
+                .catch(e => {
+                    console.error("Erro ao criar pessoa fisica:", e);
+                });
+
+            setFisica(fisicaResp.data);
+
+            var dataEstado = {
+                uf: estado.uf
+            }
+
+            const estadoResp = await EstadoDataService.create(dataEstado)
+                .catch(e => {
+                    console.error("Erro ao criar estado:", e);
+                });
+
+            setEstado(estadoResp.data);
+
+            var dataCidade = {
+                nome: cidade.nome,
+                estadoId: estadoResp?.data.id
+            }
+
+            const cidadeResp = await CidadeDataService.create(dataCidade)
+                .catch(e => {
+                    console.error("Erro ao criar cidade:", e);
+                });
+
+            setCidade(cidadeResp.data);
+
+            var dataEndereco = {
+                bairro: endereco.bairro,
+                cep: endereco.cep,
+                logradouro: endereco.logradouro,
+                numero: endereco.numero,
+                clienteId: clienteResp?.data.id,
+                cidadeId: cidadeResp?.data.id
+            }
+
+            const enderecoResp = await EnderecoDataService.create(dataEndereco)
+                .catch(e => {
+                    console.error("Erro ao criar endereco:", e);
+                });
+
+            setEndereco(enderecoResp.data);
+
+            setSucesso(true);
+            setMensagemSucesso("Cliente cadastrado com sucesso!");
+
+            setTimeout(() => {
+                if (modeloNegocio?.negocio === "Venda") {
+                    navigate('/vendas', { state: { clienteId: clienteResp.data.id } });
+                }
+                if (modeloNegocio?.negocio === "Consignacao") {
+                    localStorage.setItem("Consignacao", JSON.stringify(consignacao));
+                    navigate('/consignacao', { state: { clienteId: clienteResp.data.id } });
+                }
+                if (modeloNegocio?.negocio === "Compra") {
+                    localStorage.setItem("Compra", JSON.stringify(compra));
+                    navigate('/compra', { state: { clienteId: clienteResp.data.id } });
+                }
+                if (modeloNegocio?.negocio === "Troca") {
+                    localStorage.setItem("Troca", JSON.stringify(troca));
+                    navigate('/troca', { state: { clienteId: clienteResp.data.id } });
+                }
+
+            }, 1500);
+        } catch (error) {
+            // Se qualquer 'await' falhar, o código vem para cá
+            console.error("Erro no processo de salvamento:", error);
+            setErro(true);
+            // Tenta pegar a mensagem de erro da resposta da API, ou usa uma mensagem padrão
+            const mensagem = error.response?.data?.mensagemErro || error.message || "Ocorreu um erro inesperado.";
+            setMensagemErro(mensagem);
+        } finally {
+            // Este bloco será executado sempre no final, tanto em caso de sucesso quanto de erro
+            setIsSubmitting(false); // Reabilita o botão aqui!
+        }
     }
 
     const saveClienteJuridica = async (e) => {
 
         // Prevents the default page refresh
         e.preventDefault();
+        setIsSubmitting(true);
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFieldsPessoaJuridica();
 
@@ -424,88 +464,106 @@ const Cliente = () => {
 
         // Só continua se não houver erros
         if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
+            setIsSubmitting(false);
             return;
         }
 
-        var dataCliente = {
-            ativo: cliente.ativo,
-            data_cadastro: cliente.data_cadastro,
-            nome: cliente.nome,
-            email: cliente.email,
-            telefone: cliente.telefone
-        }
-
-        const clienteJuridicaResp = await ClienteDataService.create(dataCliente)
-            .catch(e => {
-                console.error("Erro ao criar cliente:", e);
-            });
-
-        setCliente(clienteJuridicaResp.data);
-
-        var dataJuridica = {
-            cnpj: juridica.cnpj,
-            razao_social: juridica.razao_social,
-            nome_responsavel: juridica.nome_responsavel,
-            clienteId: clienteJuridicaResp?.data.id
-        }
-
-        const juridicaResp = await JuridicaDataService.create(dataJuridica)
-            .catch(e => {
-                console.error("Erro ao criar pessoa jurídica:", e);
-            });
-
-        setJuridica(juridicaResp.data);
-
-        var dataEstado = {
-            uf: estado.uf
-        }
-
-        const estadoResp = await EstadoDataService.create(dataEstado)
-            .catch(e => {
-                console.error("Erro ao criar estado:", e);
-            });
-
-        setEstado(estadoResp.data);
-
-        var dataCidade = {
-            nome: cidade.nome,
-            estadoId: estadoResp?.data.id
-        }
-
-        const cidadeResp = await CidadeDataService.create(dataCidade)
-            .catch(e => {
-                console.error("Erro ao criar cidade:", e);
-            });
-
-        setCidade(cidadeResp.data);
-
-        var dataEndereco = {
-            bairro: endereco.bairro,
-            cep: endereco.cep,
-            logradouro: endereco.logradouro,
-            numero: endereco.numero,
-            clienteId: clienteJuridicaResp?.data.id,
-            cidadeId: cidadeResp?.data.id
-        }
-
-        const enderecoResp = await EnderecoDataService.create(dataEndereco)
-            .catch(e => {
-                console.error("Erro ao criar endereco:", e);
-            });
-
-        setEndereco(enderecoResp.data);
-
-        setTimeout(() => {
-            if (modeloNegocio?.negocio === "Venda") {
-                navigate('/vendas', { state: { clienteId: clienteJuridicaResp.data.id } });
+        try {
+            var dataCliente = {
+                ativo: cliente.ativo,
+                data_cadastro: cliente.data_cadastro,
+                nome: cliente.nome,
+                email: cliente.email,
+                telefone: cliente.telefone
             }
-            if (modeloNegocio?.negocio === "Consignacao") {
-                navigate('/consignacao', { state: { clienteId: clienteJuridicaResp.data.id } });
+
+            const clienteJuridicaResp = await ClienteDataService.create(dataCliente)
+                .catch(e => {
+                    console.error("Erro ao criar cliente:", e);
+                });
+
+            setCliente(clienteJuridicaResp.data);
+
+            var dataJuridica = {
+                cnpj: juridica.cnpj,
+                razao_social: juridica.razao_social,
+                nome_responsavel: juridica.nome_responsavel,
+                clienteId: clienteJuridicaResp?.data.id
             }
-            else {
-                navigate('/cadastro/automoveis', { state: { clienteId: clienteJuridicaResp.data.id } });
+
+            console.log(dataJuridica);
+
+            const juridicaResp = await JuridicaDataService.create(dataJuridica)
+                .catch(e => {
+                    console.error("Erro ao criar pessoa jurídica:", e);
+                });
+
+            setJuridica(juridicaResp.data);
+
+            var dataEstado = {
+                uf: estado.uf
             }
-        }, 1500);
+
+            const estadoResp = await EstadoDataService.create(dataEstado)
+                .catch(e => {
+                    console.error("Erro ao criar estado:", e);
+                });
+
+            setEstado(estadoResp.data);
+
+            var dataCidade = {
+                nome: cidade.nome,
+                estadoId: estadoResp?.data.id
+            }
+
+            const cidadeResp = await CidadeDataService.create(dataCidade)
+                .catch(e => {
+                    console.error("Erro ao criar cidade:", e);
+                });
+
+            setCidade(cidadeResp.data);
+
+            var dataEndereco = {
+                bairro: endereco.bairro,
+                cep: endereco.cep,
+                logradouro: endereco.logradouro,
+                numero: endereco.numero,
+                clienteId: clienteJuridicaResp?.data.id,
+                cidadeId: cidadeResp?.data.id
+            }
+
+            const enderecoResp = await EnderecoDataService.create(dataEndereco)
+                .catch(e => {
+                    console.error("Erro ao criar endereco:", e);
+                });
+
+            setEndereco(enderecoResp.data);
+
+            setTimeout(() => {
+                if (modeloNegocio?.negocio === "Venda") {
+                    navigate('/vendas', { state: { clienteId: clienteJuridicaResp.data.id } });
+                }
+                if (modeloNegocio?.negocio === "Consignacao") {
+                    localStorage.setItem("Consignacao", JSON.stringify(consignacao));
+                    navigate('/consignacao', { state: { clienteId: clienteJuridicaResp.data.id } });
+                }
+                if (modeloNegocio?.negocio === "Compra") {
+                    localStorage.setItem("Compra", JSON.stringify(compra));
+                    navigate('/compra', { state: { clienteId: clienteJuridicaResp.data.id } });
+                }
+                if (modeloNegocio?.negocio === "Troca") {
+                    localStorage.setItem("Troca", JSON.stringify(troca));
+                    navigate('/troca', { state: { clienteId: clienteJuridicaResp.data.id } });
+                }
+
+            }, 1500);
+        } catch (error) {
+            console.error("Erro ao salvar cliente jurídico:", error);
+            setErro(true);
+            setMensagemErro("Ocorreu um erro ao cadastrar o cliente.");
+            // CORREÇÃO: Desativa o estado de submissão em caso de erro na API
+            setIsSubmitting(false);
+        }
 
     }
 
@@ -516,19 +574,26 @@ const Cliente = () => {
     return (
         <>
             <Header />
-            <div className="container">
-                <div>Página de clientes</div>
+            {/* Cabeçalho da Página */}
+            <div className="mb-4">
+                <h1 className="fw-bold">Cadastro de Automóvel</h1>
+                <p className="text-muted">Preencha os dados abaixo para registrar um novo veículo no sistema.</p>
             </div>
-
             <div className="container">
-                {
-                    sucesso &&
 
-                    <div class="alert alert-success" role="alert">
-                        {mensagemSucesso}
+                {/* Alertas */}
+                {erro && (
+                    <div className="alert alert-danger d-flex align-items-center" role="alert">
+                        <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div>{mensagemErro}</div>
                     </div>
-
-                }
+                )}
+                {sucesso && (
+                    <div className="alert alert-success d-flex align-items-center" role="alert">
+                        <i className="bi bi-check-circle-fill me-2"></i>
+                        <div>{mensagemSucesso}</div>
+                    </div>
+                )}
 
                 <div className={`row mt-5 ${sucesso && "d-none"}`}>
                     <ButtonGroup className="mb-2">

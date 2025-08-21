@@ -17,6 +17,11 @@ class FisicaDataService {
     create(data) {
         return http.post('/api/fisica', data);
     }
+
+    duplicidade(data) {
+        return http.post("/api/fisica/verificar", data);
+    }
+
 }
 
 export default new FisicaDataService();

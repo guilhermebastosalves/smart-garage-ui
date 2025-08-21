@@ -2,6 +2,7 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import FisicaDataService from '../../services/fisicaDataService';
+import JuridicaDataService from '../../services/juridicaDataService';
 
 function ModalCompra({ show, onHide, compra }) {
     const navigate = useNavigate();
@@ -38,19 +39,47 @@ function ModalCompra({ show, onHide, compra }) {
     const buscaCliente = async (identificacao) => {
 
         try {
-            const fisicaResp = await FisicaDataService.getByCpf(identificacao);
 
-            const fisicaId = fisicaResp?.data?.[0]?.id;
-            const clienteId = fisicaResp?.data?.[0]?.clienteId;
+            const [fisicaResp, juridicaResp] = await Promise.all([
+                FisicaDataService.getByCpf(identificacao)
+                    .catch(error => {
+                        console.warn(`CPF não encontrado ou erro na busca: ${error.message}`);
+                        return null; // Retorna null em caso de erro
+                    }),
+                JuridicaDataService.getByCnpj(identificacao)
+                    .catch(error => {
+                        console.warn(`CNPJ não encontrado ou erro na busca: ${error.message}`);
+                        return null; // Retorna null em caso de erro
+                    })
+            ]);
 
-            if (fisicaId && clienteId) {
-                handleRedirect('/compra', { fisicaId: fisicaId, clienteId: clienteId })
+
+            const fisicaEncontrada = fisicaResp?.data?.[0];
+            const juridicaEncontrada = juridicaResp?.data?.[0];
+
+
+            if (fisicaEncontrada?.id && fisicaEncontrada?.clienteId) {
+
+                handleRedirect('/compra', {
+                    fisicaId: fisicaEncontrada.id,
+                    clienteId: fisicaEncontrada.clienteId
+                });
+
+            } else if (juridicaEncontrada?.id && juridicaEncontrada?.clienteId) {
+
+                handleRedirect('/compra', {
+                    juridicaId: juridicaEncontrada.id,
+                    clienteId: juridicaEncontrada.clienteId
+                });
+
             } else {
-                // alert('Proprietário não encontrado. Verifique o CPF/CNPJ ou cadastre um novo cliente.');
+                // Se nenhum foi encontrado, ativa o modo de cadastro.
                 setCadastro(true);
+                // Opcional: alertar o usuário.
+                // alert('Proprietário não encontrado. Verifique o CPF/CNPJ ou cadastre um novo cliente.');
             }
         } catch (e) {
-            console.log("Erro na busca de pessoas físicas:", e);
+            console.log("Erro na busca do cliente:", e);
         }
     }
 
