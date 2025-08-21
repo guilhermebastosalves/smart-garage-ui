@@ -10,6 +10,10 @@ class ConsignacaoDataService {
         return http.get(`api/consignacao/${id}`);
     }
 
+    getByAutomovel(automovelId) {
+        return http.get(`api/consignacao/${automovelId}`);
+    }
+
     getByAtivo() {
         return http.get(`api/consignacao/ativo`);
     }

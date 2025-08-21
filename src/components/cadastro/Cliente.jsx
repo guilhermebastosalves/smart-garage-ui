@@ -23,8 +23,7 @@ const Cliente = () => {
     const troca = { negocio: "Troca" };
 
     const location = useLocation();
-    const fisicaId = location.state?.fisicaId;
-    const clienteId = location.state?.clienteId;
+    const automovelId = location.state?.automovelId;
 
     const [cliente, setCliente] = useState('');
     const [fisica, setFisica] = useState('');
@@ -421,7 +420,7 @@ const Cliente = () => {
 
             setTimeout(() => {
                 if (modeloNegocio?.negocio === "Venda") {
-                    navigate('/vendas', { state: { clienteId: clienteResp.data.id } });
+                    navigate('/venda', { state: { clienteId: clienteResp.data.id, automovelId: automovelId } });
                 }
                 if (modeloNegocio?.negocio === "Consignacao") {
                     localStorage.setItem("Consignacao", JSON.stringify(consignacao));
@@ -541,7 +540,7 @@ const Cliente = () => {
 
             setTimeout(() => {
                 if (modeloNegocio?.negocio === "Venda") {
-                    navigate('/vendas', { state: { clienteId: clienteJuridicaResp.data.id } });
+                    navigate('/venda', { state: { clienteId: clienteJuridicaResp.data.id, automovelId: automovelId } });
                 }
                 if (modeloNegocio?.negocio === "Consignacao") {
                     localStorage.setItem("Consignacao", JSON.stringify(consignacao));

@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import ModalVenda from "./modais/ModalVenda";
 import ModeloDataService from "../services/modeloDataService";
 import MarcaDataService from "../services/marcaDataService";
+import { FaCar } from "react-icons/fa";
 
 const Detalhes = () => {
 
@@ -90,12 +91,27 @@ const Detalhes = () => {
                 <div className="row">
                     {/* Coluna da Imagem */}
                     <div className="col-lg-7">
-                        <img
-                            src={automovel.imagem !== null ? `http://localhost:3000/${automovel.imagem}` : "/fotos/no-photos.png"}
-                            alt="Imagem do Veículo"
-                            className="img-fluid rounded shadow-lg w-100"
-                            style={{ objectFit: 'cover', maxHeight: '500px' }}
-                        />
+                        {
+                            automovel.imagem ? (
+                                <img
+                                    src={automovel.imagem !== null ? `http://localhost:3000/${automovel.imagem}` : "/fotos/no-photos.png"}
+                                    alt="Imagem do Veículo"
+                                    className="img-fluid rounded shadow-lg w-100"
+                                    style={{ objectFit: 'cover', maxHeight: '500px' }}
+                                />) : (
+                                // Se NÃO EXISTE imagem, renderiza um container com o ícone
+                                <div
+                                    className="d-flex justify-content-center align-items-center w-100 rounded"
+                                    style={{
+                                        height: '500px', // Mesma altura máxima para não quebrar o layout
+                                        backgroundColor: '#f8f9fa' // Um fundo cinza claro para destacar
+                                    }}
+                                >
+                                    <FaCar size={100} color="#6c757d" />
+                                    {/* 'size' controla o tamanho do ícone.'color' controla a cor. */}
+                                </div>
+                            )
+                        }
                     </div>
 
                     {/* Coluna das Informações */}
@@ -104,7 +120,10 @@ const Detalhes = () => {
                             <h1 className="display-5 fw-bold">{`${marcaNome?.nome} ${modeloNome?.nome}`}</h1> {/* Exemplo, idealmente viria do DB */}
                             <p className="lead text-muted">ID do Veículo: {automovel && automovel.id}</p>
 
-                            <h2 className="text-primary my-4">{automovel && automovel.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h2>
+                            <h2 className="text-primary my-4">{automovel && automovel.valor && `${parseFloat(automovel.valor).toLocaleString('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL'
+                            })}`}</h2>
 
                             <dl className="row">
                                 <dt className="col-sm-4">Ano/Modelo</dt>
@@ -117,7 +136,7 @@ const Detalhes = () => {
                                 <dd className="col-sm-8">{automovel && automovel.placa}</dd>
 
                                 <dt className="col-sm-4">KM</dt>
-                                <dd className="col-sm-8">{automovel && automovel.quilometragem} km</dd>
+                                <dd className="col-sm-8">{automovel && automovel.km} </dd>
                             </dl>
 
                             <hr />
@@ -150,44 +169,5 @@ const Detalhes = () => {
     );
 }
 
-
-
-//     const editarAutomovel = (id) => {
-//         navigate(`/editar-automovel/${id}`);
-//     }
-
-//     return (
-//         <>
-//             <Header />
-//             <div>
-//                 <h1>Detalhes</h1>
-//                 <p>Esta é a página de detalhes.</p>
-//             </div>
-//             <div>
-//                 {automovel &&
-//                     (
-//                         <div className="col-md-4">
-//                             <div key={automovel.id} className="card mt-5" style={{ height: "350px" }}>
-//                                 <img src="/fotos/gol.jpg" className="card-img-top p-1" style={{ height: "200px" }} />
-//                                 <div className="card-body">
-//                                     <div className="row">
-//                                         <h5 className="card-title">{automovel.valor}</h5>
-//                                         <p className="card-text">{automovel.cor}</p>
-//                                         <div className="col-md-6">
-//                                             <p className="card-text">{automovel.ano_fabricacao}</p>
-//                                         </div>
-//                                         <div className="col-md-6">
-//                                             <button onClick={() => { editarAutomovel(automovel.id) }} className="btn btn-secondary">Editar informações</button>                                        </div>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     )
-
-//                 }
-//             </div>
-//         </>
-//     );
-// }
 
 export default Detalhes; 

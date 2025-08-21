@@ -1,14 +1,20 @@
-import { Modal, Button } from 'react-bootstrap';
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from 'react';
+import { Modal, Button, Form } from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import FisicaDataService from '../../services/fisicaDataService';
+import JuridicaDataService from '../../services/juridicaDataService';
 
 function ModalVenda({ show, onHide, venda, automovelId }) {
-    const navigate = useNavigate();
 
-    const handleRedirect = (path) => {
+    const navigate = useNavigate();
+    const [identificacao, setId] = useState('');
+    const [cadastro, setCadastro] = useState(false);
+
+
+    const handleRedirect = (path, state) => {
         localStorage.setItem("Venda", JSON.stringify(venda));
         onHide(); // Fecha o modal
-        navigate(path, { state: { automovelId: automovelId } });
+        navigate(path, { state });
     };
 
     useEffect(() => {
@@ -31,21 +37,102 @@ function ModalVenda({ show, onHide, venda, automovelId }) {
         return null;
     }
 
+    const buscaCliente = async (identificacao) => {
+
+        try {
+
+            const [fisicaResp, juridicaResp] = await Promise.all([
+                FisicaDataService.getByCpf(identificacao)
+                    .catch(error => {
+                        console.warn(`CPF não encontrado ou erro na busca: ${error.message}`);
+                        return null; // Retorna null em caso de erro
+                    }),
+                JuridicaDataService.getByCnpj(identificacao)
+                    .catch(error => {
+                        console.warn(`CNPJ não encontrado ou erro na busca: ${error.message}`);
+                        return null; // Retorna null em caso de erro
+                    })
+            ]);
+
+
+            const fisicaEncontrada = fisicaResp?.data?.[0];
+            const juridicaEncontrada = juridicaResp?.data?.[0];
+
+
+            if (fisicaEncontrada?.id && fisicaEncontrada?.clienteId) {
+
+                handleRedirect('/venda', {
+                    fisicaId: fisicaEncontrada.id,
+                    clienteId: fisicaEncontrada.clienteId,
+                    automovelId: automovelId
+                });
+
+            } else if (juridicaEncontrada?.id && juridicaEncontrada?.clienteId) {
+
+                handleRedirect('/venda', {
+                    juridicaId: juridicaEncontrada.id,
+                    clienteId: juridicaEncontrada.clienteId,
+                    automovelId: automovelId
+                });
+
+            } else {
+                // Se nenhum foi encontrado, ativa o modo de cadastro.
+                setCadastro(true);
+                // Opcional: alertar o usuário.
+                // alert('Proprietário não encontrado. Verifique o CPF/CNPJ ou cadastre um novo cliente.');
+            }
+        } catch (e) {
+            console.log("Erro na busca do cliente:", e);
+        }
+    }
+
+    // Função para lidar com o envio do formulário
+    const handleSubmit = (event) => {
+        event.preventDefault(); // Previne que a página recarregue
+
+        if (identificacao.trim()) { // Verifica se o ID não está vazio
+            buscaCliente(identificacao);
+        } else {
+            alert('Por favor, informe um CPF ou CNPJ.');
+        }
+    };
+
     return (
         <Modal show={show} onHide={onHide} backdrop="static" keyboard={false}>
             <Modal.Header closeButton>
                 <Modal.Title>Registro de Venda</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                O comprador do automóvel já está cadastrado no sistema?
+                <Form className={cadastro ? "d-none" : ""} onSubmit={handleSubmit}>
+                    <Form.Group>
+                        <Form.Label htmlFor="cpfCnpj">Informe o CPF ou CNPJ do proprietário.</Form.Label>
+                        <Form.Control
+                            id="cpfCnpj"
+                            type="text"
+                            value={identificacao} // Controla o valor do input
+                            onChange={(e) => setId(e.target.value)}
+
+                            autoFocus // Foca no campo ao abrir o modal
+                        />
+                    </Form.Group>
+                    {/* O botão dentro de um form com type="submit" aciona o onSubmit do form */}
+                    <Button variant="primary" type="submit" className="mt-3">
+                        Buscar
+                    </Button>
+                    <Button variant="outline-dark" type="submit" className="mt-3" onClick={() => handleRedirect('/cliente', { automovelId: automovelId })}>
+                        O cliente não possui cadastro
+                    </Button>
+                </Form>
+                {
+                    cadastro &&
+                    <>
+                        <p>Proprietário não encontrado. Verifique o CPF/CNPJ ou cadastre um novo cliente.</p>
+                        <Button variant='primary' onClick={() => { setCadastro(false) }}>Tentar novamente</Button>
+                        <Button variant='outline-secondary' onClick={() => handleRedirect('/cliente', { automovelId: automovelId })}>Cadastrar proprietário</Button>
+                    </>
+                }
             </Modal.Body>
             <Modal.Footer className="g-0">
-                <Button variant="primary" onClick={() => handleRedirect('/vendas')}>
-                    Sim, já está!
-                </Button>
-                <Button variant="secondary" onClick={() => handleRedirect('/cliente')}>
-                    Não, preciso cadastrá-lo!
-                </Button>
                 <Button variant="dark" onClick={onHide}>
                     Voltar
                 </Button>

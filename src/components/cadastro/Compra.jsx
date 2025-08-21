@@ -21,21 +21,6 @@ const Compra = () => {
     const fisicaId = location.state?.fisicaId;
     const juridicaId = location.state?.juridicaId;
 
-    // useEffect(() => {
-    //     Promise.all([
-    //         ClienteDataService.getById(clienteId),
-    //         FisicaDataService.getById(fisicaId),
-    //         JuridicaDataService.getById(juridicaId),
-    //     ]).then(([cliente, fisica, juridica]) => {
-    //         setCliente(cliente.data);
-    //         setFisica(fisica.data)
-    //         setJuridica(juridica.data)
-    //     }).catch(e => {
-    //         console.error("Erro ao carregar dados:", e);
-    //     })
-    // }, []);
-
-
     const [modeloNegocio, setModeloNegocio] = useState(null);
 
     useEffect(() => {
