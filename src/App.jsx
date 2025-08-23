@@ -17,6 +17,8 @@ import Cliente from './components/cadastro/Cliente'
 import ListCompras from './components/listagem/ListCompras';
 import ListConsignacao from './components/listagem/ListConsignacao';
 import ListTrocas from './components/listagem/ListTrocas';
+import ListVendas from './components/listagem/ListVendas';
+import ListGastos from "./components/listagem/ListGastos";
 
 function App() {
 
@@ -43,6 +45,8 @@ function App() {
             <Route path='/listagem/compras' element={<ListCompras />}></Route>
             <Route path='/listagem/consignacoes' element={<ListConsignacao />}></Route>
             <Route path='/listagem/trocas' element={<ListTrocas />}></Route>
+            <Route path='/listagem/vendas' element={<ListVendas />}></Route>
+            <Route path='/listagem/gastos' element={<ListGastos />}></Route>
           </Routes>
         </BrowserRouter>
       </div>

@@ -10,6 +10,10 @@ class AutomovelDataService {
         return http.get(`api/automovel/${id}`);
     }
 
+    getByRenavam(renavam) {
+        return http.get(`api/automovel/${renavam}`);
+    }
+
     getByAtivo() {
         return http.get(`api/automovel/ativo`);
     }

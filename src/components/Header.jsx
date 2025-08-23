@@ -26,7 +26,7 @@ const Header = () => {
                                             <i className="bi bi-house-fill me-2"></i>Home</Link>
                                     </li>
                                     <li>
-                                        <Link to="/vendas" className={`nav-link  ${location.pathname === '/vendas' ? 'active' : 'link-body-emphasis'}`} ><svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#speedometer2"></use></svg>
+                                        <Link to="/listagem/vendas" className={`nav-link  ${location.pathname === '/listagem/vendas' ? 'active' : 'link-body-emphasis'}`} ><svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#speedometer2"></use></svg>
                                             <i className="bi bi-cash-coin me-2"></i>Vendas
                                         </Link>
                                     </li>
@@ -41,7 +41,7 @@ const Header = () => {
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link to="/gastos" className={`nav-link ${location.pathname === '/gastos' ? 'active' : 'link-body-emphasis'}`}> <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#people-circle"></use></svg>
+                                        <Link to="/listagem/gastos" className={`nav-link ${location.pathname === '/listagem/gastos' ? 'active' : 'link-body-emphasis'}`}> <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#people-circle"></use></svg>
                                             <i class="bi bi-safe2-fill me-2"></i>Gastos
                                         </Link>
                                     </li>
