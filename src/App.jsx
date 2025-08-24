@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Login from './components/Login'
 import Home from './components/Home'
 import Venda from './components/cadastro/Venda'
 import Gasto from './components/cadastro/Gasto'
@@ -21,14 +22,18 @@ import ListTrocas from './components/listagem/ListTrocas';
 import ListVendas from './components/listagem/ListVendas';
 import ListGastos from "./components/listagem/ListGastos";
 import ListManutencoes from "./components/listagem/ListManutencoes";
+import ProtectedRoute from './components/RotaProtegida'; // Importe a rota protegida
 
 function App() {
 
   return (
     <>
       <div className='App'>
-        <BrowserRouter>
-          <Routes>
+        <Routes>
+          <Route path="/" element={<Login />}></Route>
+
+          {/* Rotas Protegidas */}
+          <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />}></Route>
             <Route path="/venda" element={<Venda />}></Route>
             <Route path="/gastos" element={<Gasto />}></Route>
@@ -51,9 +56,9 @@ function App() {
             <Route path='/listagem/vendas' element={<ListVendas />}></Route>
             <Route path='/listagem/gastos' element={<ListGastos />}></Route>
             <Route path='/listagem/manutencoes' element={<ListManutencoes />}></Route>
-          </Routes>
-        </BrowserRouter>
-      </div>
+          </Route>
+        </Routes>
+      </div >
     </>
   )
 }

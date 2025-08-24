@@ -146,7 +146,7 @@ const Gastos = () => {
                                                 return (
                                                     <tr key={d.id} className="align-middle">
                                                         <th scope="row">{d.id}</th>
-                                                        <td>{new Date(d.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td> {/* Formatar data */}
+                                                        <td>{new Date(d.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                                                         <td>
                                                             <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
                                                             <small className="text-muted">{`Placa: ${auto?.placa}`}</small>

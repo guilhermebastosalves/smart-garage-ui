@@ -160,7 +160,7 @@ const Trocas = () => {
                                                 return (
                                                     <tr key={d.id} className="align-middle">
                                                         <th scope="row">{d.id}</th>
-                                                        <td>{new Date(d.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td> {/* Formatar data */}
+                                                        <td>{new Date(d.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                                                         <td>
                                                             <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
                                                             <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
@@ -169,7 +169,7 @@ const Trocas = () => {
                                                             <div className="fw-bold">{`${nomeMarcaFornecido?.nome ?? ''} ${noModeloFornecido?.nome ?? ''}`}</div>
                                                             <small className="text-muted">{`Placa: ${autoFornecido?.placa}`}</small>
                                                         </td>
-                                                        <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td> {/* Formatar valor */}
+                                                        <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td>
                                                         <td>
                                                             <button
                                                                 className='btn btn-outline-warning btn-sm'

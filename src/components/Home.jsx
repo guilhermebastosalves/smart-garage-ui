@@ -3,18 +3,39 @@ import Header from "./Header";
 import ModalConsignacao from "./modais/ModalConsignacao";
 import { useState } from "react";
 import "../../public/static/style.css";
-
+import { useAuth } from '../context/AuthContext'; // Importe o hook
 
 const Home = () => {
+    const { user } = useAuth(); // Pegue o usuário e a função de logout
+
     return (
         <>
             <Header />
+
             <div className="container py-5">
                 {/* Cabeçalho da Página */}
                 <div className="page-header mb-5">
-                    <h1 className="display-5 fw-bold">Bem-vindo, Usuário!</h1>
+                    <h1 className="display-5 fw-bold">Bem-vindo, {user.nome}, seu id é {user.id}!</h1>
                     <p className="text-muted fs-5">Selecione uma das opções abaixo para começar a gerenciar sua garagem.</p>
                 </div>
+
+                {
+                    user.role === "gerente" && (
+                        <div>
+                            <p className="fs-3"> voce é gerente</p>
+                        </div>
+                    )
+
+                }
+
+                {
+                    user.role === "vendedor" && (
+                        <div>
+                            <p className="fs-3"> voce é vendedor</p>
+                        </div>
+                    )
+
+                }
 
                 {/* Grid de Cards de Ação */}
                 <div className="row row-cols-1 row-cols-md-3 g-4">
