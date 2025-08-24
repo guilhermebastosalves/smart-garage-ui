@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
-import Header from "../components/Header";
+import Header from "../Header";
 import Select from "react-select";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from "react-router-dom";
-import AutomovelDataService from "../services/automovelDataService";
-import ModeloDataService from "../services/modeloDataService";
-import MarcaDataService from "../services/marcaDataService";
-import GastoDataService from "../services/gastoDataService";
+import AutomovelDataService from "../../services/automovelDataService";
+import ModeloDataService from "../../services/modeloDataService";
+import MarcaDataService from "../../services/marcaDataService";
+import ManutencaoDataService from "../../services/manutencaoDataService";
+import { FaCar, FaRegIdCard, FaCalendarAlt, FaTag } from "react-icons/fa";
 
 
-const Gasto = () => {
+
+const Manutencao = () => {
 
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
@@ -43,20 +45,24 @@ const Gasto = () => {
 
     const navigate = useNavigate();
 
-    const initialGastoState = {
+    const initialManutencaoState = {
         id: null,
-        data: "",
+        // ativo: "",
+        data_envio: "",
+        data_retorno: "",
+        previsao_retorno: "",
         descricao: "",
         valor: "",
-        automovelId: ""
+        automovelId: "",
+        // gerenteId: ""
     };
 
-    const [gasto, setGasto] = useState(initialGastoState);
+    const [manutencao, setManutencao] = useState(initialManutencaoState);
 
 
-    const handleInputChangeGasto = event => {
+    const handleInputChangeManutencao = event => {
         const { name, value } = event.target;
-        setGasto({ ...gasto, [name]: value });
+        setManutencao({ ...manutencao, [name]: value });
     }
 
     const handleInputChangeRenavam = event => {
@@ -72,27 +78,6 @@ const Gasto = () => {
     const [cliente, setCliente] = useState([]);
     const [fisica, setFisica] = useState([]);
     const [juridica, setJuridica] = useState([]);
-
-    useEffect(() => {
-        setLoading(true);
-        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-        // Use Promise.all para esperar todas as chamadas essenciais terminarem
-        Promise.all([
-            AutomovelDataService.getAll(),
-            ModeloDataService.getAll(),
-            MarcaDataService.getAll()
-        ]).then(([automoveis, modelos, marcas]) => {
-            setAutomovelOpt(automoveis.data);
-            setModeloOpt(modelos.data);
-            setMarcaOpt(marcas.data);
-        }).catch((err) => {
-            console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
-        }).finally(() => {
-            setLoading(false); // Esconde o loading quando tudo terminar
-            clearTimeout(timeout);
-        });
-    }, []);
 
 
     // NOVO ESTADO PARA O BOTÃO
@@ -157,10 +142,44 @@ const Gasto = () => {
         const nomeModelo = modelo?.find(modelo => modelo.marcaId === nomeMarca.id);
 
         return {
+            // value: d.id,
+            // label: `Modelo: ${nomeModelo ? nomeModelo?.nome + " |" : ""} Marca: ${nomeMarca ? nomeMarca?.nome + " |" : ""} | Renavam: ${d.renavam} | Ano: ${d.ano_modelo}`
+
             value: d.id,
-            label: `Modelo: ${nomeModelo ? nomeModelo?.nome + " |" : ""} Marca: ${nomeMarca ? nomeMarca?.nome + " |" : ""} | Renavam: ${d.renavam} | Ano: ${d.ano_modelo}`
+
+            label: {
+                marca: nomeMarca?.nome,
+                modelo: nomeModelo?.nome,
+                renavam: d.renavam,
+                ano: d.ano_modelo,
+                placa: d.placa
+            }
         };
     });
+
+    const formatOptionLabel = ({ value, label }) => (
+        <div className="d-flex align-items-center">
+            {/* Ícone principal à esquerda */}
+            <FaCar size="2.5em" color="#0d6efd" className="me-3" />
+
+            {/* Div para o conteúdo de texto */}
+            <div>
+                {/* Linha Principal: Marca e Modelo */}
+                <div className="fw-bold fs-6">
+                    {label.marca || "Marca não encontrada"} {label.modelo || ""}
+                </div>
+
+                {/* Linha Secundária: Renavam e Ano com ícones */}
+                <div className="small text-muted d-flex align-items-center mt-1">
+                    <FaRegIdCard className="me-1" />
+                    <span>Renavam: {label.renavam}</span>
+                    <span className="mx-2">|</span>
+                    <FaCalendarAlt className="me-1" />
+                    <span>Ano: {label.ano}</span>
+                </div>
+            </div>
+        </div>
+    );
 
 
     const buscarAutomovel = async (e) => {
@@ -178,7 +197,7 @@ const Gasto = () => {
 
             if (autoResp && autoResp.data) {
 
-                setGasto(prev => ({
+                setManutencao(prev => ({
                     ...prev,
                     automovelId: autoResp?.data.id || ""
                 }));
@@ -191,7 +210,7 @@ const Gasto = () => {
         }
     }
 
-    const saveGasto = async (e) => {
+    const saveManutencao = async (e) => {
 
         // Prevents the default page refresh
         e.preventDefault();
@@ -217,26 +236,30 @@ const Gasto = () => {
 
         try {
 
-            var dataGasto = {
-                data: gasto.data,
-                valor: gasto.valor,
-                descricao: gasto.descricao,
-                automovelId: gasto.automovelId,
+            var dataManutencao = {
+                ativo: manutencao.ativo,
+                data_envio: manutencao.data_envio,
+                data_retorno: manutencao.data_retorno,
+                previsao_retorno: manutencao.previsao_retorno,
+                valor: manutencao.valor,
+                descricao: manutencao.descricao,
+                automovelId: manutencao.automovelId,
+                // gerenteId: manutencao.gerenteId
             }
 
-            const gastoResp = await GastoDataService.create(dataGasto)
+            const manutencaoResp = await ManutencaoDataService.create(dataManutencao)
                 .catch(e => {
-                    console.error("Erro ao registrar gasto:", e);
+                    console.error("Erro ao registrar manutenção:", e);
                 });
 
-            setGasto(gastoResp.data);
+            setManutencao(manutencaoResp.data);
 
             // --- SUCESSO! ---
             setSucesso(true);
-            setMensagemSucesso("Registro de gasto realizado com sucesso!");
+            setMensagemSucesso("Registro de manutenção realizado com sucesso!");
 
             setTimeout(() => {
-                navigate('/listagem/gastos');
+                navigate('/listagem/manutencoes');
             }, 1500);
 
 
@@ -262,8 +285,8 @@ const Gasto = () => {
 
                 {/* Cabeçalho da Página */}
                 <div className="mb-4">
-                    <h1 className="fw-bold">Registro de Gastos</h1>
-                    <p className="text-muted">Preencha os dados abaixo para registrar um novo gasto.</p>
+                    <h1 className="fw-bold">Registro de Manutenções</h1>
+                    <p className="text-muted">Preencha os dados abaixo para registrar uma nova manutenção.</p>
                 </div>
 
                 {/* Alertas */}
@@ -280,7 +303,7 @@ const Gasto = () => {
                     </div>
                 )}
 
-                <form className="mb-5">
+                <form className={`mb-5 ${sucesso ? "d-none" : ""}`}>
                     <legend className="h5 fw-bold mb-3 border-bottom pb-2">Busca pelo Automóvel</legend>
                     <div className="row g-3">
                         <div className="col-md-4">
@@ -289,7 +312,7 @@ const Gasto = () => {
                             {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o renavam.</div>}
                             {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Renavam inválido.</div>}
                         </div>
-                        <div className="col-md-3 d-flex align-items-center">
+                        <div className="col-md-3 d-flex align-items-center mt-5">
                             <button
                                 type="button"
                                 className="btn btn-primary"
@@ -302,45 +325,68 @@ const Gasto = () => {
                 </form>
 
                 {/* Formulário com Seções */}
-                <form onSubmit={saveGasto} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
+                <form onSubmit={saveManutencao} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
                     {/* Seção 4: Troca */}
                     <fieldset className="mb-5">
-                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Detalhes do Gasto</legend>
+                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Detalhes da Manutenção</legend>
                         <div className="row g-3">
                             <div className="col-md-4">
                                 <label for="valor" class="form-label">Valor</label>
-                                <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeGasto} />
+                                <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeManutencao} />
                                 {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                 {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
                             </div>
-                            <div className="col-md-4">
-                                <label for="descricao" class="form-label">Descrição</label>
-                                <input type="text" className={`form-control ${hasError("descricao") && "is-invalid"}`} id="descricao" name="descricao" aria-describedby="descricaoHelp" onChange={handleInputChangeGasto} />
 
-                                {tipo.includes("descricao") && <div id="descricaohelp" class="form-text text-danger ms-1">Descrição inválida.</div>}
-                            </div>
                             <div className="col-md-4">
-                                <label for="data" class="form-label">Data</label><br />
+                                <label for="data" class="form-label">Data Envio</label><br />
+
                                 <DatePicker
-                                    style={{ width: "100%;" }}
+
                                     className={`form-control ${hasError("data") && "is-invalid"}`}
+                                    calendarClassName="custom-datepicker-container"
                                     type="text"
                                     aria-describedby="dataHelp"
                                     id="data"
-                                    name="data"
-                                    selected={gasto.data}
-                                    onChange={(date) => setGasto({ ...gasto, data: date })}
+                                    name="data_envio"
+                                    selected={manutencao.data_envio}
+                                    onChange={(date) => setManutencao({ ...manutencao, data_envio: date })}
                                     dateFormat="dd/MM/yyyy" // Formato da data
                                 />
+
+                                {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
+                                {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
+                            </div>
+                            <div className="col-md-4">
+                                <label for="data" class="form-label">Previsão de Retorno</label><br />
+                                <div className="w-100">
+                                    <DatePicker
+                                        style={{ width: "100%;" }}
+                                        className={`form-control ${hasError("data") && "is-invalid"}`}
+                                        calendarClassName="custom-datepicker-container"
+                                        type="text"
+                                        aria-describedby="dataHelp"
+                                        id="data"
+                                        name="previsao_retorno"
+                                        selected={manutencao.previsao_retorno}
+                                        onChange={(date) => setManutencao({ ...manutencao, previsao_retorno: date })}
+                                        dateFormat="dd/MM/yyyy" // Formato da data
+                                    />
+                                </div>
                                 {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
                                 {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
                             </div>
                             <div className="col-md-4">
                                 <label for="automovel" class="form-label">Automóvel</label>
-                                <Select isSearchable={true} className={`${hasError("automovel") && "is-invalid"}`} id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setGasto({ ...gasto, automovelId: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === gasto.automovelId) || null} isClearable={true}>
+                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovel") && "is-invalid"}`} id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setManutencao({ ...manutencao, automovelId: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === manutencao.automovelId) || null} isClearable={true} styles={customStyles}>
                                 </Select>
                                 {vazio.includes("automovel") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel.</div>}
+                            </div>
+                            <div className="col-md-8">
+                                <label for="descricao" class="form-label">Descrição</label>
+                                <textarea type="text" value={manutencao.descricao} placeholder="Detalhes do serviço, peças trocadas, etc." rows="3" className={`form-control ${hasError("descricao") && "is-invalid"}`} id="descricao" name="descricao" aria-describedby="descricaoHelp" onChange={handleInputChangeManutencao} />
+
+                                {tipo.includes("descricao") && <div id="descricaohelp" class="form-text text-danger ms-1">Descrição inválida.</div>}
                             </div>
                         </div>
                     </fieldset>
@@ -354,7 +400,7 @@ const Gasto = () => {
                                     Salvando..
                                 </>
                             ) : (
-                                "Cadastrar Automóvel"
+                                "Registrar Manutenção"
                             )}
                         </button>
                     </div>
@@ -364,4 +410,4 @@ const Gasto = () => {
     )
 }
 
-export default Gasto;
+export default Manutencao;

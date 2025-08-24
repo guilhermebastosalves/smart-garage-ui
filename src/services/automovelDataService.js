@@ -11,7 +11,7 @@ class AutomovelDataService {
     }
 
     getByRenavam(renavam) {
-        return http.get(`api/automovel/${renavam}`);
+        return http.get(`api/automovel/renavam/${renavam}`);
     }
 
     getByAtivo() {
@@ -25,8 +25,8 @@ class AutomovelDataService {
         return http.post("/api/automovel/verificar", data);
     }
 
-    update(id, data) {
-        return http.put(`/api/automovel/${id}`, data)
+    update(id, data, config) {
+        return http.put(`/api/automovel/${id}`, data, config)
     }
 
 }

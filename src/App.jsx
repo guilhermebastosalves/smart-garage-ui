@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './components/Home'
 import Venda from './components/cadastro/Venda'
-import Gastos from './components/Gastos'
+import Gasto from './components/cadastro/Gasto'
+import Manutencao from './components/cadastro/Manutencao';
 import Troca from './components/cadastro/Troca'
 import Relatorios from './components/Relatorios'
 import Estoque from './components/Estoque'
@@ -19,6 +20,7 @@ import ListConsignacao from './components/listagem/ListConsignacao';
 import ListTrocas from './components/listagem/ListTrocas';
 import ListVendas from './components/listagem/ListVendas';
 import ListGastos from "./components/listagem/ListGastos";
+import ListManutencoes from "./components/listagem/ListManutencoes";
 
 function App() {
 
@@ -29,8 +31,9 @@ function App() {
           <Routes>
             <Route path="/home" element={<Home />}></Route>
             <Route path="/venda" element={<Venda />}></Route>
-            <Route path="/gastos" element={<Gastos />}></Route>
+            <Route path="/gastos" element={<Gasto />}></Route>
             <Route path="/troca" element={<Troca />}></Route>
+            <Route path="/manutencao" element={<Manutencao />}></Route>
             <Route path="/relatorios" element={<Relatorios />}></Route>
             <Route path="/estoque" element={<Estoque />}></Route>
             <Route path="/cadastro/automoveis" element={<Automovel />}></Route>
@@ -47,6 +50,7 @@ function App() {
             <Route path='/listagem/trocas' element={<ListTrocas />}></Route>
             <Route path='/listagem/vendas' element={<ListVendas />}></Route>
             <Route path='/listagem/gastos' element={<ListGastos />}></Route>
+            <Route path='/listagem/manutencoes' element={<ListManutencoes />}></Route>
           </Routes>
         </BrowserRouter>
       </div>

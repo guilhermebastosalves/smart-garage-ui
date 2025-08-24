@@ -18,67 +18,43 @@ const EditarConsignacao = () => {
     const { id } = useParams();
 
     const [automovel, setAutomovel] = useState([]);
-
     const [modelo, setModelo] = useState([]);
-
     const [marca, setMarca] = useState([]);
 
     const [cliente, setCliente] = useState([]);
-
     const [fisica, setFisica] = useState([]);
-
     const [juridica, setJuridica] = useState([]);
 
     const [consignacao, setConsignacao] = useState('');
 
-
-    const retrieveAutomovel = useCallback(() => {
-        AutomovelDataService.getAll()
-            .then(response => {
-                setAutomovel(response.data);
-                // console.log("Automóvel carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar automovel:", e);
-            });
-    }, [id]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        retrieveAutomovel();
-    }, [retrieveAutomovel]);
-
-
-    const retrieveMarca = useCallback(() => {
-        MarcaDataService.getAll()
-            .then(response => {
-                setMarca(response.data);
-                // console.log("Marcas carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar marcas:", e);
-            });
+        setLoading(true);
+        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
+        // Use Promise.all para esperar todas as chamadas essenciais terminarem
+        Promise.all([
+            AutomovelDataService.getAll(),
+            ModeloDataService.getAll(),
+            MarcaDataService.getAll(),
+            ClienteDataService.getAll(),
+            FisicaDataService.getAll(),
+            JuridicaDataService.getAll(),
+        ]).then(([automoveis, modelos, marcas, cliente, fisica, juridica]) => {
+            setAutomovel(automoveis.data);
+            setModelo(modelos.data);
+            setMarca(marcas.data);
+            setCliente(cliente.data);
+            setFisica(fisica.data);
+            setJuridica(juridica.data);
+        }).catch((err) => {
+            console.error("Erro ao carregar dados:", err);
+            setLoading(false); // Garante que o loading não fica travado
+        }).finally(() => {
+            setLoading(false); // Esconde o loading quando tudo terminar
+            clearTimeout(timeout);
+        });
     }, []);
-
-
-    useEffect(() => {
-        retrieveMarca();
-    }, [retrieveMarca]);
-
-
-    const retrieveModelo = useCallback(() => {
-
-        ModeloDataService.getAll()
-            .then(response => {
-                setModelo(response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar modelo:", e);
-            });
-    }, [marca]);
-
-    useEffect(() => {
-        retrieveModelo();
-    }, [retrieveModelo]);
 
     const retrieveConsignacao = useCallback(() => {
         ConsignacaoDataService.getById(id)
@@ -93,7 +69,6 @@ const EditarConsignacao = () => {
     useEffect(() => {
         retrieveConsignacao();
     }, [retrieveConsignacao]);
-
 
     // --- Event Handlers ---
     const handleInputChangeConsignacao = event => {
@@ -122,51 +97,6 @@ const EditarConsignacao = () => {
     const [tipo, setTipo] = useState([]);
 
     const navigate = useNavigate();
-
-
-    const retrieveCliente = useCallback(() => {
-        ClienteDataService.getAll()
-            .then(response => {
-                setCliente(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar clientes:", e);
-            });
-    }, []);
-
-
-    useEffect(() => {
-        retrieveCliente();
-    }, [retrieveCliente]);
-
-    const retrieveFisica = useCallback(() => {
-        FisicaDataService.getAll()
-            .then(response => {
-                setFisica(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar pessoas físicas:", e);
-            });
-    }, []);
-
-
-    useEffect(() => {
-        retrieveFisica();
-    }, [retrieveFisica]);
-
-    const retrieveJuridica = useCallback(() => {
-        JuridicaDataService.getAll()
-            .then(response => {
-                setJuridica(response.data);
-                // console.log("Automóveis carregados:", response.data);
-            })
-            .catch(e => {
-                console.error("Erro ao buscar pessoas físicas:", e);
-            });
-    }, []);
-
 
     const optionsFornecedor = cliente.map((d) => {
         const pessoaFisica = fisica.find(pessoa => pessoa.clienteId === d.id);

@@ -55,3 +55,90 @@ body {
     margin: 0 auto;
     display: block;
 }
+
+/* Estilo geral para o container do calendário */
+.custom-datepicker-container {
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: sans-serif;
+}
+
+/* Cabeçalho com o mês e os botões de navegação */
+.custom-datepicker-container .react-datepicker__header {
+    background-color: #0d6efd;
+    /* Azul primário do Bootstrap */
+    border-bottom: none;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    padding-top: 15px;
+}
+
+/* Texto do mês (ex: "Agosto 2025") */
+.custom-datepicker-container .react-datepicker__current-month {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+/* Setas de navegação */
+.custom-datepicker-container .react-datepicker__navigation-icon::before {
+    border-color: #ffffff;
+    border-width: 2px 2px 0 0;
+}
+
+/* Nomes dos dias da semana (D, S, T, Q, Q, S, S) */
+.custom-datepicker-container .react-datepicker__day-name {
+    color: #ffffff;
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+/* Estilo para cada dia no calendário */
+.custom-datepicker-container .react-datepicker__day {
+    border-radius: 50%;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+}
+
+/* Dia quando o mouse passa por cima */
+.custom-datepicker-container .react-datepicker__day:hover {
+    background-color: #e9ecef;
+    transform: scale(1.05);
+}
+
+/* Dia selecionado */
+.custom-datepicker-container .react-datepicker__day--selected {
+    background-color: #0d6efd;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* Dia de hoje (não selecionado) */
+.custom-datepicker-container .react-datepicker__day--today {
+    font-weight: bold;
+    border: 1px solid #0d6efd;
+}
+
+/* Dias fora do mês atual */
+.custom-datepicker-container .react-datepicker__day--outside-month {
+    opacity: 0.4;
+}
+
+/* --- CORREÇÃO PARA LARGURA TOTAL (width: 100%) --- */
+
+/* O 'div' que o DatePicker cria ao redor do input */
+.react-datepicker-wrapper {
+    width: 100%;
+}
+
+/* O container do input dentro do wrapper */
+.react-datepicker__input-container {
+    width: 100%;
+}
+
+/* Opcional: Garante que o input dentro também tenha 100% (o form-control já faz isso, mas é uma garantia extra) */
+.react-datepicker__input-container input {
+    width: 100%;
+}

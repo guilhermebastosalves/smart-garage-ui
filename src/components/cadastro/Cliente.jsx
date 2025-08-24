@@ -656,7 +656,7 @@ const Cliente = () => {
                                 <div class="col-md-4 ">
                                     <label for="data" class="form-label">Data cadastro</label><br />
                                     <DatePicker
-                                        style={{ width: "100%;" }}
+                                        calendarClassName="custom-datepicker-container"
                                         className={`form-control ${hasError("data") && "is-invalid"}`}
                                         type="text"
                                         aria-describedby="dataHelp"
@@ -784,7 +784,7 @@ const Cliente = () => {
                                 <div class="col-md-4">
                                     <label for="data" class="form-label">Data cadastro</label><br />
                                     <DatePicker
-                                        style={{ width: "100%;" }}
+                                        calendarClassName="custom-datepicker-container"
                                         className={`form-control ${hasError("data") && "is-invalid"}`}
                                         type="text"
                                         aria-describedby="dataHelp"

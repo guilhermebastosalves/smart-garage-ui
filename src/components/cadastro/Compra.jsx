@@ -11,6 +11,8 @@ import ModeloDataService from "../../services/modeloDataService";
 import MarcaDataService from "../../services/marcaDataService";
 import CompraDataService from "../../services/compraDataService";
 import { useLocation, useNavigate } from "react-router-dom";
+import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
+
 
 const Compra = () => {
 
@@ -173,15 +175,65 @@ const Compra = () => {
 
 
 
-    const optionsFornecedor = cliente.map((d) => {
+    const optionsFornecedor = cliente?.map((d) => {
         const pessoaFisica = fisica.find(pessoa => pessoa.clienteId === d.id);
         const pessoaJuridica = juridica.find(pessoa => pessoa.clienteId === d.id);
 
         return {
+            // value: d.id,
+            // label: `Nome: ${d.nome || ""}\n${pessoaJuridica ? pessoaJuridica?.razao_social + "\n" : ""}${pessoaFisica ? "CPF: " + pessoaFisica?.cpf + "\n" : ""}${pessoaJuridica ? "CNPJ: " + pessoaJuridica?.cnpj : ""}`
+
             value: d.id,
-            label: `nome: ${d.nome || ""} | ${pessoaJuridica ? pessoaJuridica?.razao_social + " |" : ""} ${pessoaFisica ? "cpf: " + pessoaFisica?.cpf + " |" : ""}  ${pessoaJuridica ? "cnpj: " + pessoaJuridica?.cnpj : ""}`
-        };
+
+            label: {
+                nome: d.nome,
+                razaoSocial: pessoaJuridica?.razao_social,
+                cpf: pessoaFisica?.cpf,
+                cnpj: pessoaJuridica?.cnpj,
+                // Adicionamos um 'tipo' para facilitar a lógica na formatação
+                tipo: pessoaJuridica ? 'juridica' : 'fisica'
+            }
+        }
     });
+
+    const formatOptionLabelFornecedor = ({ value, label }) => {
+
+        // Define o ícone e o título principal com base no tipo de fornecedor
+        const isPessoaJuridica = label.tipo === 'juridica';
+        const IconePrincipal = isPessoaJuridica ? FaBuilding : FaUserTie;
+        const titulo = isPessoaJuridica ? label.razaoSocial : label.nome;
+        const subtitulo = isPessoaJuridica ? label.nome : '';
+
+        return (
+            <div className="d-flex align-items-center">
+                {/* Ícone principal à esquerda (Empresa ou Pessoa) */}
+                <IconePrincipal size="2.5em" color="#0d6efd" className="me-3" />
+
+                {/* Div para o conteúdo de texto */}
+                <div>
+                    {/* Linha Principal: Razão Social ou Nome */}
+                    <div className="fw-bold fs-6">{titulo}</div>
+
+                    {/* Linha Secundária: Nome Fantasia (se for PJ) ou Documento */}
+                    <div className="small text-muted d-flex align-items-center mt-1">
+                        {isPessoaJuridica ? (
+                            <>
+                                <FaFileContract className="me-1" />
+                                <span>CNPJ: {label.cnpj}</span>
+                                {subtitulo && <span className="mx-2">|</span>}
+                                {subtitulo && <span>({subtitulo})</span>}
+                            </>
+                        ) : (
+                            <>
+                                <FaIdCard className="me-1" />
+                                <span>CPF: {label.cpf}</span>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
 
     const validateFields = () => {
@@ -563,7 +615,7 @@ const Compra = () => {
 
                             <div class="col-md-3">
                                 <label for="fornecedor" className="form-label">Fornecedor</label>
-                                <Select isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === compra.clienteId) || null} isClearable={true} styles={customStyles}>
+                                <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === compra.clienteId) || null} isClearable={true} styles={customStyles}>
                                 </Select>
                                 {
                                     vazio.includes("clienteId") &&
@@ -574,7 +626,7 @@ const Compra = () => {
                             <div class="col-md-3">
                                 <label for="data" class="form-label">Data</label><br />
                                 <DatePicker
-
+                                    calendarClassName="custom-datepicker-container"
                                     className={`form-control date-picker ${hasError("data") && "is-invalid"}`}
                                     type="text"
                                     aria-describedby="dataHelp"
@@ -594,22 +646,25 @@ const Compra = () => {
                                     <div className="invalid-feedback">Data inválida.</div>
                                 }
                             </div>
+                            <div className="col-md-3 d-flex justify-content-center align-items-end">
+                                <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
+                                    {isSubmitting ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            Salvando..
+                                        </>
+                                    ) : (
+                                        "Cadastrar Automóvel"
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </fieldset>
 
                     {/* Botão de Submissão */}
-                    <div className="d-flex justify-content-end">
-                        <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
-                            {isSubmitting ? (
-                                <>
-                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                    Salvando..
-                                </>
-                            ) : (
-                                "Cadastrar Automóvel"
-                            )}
-                        </button>
-                    </div>
+                    {/* <div className="border d-flex justify-content-end">
+
+                    </div> */}
                 </form >
             </div >
         </>

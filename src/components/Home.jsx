@@ -52,7 +52,7 @@ const Home = () => {
                                 <img src="/static/img/wrench.png" alt="Manutenções" className="mx-auto mb-3" style={{ width: "64px" }} />
                                 <h3 className="card-title h4 mb-3">Manutenções</h3>
                                 <p className="card-text text-muted mb-5">Acompanhe os gastos e o andamento das manutenções dos veículos.</p>
-                                <button className="btn btn-primary mt-auto">Acessar</button>
+                                <Link to="/listagem/manutencoes" className="btn btn-primary mt-auto">Acessar</Link>
                             </div>
                         </div>
                     </div>

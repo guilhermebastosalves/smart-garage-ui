@@ -11,6 +11,9 @@ import ModeloDataService from "../../services/modeloDataService";
 import MarcaDataService from "../../services/marcaDataService";
 import TrocaDataService from "../../services/trocaDataService";
 import { useLocation, useNavigate } from "react-router-dom";
+import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
+import { FaCar, FaRegIdCard, FaCalendarAlt, FaTag } from "react-icons/fa";
+
 
 const Troca = () => {
 
@@ -239,20 +242,104 @@ const Troca = () => {
         const pessoaJuridica = juridica.find(pessoa => pessoa.clienteId === d.id);
 
         return {
+            // value: d.id,
+            // label: `Nome: ${d.nome || ""}\n${pessoaJuridica ? pessoaJuridica?.razao_social + "\n" : ""}${pessoaFisica ? "CPF: " + pessoaFisica?.cpf + "\n" : ""}${pessoaJuridica ? "CNPJ: " + pessoaJuridica?.cnpj : ""}`
+
             value: d.id,
-            label: `nome: ${d.nome || ""} | ${pessoaJuridica ? pessoaJuridica?.razao_social + " |" : ""} ${pessoaFisica ? "cpf: " + pessoaFisica?.cpf + " |" : ""}  ${pessoaJuridica ? "cnpj: " + pessoaJuridica?.cnpj : ""}`
-        };
+
+            label: {
+                nome: d.nome,
+                razaoSocial: pessoaJuridica?.razao_social,
+                cpf: pessoaFisica?.cpf,
+                cnpj: pessoaJuridica?.cnpj,
+                // Adicionamos um 'tipo' para facilitar a lógica na formatação
+                tipo: pessoaJuridica ? 'juridica' : 'fisica'
+            }
+        }
     });
+
+    const formatOptionLabelFornecedor = ({ value, label }) => {
+
+        // Define o ícone e o título principal com base no tipo de fornecedor
+        const isPessoaJuridica = label.tipo === 'juridica';
+        const IconePrincipal = isPessoaJuridica ? FaBuilding : FaUserTie;
+        const titulo = isPessoaJuridica ? label.razaoSocial : label.nome;
+        const subtitulo = isPessoaJuridica ? label.nome : '';
+
+        return (
+            <div className="d-flex align-items-center">
+                {/* Ícone principal à esquerda (Empresa ou Pessoa) */}
+                <IconePrincipal size="2.5em" color="#0d6efd" className="me-3" />
+
+                {/* Div para o conteúdo de texto */}
+                <div>
+                    {/* Linha Principal: Razão Social ou Nome */}
+                    <div className="fw-bold fs-6">{titulo}</div>
+
+                    {/* Linha Secundária: Nome Fantasia (se for PJ) ou Documento */}
+                    <div className="small text-muted d-flex align-items-center mt-1">
+                        {isPessoaJuridica ? (
+                            <>
+                                <FaFileContract className="me-1" />
+                                <span>CNPJ: {label.cnpj}</span>
+                                {subtitulo && <span className="mx-2">|</span>}
+                                {subtitulo && <span>({subtitulo})</span>}
+                            </>
+                        ) : (
+                            <>
+                                <FaIdCard className="me-1" />
+                                <span>CPF: {label.cpf}</span>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     const optionsAutomovel = automovelOpt?.map((d) => {
         const nomeMarca = marcaOpt?.find(marca => marca.id === d.marcaId);
         const nomeModelo = modeloOpt?.find(modelo => modelo.marcaId === nomeMarca.id);
 
         return {
+            // value: d.id,
+            // label: `Modelo: ${nomeModelo ? nomeModelo?.nome + " |" : ""} Marca: ${nomeMarca ? nomeMarca?.nome + " |" : ""} | Renavam: ${d.renavam} | Ano: ${d.ano_modelo}`
+
             value: d.id,
-            label: `Modelo: ${nomeModelo ? nomeModelo?.nome + " |" : ""} Marca: ${nomeMarca ? nomeMarca?.nome + " |" : ""} | Renavam: ${d.renavam} | Ano: ${d.ano_modelo}`
+
+            label: {
+                marca: nomeMarca?.nome,
+                modelo: nomeModelo?.nome,
+                renavam: d.renavam,
+                ano: d.ano_modelo,
+                placa: d.placa
+            }
         };
     });
+
+    const formatOptionLabel = ({ value, label }) => (
+        <div className="d-flex align-items-center">
+            {/* Ícone principal à esquerda */}
+            <FaCar size="2.5em" color="#0d6efd" className="me-3" />
+
+            {/* Div para o conteúdo de texto */}
+            <div>
+                {/* Linha Principal: Marca e Modelo */}
+                <div className="fw-bold fs-6">
+                    {label.marca || "Marca não encontrada"} {label.modelo || ""}
+                </div>
+
+                {/* Linha Secundária: Renavam e Ano com ícones */}
+                <div className="small text-muted d-flex align-items-center mt-1">
+                    <FaRegIdCard className="me-1" />
+                    <span>Renavam: {label.renavam}</span>
+                    <span className="mx-2">|</span>
+                    <FaCalendarAlt className="me-1" />
+                    <span>Ano: {label.ano}</span>
+                </div>
+            </div>
+        </div>
+    );
 
     const optionsFormaPagamento = [
         {
@@ -625,7 +712,7 @@ const Troca = () => {
                             <div className="col-md-4">
                                 <label for="data" class="form-label">Data</label><br />
                                 <DatePicker
-                                    style={{ width: "100%;" }}
+                                    calendarClassName="custom-datepicker-container"
                                     className={`form-control ${hasError("data") && "is-invalid"}`}
                                     type="text"
                                     aria-describedby="dataHelp"
@@ -641,7 +728,7 @@ const Troca = () => {
                             </div>
                             <div className="col-md-4">
                                 <label for="fornecedor" class="form-label">Fornecedor</label>
-                                <Select isSearchable={true} className={`${hasError("fornecedor") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === troca.clienteId) || null} isClearable={true}>
+                                <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("fornecedor") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === troca.clienteId) || null} isClearable={true}>
                                 </Select>
                                 {vazio.includes("clienteId") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o proprietário.</div>}
                             </div>
@@ -653,7 +740,7 @@ const Troca = () => {
                             </div> */}
                             <div className="col-md-4">
                                 <label for="automovel_fornecido" class="form-label">Automóvel Fornecido</label>
-                                <Select isSearchable={true} className={`${hasError("automovel_fornecido") && "is-invalid"}`} id="automovel_fornecido" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setTroca({ ...troca, automovel_fornecido: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === troca.automovel_fornecido) || null} isClearable={true}>
+                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovel_fornecido") && "is-invalid"}`} id="automovel_fornecido" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setTroca({ ...troca, automovel_fornecido: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === troca.automovel_fornecido) || null} isClearable={true}>
                                 </Select>
                                 {vazio.includes("automovel_fornecido") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel fornecido.</div>}
                             </div>

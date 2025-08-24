@@ -11,6 +11,8 @@ import AutomovelDataService from "../../services/automovelDataService";
 import ModeloDataService from "../../services/modeloDataService";
 import MarcaDataService from "../../services/marcaDataService";
 import ConsignacaoDataService from "../../services/consignacaoDataService";
+import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
+
 
 const Consignacao = () => {
 
@@ -219,9 +221,20 @@ const Consignacao = () => {
         const pessoaJuridica = juridica.find(pessoa => pessoa.clienteId === d.id);
 
         return {
+            // value: d.id,
+            // label: `Nome: ${d.nome || ""}\n${pessoaJuridica ? pessoaJuridica?.razao_social + "\n" : ""}${pessoaFisica ? "CPF: " + pessoaFisica?.cpf + "\n" : ""}${pessoaJuridica ? "CNPJ: " + pessoaJuridica?.cnpj : ""}`
+
             value: d.id,
-            label: `Nome: ${d.nome || ""}\n${pessoaJuridica ? pessoaJuridica?.razao_social + "\n" : ""}${pessoaFisica ? "CPF: " + pessoaFisica?.cpf + "\n" : ""}${pessoaJuridica ? "CNPJ: " + pessoaJuridica?.cnpj : ""}`
-        };
+
+            label: {
+                nome: d.nome,
+                razaoSocial: pessoaJuridica?.razao_social,
+                cpf: pessoaFisica?.cpf,
+                cnpj: pessoaJuridica?.cnpj,
+                // Adicionamos um 'tipo' para facilitar a lógica na formatação
+                tipo: pessoaJuridica ? 'juridica' : 'fisica'
+            }
+        }
     });
 
 
@@ -250,6 +263,46 @@ const Consignacao = () => {
             zIndex: 9999, // garante que fique acima de outros elementos
         }),
     };
+
+    const formatOptionLabelFornecedor = ({ value, label }) => {
+
+        // Define o ícone e o título principal com base no tipo de fornecedor
+        const isPessoaJuridica = label.tipo === 'juridica';
+        const IconePrincipal = isPessoaJuridica ? FaBuilding : FaUserTie;
+        const titulo = isPessoaJuridica ? label.razaoSocial : label.nome;
+        const subtitulo = isPessoaJuridica ? label.nome : '';
+
+        return (
+            <div className="d-flex align-items-center">
+                {/* Ícone principal à esquerda (Empresa ou Pessoa) */}
+                <IconePrincipal size="2.5em" color="#0d6efd" className="me-3" />
+
+                {/* Div para o conteúdo de texto */}
+                <div>
+                    {/* Linha Principal: Razão Social ou Nome */}
+                    <div className="fw-bold fs-6">{titulo}</div>
+
+                    {/* Linha Secundária: Nome Fantasia (se for PJ) ou Documento */}
+                    <div className="small text-muted d-flex align-items-center mt-1">
+                        {isPessoaJuridica ? (
+                            <>
+                                <FaFileContract className="me-1" />
+                                <span>CNPJ: {label.cnpj}</span>
+                                {subtitulo && <span className="mx-2">|</span>}
+                                {subtitulo && <span>({subtitulo})</span>}
+                            </>
+                        ) : (
+                            <>
+                                <FaIdCard className="me-1" />
+                                <span>CPF: {label.cpf}</span>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
 
     const saveAutomovel = async (e) => {
 
@@ -322,7 +375,7 @@ const Consignacao = () => {
 
             formData.append("ano_fabricacao", automovel.ano_fabricacao);
             formData.append("ano_modelo", automovel.ano_modelo);
-            formData.append("ativo", automovel.ativo);
+            // formData.append("ativo", automovel.ativo);
             formData.append("cor", automovel.cor);
             formData.append("combustivel", automovel.combustivel);
             formData.append("km", automovel.km);
@@ -561,6 +614,7 @@ const Consignacao = () => {
                                 <DatePicker
                                     style={{ width: "100%;" }}
                                     className="form-control"
+                                    calendarClassName="custom-datepicker-container"
                                     type="text"
                                     aria-describedby="dataHelp"
                                     id="data_inicio"
@@ -574,7 +628,7 @@ const Consignacao = () => {
                             </div>
                             <div className="col-md-4">
                                 <label for="fornecedor" class="form-label">Proprietario</label>
-                                <Select isSearchable={true} class="form-select" id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleProprietarioChange} value={optionsFornecedor.find(option => option.value === consignacao.clienteId) || null} isClearable={true}
+                                <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} class="form-select" id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleProprietarioChange} value={optionsFornecedor.find(option => option.value === consignacao.clienteId) || null} isClearable={true}
                                     styles={customStyles}>
                                 </Select>
                                 {vazio.includes("clienteId") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o proprietário.</div>}

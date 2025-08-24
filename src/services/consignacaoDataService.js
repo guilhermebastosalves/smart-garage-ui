@@ -11,7 +11,7 @@ class ConsignacaoDataService {
     }
 
     getByAutomovel(automovelId) {
-        return http.get(`api/consignacao/${automovelId}`);
+        return http.get(`api/consignacao/automovel/${automovelId}`);
     }
 
     getByAtivo() {
