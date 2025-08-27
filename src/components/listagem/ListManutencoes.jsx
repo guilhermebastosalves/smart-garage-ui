@@ -81,9 +81,9 @@ const Manutencao = () => {
         setCurrentPage(id)
     }
 
-    // const editarConsignacao = (id) => {
-    //     navigate(`/editar-consignacao/${id}`)
-    // }
+    const editarManutencao = (id) => {
+        navigate(`/editar-manutencao/${id}`)
+    }
 
 
     return (
@@ -158,13 +158,13 @@ const Manutencao = () => {
                                                             <button className='btn btn-outline-primary btn-sm'>+</button>
                                                         </td>
                                                         <td>
-                                                            {/* <button
+                                                            <button
                                                                 className='btn btn-outline-warning btn-sm'
-                                                                onClick={() => { editarConsignacao(d.id) }}
-                                                                title="Editar Consignação" // Dica para o usuário
+                                                                onClick={() => { editarManutencao(d.id) }}
+                                                                title="Editar Manutenção" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
-                                                            </button> */}
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 );

@@ -328,9 +328,9 @@ const Gasto = () => {
                                 {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                 {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
                             </div>
-                            <div className="col-md-4">
+                            <div className="col-md-8">
                                 <label for="descricao" class="form-label">Descrição</label>
-                                <input type="text" className={`form-control ${hasError("descricao") && "is-invalid"}`} id="descricao" name="descricao" aria-describedby="descricaoHelp" onChange={handleInputChangeGasto} />
+                                <textarea type="text" placeholder="Detalhes do serviço, peças trocadas, etc." rows="3" className={`form-control ${hasError("descricao") && "is-invalid"}`} id="descricao" name="descricao" aria-describedby="descricaoHelp" onChange={handleInputChangeGasto} />
 
                                 {tipo.includes("descricao") && <div id="descricaohelp" class="form-text text-danger ms-1">Descrição inválida.</div>}
                             </div>

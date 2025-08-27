@@ -18,6 +18,10 @@ class ConsignacaoDataService {
         return http.get(`api/consignacao/ativo`);
     }
 
+    getDetalhesById(id) {
+        return http.get(`/api/consignacao/detalhes/${id}`);
+    };
+
     create(data) {
         return http.post('/api/consignacao', data)
     }

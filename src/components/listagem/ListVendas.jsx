@@ -17,6 +17,7 @@ const Vendas = () => {
     const [marca, setMarca] = useState([]);
 
     const [opcao, setOpcao] = useState('');
+    const navigate = useNavigate();
 
     const handleInputChangeOpcao = event => {
         const { value } = event.target;
@@ -81,9 +82,9 @@ const Vendas = () => {
         setCurrentPage(id)
     }
 
-    // const editarConsignacao = (id) => {
-    //     navigate(`/editar-consignacao/${id}`)
-    // }
+    const editarVenda = (id) => {
+        navigate(`/editar-venda/${id}`)
+    }
 
 
     return (
@@ -150,8 +151,8 @@ const Vendas = () => {
                                                         <td>
                                                             <button
                                                                 className='btn btn-outline-warning btn-sm'
-                                                                onClick={() => { editarConsignacao(d.id) }}
-                                                                title="Editar Consignação" // Dica para o usuário
+                                                                onClick={() => { editarVenda(d.id) }}
+                                                                title="Editar Venda" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
                                                             </button>
@@ -213,8 +214,8 @@ const Vendas = () => {
                                                         <td>
                                                             <button
                                                                 className='btn btn-outline-warning btn-sm'
-                                                                onClick={() => { editarConsignacao(d.id) }}
-                                                                title="Editar Consignação" // Dica para o usuário
+                                                                onClick={() => { editarVenda(d.id) }}
+                                                                title="Editar Venda" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
                                                             </button>

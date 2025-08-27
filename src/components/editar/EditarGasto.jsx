@@ -1,12 +1,11 @@
 import Header from "../Header";
 import { useState } from "react";
-import CompraDataService from "../../services/compraDataService";
+import GastoDataService from "../../services/gastoDataService";
 import AutomovelDataService from "../../services/automovelDataService";
 import MarcaDataService from "../../services/marcaDataService";
 import ModeloDataService from "../../services/modeloDataService";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useCallback } from "react";
-import ClienteDataService from "../../services/clienteDataService";
 import Select from "react-select";
 import FisicaDataService from "../../services/fisicaDataService";
 import JuridicaDataService from "../../services/juridicaDataService";
@@ -16,27 +15,23 @@ import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa"
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaTag } from "react-icons/fa";
 import React from "react";
 
-const EditarCompra = () => {
+const EditarGasto = () => {
 
     const { id } = useParams();
 
-    const [automovelOpt, setAutomovelOpt] = useState([]);
-    const [modeloOpt, setModeloOpt] = useState([]);
-    const [marcaOpt, setMarcaOpt] = useState([]);
+    const [automovel, setAutomovel] = useState([]);
+    const [modelo, setModelo] = useState([]);
+    const [marca, setMarca] = useState([]);
 
-    const [cliente, setCliente] = useState([]);
-    const [fisica, setFisica] = useState([]);
-    const [juridica, setJuridica] = useState([]);
-
-    const [compra, setCompra] = useState('');
     const [loading, setLoading] = useState(true);
+
 
     const [formData, setFormData] = useState({
         // Campos do Automóvel
-        valor: "", data: "",
+        valor: "", data: "", descricao: "",
+
 
         // IDs das associações
-        clienteId: null,
         automovelId: null,
 
     });
@@ -47,32 +42,26 @@ const EditarCompra = () => {
         const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
         // Use Promise.all para esperar todas as chamadas essenciais terminarem
         Promise.all([
-            CompraDataService.getById(id),
+            GastoDataService.getById(id),
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll(),
-            ClienteDataService.getAll(),
-            FisicaDataService.getAll(),
-            JuridicaDataService.getAll()
-        ]).then(([compras, automoveis, modelos, marcas, clientes, fisica, juridica]) => {
-            const compra = compras.data;
-            setFormData(prev => ({ ...prev, ...compra }));
+        ]).then(([gastoId, automoveis, modelos, marcas]) => {
+            const gasto = gastoId.data;
+            setFormData(prev => ({ ...prev, ...gasto }));
 
             // Ajusta a data da compra antes de colocá-la no estado
-            const dataCompraAjustada = ajustarDataParaFusoLocal(compra.data);
+            const dataVendaAjustada = ajustarDataParaFusoLocal(gasto.data);
             // Define o estado do formulário com a data já corrigida
             setFormData({
-                ...compra,
-                data: dataCompraAjustada
+                ...gasto,
+                data: dataVendaAjustada
             });
 
             // setCompra(compras.data);
-            setAutomovelOpt(automoveis.data);
-            setModeloOpt(modelos.data);
-            setMarcaOpt(marcas.data);
-            setCliente(clientes.data);
-            setFisica(fisica.data);
-            setJuridica(juridica.data);
+            setAutomovel(automoveis.data);
+            setModelo(modelos.data);
+            setMarca(marcas.data);
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
             setLoading(false); // Garante que o loading não fica travado
@@ -98,13 +87,10 @@ const EditarCompra = () => {
 
 
     // --- Event Handlers ---
-    const handleProprietarioChange = (selectedOption) => {
-        setFormData({ ...formData, clienteId: selectedOption ? selectedOption.value : "" });
-    };
-
     const handleAutomovelChange = (selectedOption) => {
         setFormData({ ...formData, automovelId: selectedOption ? selectedOption.value : "" });
     };
+
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -134,82 +120,22 @@ const EditarCompra = () => {
         let tipoErros = [];
 
         // Vazio
-        if (!formData.data) vazioErros.push("data");
-        if (!formData.valor) vazioErros.push("valor");
-        if (!formData.clienteId) vazioErros.push("clienteId");
-        if (!formData.automovelId) vazioErros.push("automovelId");
+        // if (!formData.data) vazioErros.push("data");
+        // if (!formData.valor) vazioErros.push("valor");
+        // if (!formData.clienteId) vazioErros.push("clienteId");
+        // if (!formData.automovelId) vazioErros.push("automovelId");
 
         // Tipo
-        if (formData.valor && isNaN(formData.valor)) tipoErros.push("valor");
-        if (formData.valor && formData.valor <= 0) tipoErros.push("valor");
-        if (formData.data && formData.data > new Date()) tipoErros.push("data");
+        // if (formData.valor && isNaN(formData.valor)) tipoErros.push("valor");
+        // if (formData.valor && formData.valor <= 0) tipoErros.push("valor");
+        // if (formData.data && formData.data > new Date()) tipoErros.push("data");
 
         return { vazioErros, tamanhoErros, tipoErros };
     };
 
-    const optionsFornecedor = cliente?.map((d) => {
-        const pessoaFisica = fisica.find(pessoa => pessoa.clienteId === d.id);
-        const pessoaJuridica = juridica.find(pessoa => pessoa.clienteId === d.id);
-
-        return {
-            // value: d.id,
-            // label: `Nome: ${d.nome || ""}\n${pessoaJuridica ? pessoaJuridica?.razao_social + "\n" : ""}${pessoaFisica ? "CPF: " + pessoaFisica?.cpf + "\n" : ""}${pessoaJuridica ? "CNPJ: " + pessoaJuridica?.cnpj : ""}`
-
-            value: d.id,
-
-            label: {
-                nome: d.nome,
-                razaoSocial: pessoaJuridica?.razao_social,
-                cpf: pessoaFisica?.cpf,
-                cnpj: pessoaJuridica?.cnpj,
-                // Adicionamos um 'tipo' para facilitar a lógica na formatação
-                tipo: pessoaJuridica ? 'juridica' : 'fisica'
-            }
-        }
-    });
-
-    const formatOptionLabelFornecedor = ({ value, label }) => {
-
-        // Define o ícone e o título principal com base no tipo de fornecedor
-        const isPessoaJuridica = label.tipo === 'juridica';
-        const IconePrincipal = isPessoaJuridica ? FaBuilding : FaUserTie;
-        const titulo = isPessoaJuridica ? label.razaoSocial : label.nome;
-        const subtitulo = isPessoaJuridica ? label.nome : '';
-
-        return (
-            <div className="d-flex align-items-center">
-                {/* Ícone principal à esquerda (Empresa ou Pessoa) */}
-                <IconePrincipal size="2.5em" color="#0d6efd" className="me-3" />
-
-                {/* Div para o conteúdo de texto */}
-                <div>
-                    {/* Linha Principal: Razão Social ou Nome */}
-                    <div className="fw-bold fs-6">{titulo}</div>
-
-                    {/* Linha Secundária: Nome Fantasia (se for PJ) ou Documento */}
-                    <div className="small text-muted d-flex align-items-center mt-1">
-                        {isPessoaJuridica ? (
-                            <>
-                                <FaFileContract className="me-1" />
-                                <span>CNPJ: {label.cnpj}</span>
-                                {subtitulo && <span className="mx-2">|</span>}
-                                {subtitulo && <span>({subtitulo})</span>}
-                            </>
-                        ) : (
-                            <>
-                                <FaIdCard className="me-1" />
-                                <span>CPF: {label.cpf}</span>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
-    const optionsAutomovel = automovelOpt?.map((d) => {
-        const nomeMarca = marcaOpt?.find(marca => marca.id === d.marcaId);
-        const nomeModelo = modeloOpt?.find(modelo => modelo.marcaId === nomeMarca.id);
+    const optionsAutomovel = automovel?.map((d) => {
+        const nomeMarca = marca?.find(marca => marca.id === d.marcaId);
+        const nomeModelo = modelo?.find(modelo => modelo.marcaId === nomeMarca.id);
 
         return {
             // value: d.id,
@@ -280,7 +206,7 @@ const EditarCompra = () => {
 
 
 
-    const editarCompra = async (e) => {
+    const editarGasto = async (e) => {
 
         // Prevents the default page refresh
         e.preventDefault();
@@ -305,23 +231,24 @@ const EditarCompra = () => {
 
         try {
 
-            const compraData = new FormData();
-            compraData.append("data", formData.data);
-            compraData.append("valor", formData.valor);
-            compraData.append("clienteId", formData.clienteId);
-            compraData.append("automovelId", formData.automovelId);
+            const gastoData = new FormData();
+            gastoData.append("data", formData.data);
+            gastoData.append("valor", formData.valor);
+            gastoData.append("descricao", formData.descricao);
+            gastoData.append("automovelId", formData.automovelId);
 
-            await CompraDataService.update(id, compraData);
+
+            await GastoDataService.update(id, gastoData);
 
             setSucesso(true);
-            setMensagemSucesso("Compra editada com sucesso!");
+            setMensagemSucesso("Gasto editado com sucesso!");
 
             setTimeout(() => {
-                navigate('/listagem/compras');
+                navigate('/listagem/gastos');
             }, 1500)
 
         } catch (error) {
-            console.error("Erro ao atualizar automovel:", error);
+            console.error("Erro ao atualizar gasto:", error);
             // Lógica para tratar erros...
         } finally {
             setIsSubmitting(false);
@@ -345,13 +272,12 @@ const EditarCompra = () => {
     ));
 
 
-
     return (
         <>
             <Header />
             <div className="container">
                 <h1>Edição</h1>
-                <p>Esta é a página de edição de compras.</p>
+                <p>Esta é a página de edição de gastos.</p>
             </div>
 
 
@@ -369,18 +295,19 @@ const EditarCompra = () => {
                 }
 
                 {/* Formulário com Seções */}
-                <form onSubmit={editarCompra} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
+                <form onSubmit={editarGasto} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
                     <fieldset className="mb-5">
-                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações da compra</legend>
+                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações sobre o gasto</legend>
                         <div className="row g-3">
-                            <div className="col-md-2">
+                            <div className="col-md-4">
                                 <label for="valor" class="form-label">Valor</label>
                                 <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor ?? ""} />
                                 {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
                                 {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
                             </div>
-                            <div className="col-md-2">
+
+                            <div className="col-md-4">
                                 <label for="data" class="form-label">Data</label><br />
                                 <DatePicker
                                     calendarClassName="custom-datepicker-container"
@@ -407,18 +334,19 @@ const EditarCompra = () => {
 
                             </div>
                             <div className="col-md-4">
-                                <label for="fornecedor" class="form-label">Proprietario</label>
-                                <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="clienteId" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleProprietarioChange} value={optionsFornecedor.find(option => option.value === formData.clienteId) || null} isClearable={true}
-                                    styles={customStyles}>
-                                </Select>
-                                {vazio.includes("clienteId") && <div className="invalid-feedback">Informe o proprietário.</div>}
-                            </div>
-                            <div className="col-md-4">
                                 <label for="automovel" class="form-label">Automóvel</label>
-                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}>
+                                <Select styles={customStyles} formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}>
                                 </Select>
                                 {vazio.includes("automovelId") && <div className="invalid-feedback">Informe o automóvel.</div>}
                             </div>
+                            <div className="col-md-8">
+                                <label for="descricao" class="form-label">Descrição</label>
+                                <textarea type="text" rows="3" className={`form-control ${hasError("descricao") && "is-invalid"}`} id="descricao" name="descricao" aria-describedby="descricaoHelp" onChange={handleInputChange} value={formData.descricao ?? ""} />
+
+                                {tipo.includes("descricao") && <div id="descricaohelp" class="form-text text-danger ms-1">Descrição inválida.</div>}
+                            </div>
+
+
                         </div>
                     </fieldset>
 
@@ -443,4 +371,4 @@ const EditarCompra = () => {
     )
 }
 
-export default EditarCompra;
+export default EditarGasto;

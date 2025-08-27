@@ -81,9 +81,9 @@ const Gastos = () => {
         setCurrentPage(id)
     }
 
-    // const editarConsignacao = (id) => {
-    //     navigate(`/editar-consignacao/${id}`)
-    // }
+    const editarGasto = (id) => {
+        navigate(`/editar-gasto/${id}`)
+    }
 
 
     return (
@@ -156,13 +156,13 @@ const Gastos = () => {
                                                             <button className='btn btn-outline-primary btn-sm'>+</button>
                                                         </td>
                                                         <td>
-                                                            {/* <button
+                                                            <button
                                                                 className='btn btn-outline-warning btn-sm'
-                                                                onClick={() => { editarConsignacao(d.id) }}
-                                                                title="Editar Consignação" // Dica para o usuário
+                                                                onClick={() => { editarGasto(d.id) }}
+                                                                title="Editar Gasto" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
-                                                            </button> */}
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 );

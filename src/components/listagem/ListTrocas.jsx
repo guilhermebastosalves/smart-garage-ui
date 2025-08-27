@@ -6,7 +6,8 @@ import MarcaDataService from '../../services/marcaDataService';
 import ClienteDataService from '../../services/clienteDataService';
 import FisicaDataService from '../../services/fisicaDataService';
 import JuridicaDataService from '../../services/juridicaDataService';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ModalTroca from '../modais/ModalTroca';
 
 
@@ -25,6 +26,7 @@ const Trocas = () => {
     const [juridica, setJuridica] = useState([]);
 
     const [opcao, setOpcao] = useState('');
+    const navigate = useNavigate();
 
     const handleInputChangeOpcao = event => {
         const { value } = event.target;

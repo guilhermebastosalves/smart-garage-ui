@@ -1,6 +1,6 @@
 import Header from "../Header";
 import { useState } from "react";
-import CompraDataService from "../../services/compraDataService";
+import TrocaDataService from "../../services/trocaDataService";
 import AutomovelDataService from "../../services/automovelDataService";
 import MarcaDataService from "../../services/marcaDataService";
 import ModeloDataService from "../../services/modeloDataService";
@@ -16,28 +16,30 @@ import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa"
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaTag } from "react-icons/fa";
 import React from "react";
 
-const EditarCompra = () => {
+const EditarTroca = () => {
 
     const { id } = useParams();
 
-    const [automovelOpt, setAutomovelOpt] = useState([]);
-    const [modeloOpt, setModeloOpt] = useState([]);
-    const [marcaOpt, setMarcaOpt] = useState([]);
+    const [automovel, setAutomovel] = useState([]);
+    const [modelo, setModelo] = useState([]);
+    const [marca, setMarca] = useState([]);
 
     const [cliente, setCliente] = useState([]);
     const [fisica, setFisica] = useState([]);
     const [juridica, setJuridica] = useState([]);
 
-    const [compra, setCompra] = useState('');
     const [loading, setLoading] = useState(true);
+
 
     const [formData, setFormData] = useState({
         // Campos do Automóvel
-        valor: "", data: "",
+        valor: "", data: "", forma_pagamento: "",
+
 
         // IDs das associações
         clienteId: null,
         automovelId: null,
+        automovel_fornecido: null
 
     });
 
@@ -47,29 +49,29 @@ const EditarCompra = () => {
         const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
         // Use Promise.all para esperar todas as chamadas essenciais terminarem
         Promise.all([
-            CompraDataService.getById(id),
+            TrocaDataService.getById(id),
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll(),
             ClienteDataService.getAll(),
             FisicaDataService.getAll(),
             JuridicaDataService.getAll()
-        ]).then(([compras, automoveis, modelos, marcas, clientes, fisica, juridica]) => {
-            const compra = compras.data;
-            setFormData(prev => ({ ...prev, ...compra }));
+        ]).then(([trocaId, automoveis, modelos, marcas, clientes, fisica, juridica]) => {
+            const troca = trocaId.data;
+            setFormData(prev => ({ ...prev, ...troca }));
 
             // Ajusta a data da compra antes de colocá-la no estado
-            const dataCompraAjustada = ajustarDataParaFusoLocal(compra.data);
+            const dataTrocaAjustada = ajustarDataParaFusoLocal(troca.data);
             // Define o estado do formulário com a data já corrigida
             setFormData({
-                ...compra,
-                data: dataCompraAjustada
+                ...troca,
+                data: dataTrocaAjustada
             });
 
             // setCompra(compras.data);
-            setAutomovelOpt(automoveis.data);
-            setModeloOpt(modelos.data);
-            setMarcaOpt(marcas.data);
+            setAutomovel(automoveis.data);
+            setModelo(modelos.data);
+            setMarca(marcas.data);
             setCliente(clientes.data);
             setFisica(fisica.data);
             setJuridica(juridica.data);
@@ -106,6 +108,10 @@ const EditarCompra = () => {
         setFormData({ ...formData, automovelId: selectedOption ? selectedOption.value : "" });
     };
 
+    const handleAutomovelFornecidoChange = (selectedOption) => {
+        setFormData({ ...formData, automovel_fornecido: selectedOption ? selectedOption.value : "" });
+    };
+
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -134,15 +140,15 @@ const EditarCompra = () => {
         let tipoErros = [];
 
         // Vazio
-        if (!formData.data) vazioErros.push("data");
-        if (!formData.valor) vazioErros.push("valor");
-        if (!formData.clienteId) vazioErros.push("clienteId");
-        if (!formData.automovelId) vazioErros.push("automovelId");
+        // if (!formData.data) vazioErros.push("data");
+        // if (!formData.valor) vazioErros.push("valor");
+        // if (!formData.clienteId) vazioErros.push("clienteId");
+        // if (!formData.automovelId) vazioErros.push("automovelId");
 
         // Tipo
-        if (formData.valor && isNaN(formData.valor)) tipoErros.push("valor");
-        if (formData.valor && formData.valor <= 0) tipoErros.push("valor");
-        if (formData.data && formData.data > new Date()) tipoErros.push("data");
+        // if (formData.valor && isNaN(formData.valor)) tipoErros.push("valor");
+        // if (formData.valor && formData.valor <= 0) tipoErros.push("valor");
+        // if (formData.data && formData.data > new Date()) tipoErros.push("data");
 
         return { vazioErros, tamanhoErros, tipoErros };
     };
@@ -207,9 +213,9 @@ const EditarCompra = () => {
         );
     };
 
-    const optionsAutomovel = automovelOpt?.map((d) => {
-        const nomeMarca = marcaOpt?.find(marca => marca.id === d.marcaId);
-        const nomeModelo = modeloOpt?.find(modelo => modelo.marcaId === nomeMarca.id);
+    const optionsAutomovel = automovel?.map((d) => {
+        const nomeMarca = marca?.find(marca => marca.id === d.marcaId);
+        const nomeModelo = modelo?.find(modelo => modelo.marcaId === nomeMarca.id);
 
         return {
             // value: d.id,
@@ -280,7 +286,7 @@ const EditarCompra = () => {
 
 
 
-    const editarCompra = async (e) => {
+    const editarTroca = async (e) => {
 
         // Prevents the default page refresh
         e.preventDefault();
@@ -305,23 +311,25 @@ const EditarCompra = () => {
 
         try {
 
-            const compraData = new FormData();
-            compraData.append("data", formData.data);
-            compraData.append("valor", formData.valor);
-            compraData.append("clienteId", formData.clienteId);
-            compraData.append("automovelId", formData.automovelId);
+            const trocaData = new FormData();
+            trocaData.append("data", formData.data);
+            trocaData.append("valor", formData.valor);
+            trocaData.append("forma_pagamento", formData.forma_pagamento);
+            trocaData.append("clienteId", formData.clienteId);
+            trocaData.append("automovelId", formData.automovelId);
+            trocaData.append("automovel_fornecido", formData.automovel_fornecido);
 
-            await CompraDataService.update(id, compraData);
+            await TrocaDataService.update(id, trocaData);
 
             setSucesso(true);
-            setMensagemSucesso("Compra editada com sucesso!");
+            setMensagemSucesso("Troca editada com sucesso!");
 
             setTimeout(() => {
-                navigate('/listagem/compras');
+                navigate('/listagem/trocas');
             }, 1500)
 
         } catch (error) {
-            console.error("Erro ao atualizar automovel:", error);
+            console.error("Erro ao atualizar troca:", error);
             // Lógica para tratar erros...
         } finally {
             setIsSubmitting(false);
@@ -344,6 +352,25 @@ const EditarCompra = () => {
         </>
     ));
 
+    const optionsFormaPagamento = [
+        {
+            label: "Cartão",
+            value: "Cartao"
+        },
+        {
+            label: "Dinheiro",
+            value: "Dinheiro"
+        },
+        {
+            label: "Financiamento",
+            value: "Financiamento"
+        },
+        {
+            label: "Pix",
+            value: "Pix"
+        }
+    ];
+
 
 
     return (
@@ -351,7 +378,7 @@ const EditarCompra = () => {
             <Header />
             <div className="container">
                 <h1>Edição</h1>
-                <p>Esta é a página de edição de compras.</p>
+                <p>Esta é a página de edição de trocas.</p>
             </div>
 
 
@@ -369,18 +396,24 @@ const EditarCompra = () => {
                 }
 
                 {/* Formulário com Seções */}
-                <form onSubmit={editarCompra} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
+                <form onSubmit={editarTroca} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
                     <fieldset className="mb-5">
-                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações da compra</legend>
+                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações da troca</legend>
                         <div className="row g-3">
-                            <div className="col-md-2">
+                            <div className="col-md-4">
                                 <label for="valor" class="form-label">Valor</label>
                                 <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor ?? ""} />
                                 {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
                                 {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
                             </div>
-                            <div className="col-md-2">
+                            <div className="col-md-4">
+                                <label for="forma_pagamento" class="form-label">Forma de Pagamento</label>
+                                <Select className={`${hasError("forma_pagamento") && "is-invalid"}`} id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === formData.forma_pagamento)} onChange={(option) => setFormData({ ...formData, forma_pagamento: option.value })} options={optionsFormaPagamento} isClearable={true}>
+                                </Select>
+                                {vazio.includes("forma_pagamento") && <div id="formapagamentohelp" class="form-text text-danger ms-1">Informe a forma de pagamento.</div>}
+                            </div>
+                            <div className="col-md-4">
                                 <label for="data" class="form-label">Data</label><br />
                                 <DatePicker
                                     calendarClassName="custom-datepicker-container"
@@ -419,6 +452,13 @@ const EditarCompra = () => {
                                 </Select>
                                 {vazio.includes("automovelId") && <div className="invalid-feedback">Informe o automóvel.</div>}
                             </div>
+                            <div className="col-md-4">
+                                <label for="automovel" class="form-label">Automóvel Fornecido</label>
+                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelFornecidoChange} value={optionsAutomovel.find(option => option.value === formData.automovel_fornecido) || null} isClearable={true}>
+                                </Select>
+                                {vazio.includes("automovel_fornecido") && <div className="invalid-feedback">Informe o automóvel.</div>}
+                            </div>
+
                         </div>
                     </fieldset>
 
@@ -443,4 +483,4 @@ const EditarCompra = () => {
     )
 }
 
-export default EditarCompra;
+export default EditarTroca;

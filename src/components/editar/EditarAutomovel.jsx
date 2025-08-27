@@ -70,68 +70,6 @@ const EditarAutomovel = () => {
         }).catch(e => console.error("Erro ao carregar dados:", e));
     }, [id]); // Roda apenas uma vez quando o ID muda
 
-    // const retrieveAutomovel = useCallback(() => {
-    //     AutomovelDataService.getById(id)
-    //         .then(response => {
-    //             setAutomovel(response.data);
-    //             // console.log("Automóvel carregados:", response.data);
-    //         })
-    //         .catch(e => {
-    //             console.error("Erro ao buscar automovel:", e);
-    //         });
-    // }, [id]);
-
-    // useEffect(() => {
-    //     retrieveAutomovel();
-    // }, [retrieveAutomovel]);
-
-
-    // const retrieveMarca = useCallback((marcaId) => {
-    //     if (!marcaId) return;
-    //     MarcaDataService.getById(marcaId)
-    //         .then(response => {
-    //             setMarca(response.data);
-    //             // console.log("Marcas carregados:", response.data);
-    //         })
-    //         .catch(e => {
-    //             console.error("Erro ao buscar marca:", e);
-    //         });
-    // }, []);
-
-
-    // useEffect(() => {
-    //     if (automovel && automovel.marcaId) {
-    //         retrieveMarca(automovel.marcaId);
-    //     }
-    // }, [automovel, retrieveMarca]);
-
-
-    // const retrieveModelo = useCallback(() => {
-    //     if (!marca.id) return;
-
-    //     ModeloDataService.getAll()
-    //         .then(response => {
-    //             const modelos = response.data;
-    //             setModelo(response.data);
-
-    //             const aux = modelos.find(modelo => modelo.marcaId === marca.id);
-
-    //             setModeloId(aux);
-
-    //             if (aux && aux.nome) {
-    //                 setNomeModelo(aux.nome);
-    //             }
-    //             // console.log("Modelos carregados:", response.data);
-    //         })
-    //         .catch(e => {
-    //             console.error("Erro ao buscar modelo:", e);
-    //         });
-    // }, [marca]);
-
-    // useEffect(() => {
-    //     retrieveModelo();
-    // }, [retrieveModelo]);
-
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -142,20 +80,6 @@ const EditarAutomovel = () => {
         setFormData(prev => ({ ...prev, file: event.target.files[0] }));
     };
 
-
-    // --- Event Handlers ---
-    // const handleInputChangeAutomovel = event => {
-    //     const { name, value } = event.target;
-    //     setAutomovel({ ...automovel, [name]: value });
-    // };
-
-    // const handleInputChangeModelo = event => {
-    //     setNomeModelo(event.target.value);
-    // };
-
-    // const handleInputChangeMarca = (event) => {
-    //     setMarca(prev => ({ ...prev, nome: event.target.value }));
-    // };
 
     // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -181,27 +105,27 @@ const EditarAutomovel = () => {
         let tipoErros = [];
 
         // Vazio
-        if (!automovel.valor) vazioErros.push("valor");
-        if (!automovel.ano_fabricacao) vazioErros.push("ano_fabricacao");
-        if (!automovel.ano_modelo) vazioErros.push("ano_modelo");
-        if (!automovel.renavam) vazioErros.push("renavam");
-        if (!automovel.placa) vazioErros.push("placa");
-        if (!automovel.origem) vazioErros.push("origem");
-        if (!automovel.km) vazioErros.push("km");
-        if (!automovel.combustivel) vazioErros.push("combustivel");
-        if (!automovel.cor) vazioErros.push("cor");
-        if (!modelo.modelo) vazioErros.push("modelo");
-        if (!marca.marca) vazioErros.push("marca");
+        if (!formData.valor) vazioErros.push("valor");
+        if (!formData.ano_fabricacao) vazioErros.push("ano_fabricacao");
+        if (!formData.ano_modelo) vazioErros.push("ano_modelo");
+        if (!formData.renavam) vazioErros.push("renavam");
+        if (!formData.placa) vazioErros.push("placa");
+        if (!formData.origem) vazioErros.push("origem");
+        if (!formData.km) vazioErros.push("km");
+        if (!formData.combustivel) vazioErros.push("combustivel");
+        if (!formData.cor) vazioErros.push("cor");
+        if (!formData.modeloNome) vazioErros.push("modelo");
+        if (!formData.marcaNome) vazioErros.push("marca");
 
         // Tamanho
-        if (automovel.renavam && (automovel.renavam.length !== 11 || isNaN(automovel.renavam))) tamanhoErros.push("renavam");
-        if (automovel.placa && automovel.placa.length !== 7) tamanhoErros.push("placa");
+        if (formData.renavam && (formData.renavam.length !== 11 || isNaN(formData.renavam))) tamanhoErros.push("renavam");
+        if (formData.placa && formData.placa.length !== 7) tamanhoErros.push("placa");
 
         // Tipo
-        if (automovel.ano_fabricacao && isNaN(automovel.ano_fabricacao)) tipoErros.push("ano_fabricacao");
-        if (automovel.ano_modelo && isNaN(automovel.ano_modelo)) tipoErros.push("ano_modelo");
-        if (automovel.valor && isNaN(automovel.valor)) tipoErros.push("valor");
-        if (automovel.km && isNaN(automovel.km)) tipoErros.push("km");
+        if (formData.ano_fabricacao && isNaN(formData.ano_fabricacao)) tipoErros.push("ano_fabricacao");
+        if (formData.ano_modelo && isNaN(formData.ano_modelo)) tipoErros.push("ano_modelo");
+        if (formData.valor && isNaN(formData.valor)) tipoErros.push("valor");
+        if (formData.km && isNaN(formData.km)) tipoErros.push("km");
 
         return { vazioErros, tamanhoErros, tipoErros };
     };
@@ -211,67 +135,25 @@ const EditarAutomovel = () => {
 
         // Prevents the default page refresh
         e.preventDefault();
-        // setErro(false);
-        // setSucesso(false);
-        // setVazio([]);
-        // setIsSubmitting(true); // Desabilita o botão
+        setErro(false);
+        setSucesso(false);
+        setVazio([]);
+        setIsSubmitting(true); // Desabilita o botão
 
 
-        // const { vazioErros, tamanhoErros, tipoErros } = validateFields();
+        const { vazioErros, tamanhoErros, tipoErros } = validateFields();
 
-        // setVazio(vazioErros);
-        // setTamanho(tamanhoErros);
-        // setTipo(tipoErros);
+        setVazio(vazioErros);
+        setTamanho(tamanhoErros);
+        setTipo(tipoErros);
 
-        // // Só continua se não houver erros
-        // if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
-        //     setIsSubmitting(false);
-        //     return;
-        // }
+        // Só continua se não houver erros
+        if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
+            setIsSubmitting(false);
+            return;
+        }
 
         try {
-            // aqui crio os JSON's auxiliares, para ficar igual no bd, chamo os campos de nome
-            // var dataMarca = {
-            //     nome: marca.nome
-            // }
-
-            // var dataModelo = {
-            //     nome: nomeModelo
-            // }
-
-            // if (modeloId) {
-            //     const modeloEdit = await ModeloDataService.update(modeloId.id, dataModelo)
-            //         .catch(e => {
-            //             console.error("Erro ao atualizar modelo:", e);
-            //         });
-            // }
-
-            // const marcaEdit = await MarcaDataService.update(marca.id, dataMarca)
-            //     .catch(e => {
-            //         console.error("Erro ao criar marca:", e);
-            //     });
-
-            // setMarca(marcaEdit.data);
-
-            // const formData = new FormData();
-
-            // formData.append("ano_fabricacao", automovel.ano_fabricacao);
-            // formData.append("ano_modelo", automovel.ano_modelo);
-            // formData.append("cor", automovel.cor);
-            // formData.append("combustivel", automovel.combustivel);
-            // formData.append("km", automovel.km);
-            // formData.append("origem", automovel.origem);
-            // formData.append("placa", automovel.placa);
-            // formData.append("renavam", automovel.renavam);
-            // formData.append("valor", automovel.valor);
-            // formData.append("marcaId", automovel.marcaId);
-
-            // Se o usuário selecionou um novo arquivo, anexe-o.
-            // if (automovel.file) {
-            //     formData.append("file", automovel.file);
-            // }
-
-
 
             // --- ETAPA 1: ATUALIZAR MARCA (se o nome mudou) ---
             // Aqui você pode adicionar uma lógica para verificar se o nome da marca foi realmente alterado
@@ -308,20 +190,6 @@ const EditarAutomovel = () => {
             setSucesso(true);
             setMensagemSucesso("Atualizações realizadas com sucesso!");
             setTimeout(() => navigate(`/detalhes/${id}`), 1500);
-
-            // const automovelEdit = await AutomovelDataService.update(id, formData, {
-            //     headers: { "Content-type": "multipart/form-data" }
-            // })
-            //     .catch(e => {
-            //         console.error("Erro ao atualizar automovel:", e);
-            //     });
-
-            // setSucesso(true);
-            // setMensagemSucesso("Automóvel editado com sucesso!");
-
-            // setTimeout(() => {
-            //     navigate(`/detalhes/${id}`);
-            // }, 1500);
 
         } catch (error) {
             console.error("Erro ao atualizar automovel:", error);

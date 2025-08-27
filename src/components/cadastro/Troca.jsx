@@ -732,12 +732,7 @@ const Troca = () => {
                                 </Select>
                                 {vazio.includes("clienteId") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o proprietário.</div>}
                             </div>
-                            {/* <div className="col-md-4">
-                                <label for="automovel" class="form-label">Automóvel Recebido</label>
-                                <Select isSearchable={true} className={`form-control ${hasError("km") && "is-invalid"}`} id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === troca.automovelId) || null} isClearable={true}>
-                                </Select>
-                                {vazio.includes("automovelId") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel recebido.</div>}
-                            </div> */}
+
                             <div className="col-md-4">
                                 <label for="automovel_fornecido" class="form-label">Automóvel Fornecido</label>
                                 <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovel_fornecido") && "is-invalid"}`} id="automovel_fornecido" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setTroca({ ...troca, automovel_fornecido: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === troca.automovel_fornecido) || null} isClearable={true}>

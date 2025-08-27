@@ -14,6 +14,10 @@ class TrocaDataService {
         return http.post('/api/troca', data);
     }
 
+    update(id, data) {
+        return http.put(`/api/troca/${id}`, data);
+    }
+
 }
 
 export default new TrocaDataService();

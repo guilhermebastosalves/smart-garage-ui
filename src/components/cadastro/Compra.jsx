@@ -196,6 +196,8 @@ const Compra = () => {
         }
     });
 
+
+
     const formatOptionLabelFornecedor = ({ value, label }) => {
 
         // Define o ícone e o título principal com base no tipo de fornecedor

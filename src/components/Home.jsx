@@ -15,18 +15,9 @@ const Home = () => {
             <div className="container py-5">
                 {/* Cabeçalho da Página */}
                 <div className="page-header mb-5">
-                    <h1 className="display-5 fw-bold">Bem-vindo, {user.nome}, seu id é {user.id}!</h1>
+                    <h1 className="display-5 fw-bold">Bem-vindo, {user.nome}!</h1>
                     <p className="text-muted fs-5">Selecione uma das opções abaixo para começar a gerenciar sua garagem.</p>
                 </div>
-
-                {
-                    user.role === "gerente" && (
-                        <div>
-                            <p className="fs-3"> voce é gerente</p>
-                        </div>
-                    )
-
-                }
 
                 {
                     user.role === "vendedor" && (

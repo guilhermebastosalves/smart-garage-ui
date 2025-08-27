@@ -94,6 +94,9 @@ const Consignacoes = () => {
         navigate(`/editar-consignacao/${id}`)
     }
 
+    const verDetalhes = (id) => {
+        navigate(`/detalhes-consignacao/${id}`);
+    }
 
     return (
         <>
@@ -118,20 +121,7 @@ const Consignacoes = () => {
                             <option value="">Padrão</option>
                             <option value="data_inicio">Mais Recentes</option>
                         </select>
-                        {/* <div className="btn-group" role="group">
-                            <button
-                                type="button"
-                                className={`btn ${opcao === '' ? 'btn-primary' : 'btn-outline-secondary'}`}
-                                onClick={() => setOpcao('')}>
-                                Padrão
-                            </button>
-                            <button
-                                type="button"
-                                className={`btn ${opcao === 'data_inicio' ? 'btn-primary' : 'btn-outline-secondary'}`}
-                                onClick={() => setOpcao('data_inicio')}>
-                                Mais Recentes
-                            </button>
-                        </div> */}
+
                     </div>
 
                     <div className="card-body">
@@ -165,20 +155,10 @@ const Consignacoes = () => {
                                                 const nomeMarca = marca.find(m => m.id === auto?.marcaId);
                                                 const noModelo = modelo.find(mo => mo.marcaId === nomeMarca?.id);
 
-                                                // return (
-                                                //     <tr key={d.id}>
-                                                //         <th scope="row">{d.id}</th>
-                                                //         <td>{d.data_inicio}</td>
-                                                //         <td>{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</td>
-                                                //         <td>{`${auto?.placa}`}</td>
-                                                //         <td>{d.valor}</td>
-                                                //         <td><button className='btn btn-warning' onClick={() => { editarConsignacao(d.id) }}>Editar</button></td>
-                                                //     </tr>
-                                                // );
                                                 return (
                                                     <tr key={d.id} className="align-middle">
                                                         <th scope="row">{d.id}</th>
-                                                        <td>{new Date(d.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td> {/* Formatar data */}
+                                                        <td>{new Date(d.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                                                         <td>
                                                             <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
                                                             <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
@@ -191,6 +171,13 @@ const Consignacoes = () => {
                                                                 title="Editar Consignação" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
+                                                            </button>
+                                                            <button
+                                                                className='btn btn-outline-info btn-sm'
+                                                                onClick={() => { verDetalhes(d.id) }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <i className="bi bi-eye-fill"></i>
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -242,12 +229,12 @@ const Consignacoes = () => {
                                                 return (
                                                     <tr key={d.id} className="align-middle">
                                                         <th scope="row">{d.id}</th>
-                                                        <td>{new Date(d.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td> {/* Formatar data */}
+                                                        <td>{new Date(d.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                                                         <td>
                                                             <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
                                                             <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
                                                         </td>
-                                                        <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td> {/* Formatar valor */}
+                                                        <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td>
                                                         <td>
                                                             <button
                                                                 className='btn btn-outline-warning btn-sm'
@@ -255,6 +242,13 @@ const Consignacoes = () => {
                                                                 title="Editar Consignação" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
+                                                            </button>
+                                                            <button
+                                                                className='btn btn-outline-info btn-sm'
+                                                                onClick={() => { verDetalhes(d.id) }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <i className="bi bi-eye-fill"></i>
                                                             </button>
                                                         </td>
                                                     </tr>
