@@ -10,6 +10,11 @@ class CompraDataService {
         return http.get(`/api/compra/${id}`);
     }
 
+    getDetalhesById(id) {
+        return http.get(`/api/compra/detalhes/${id}`);
+    };
+
+
     create(data) {
         return http.post('/api/compra', data);
     }

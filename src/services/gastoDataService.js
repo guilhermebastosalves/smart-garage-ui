@@ -10,6 +10,10 @@ class GastoDataService {
         return http.get(`/api/gasto/${id}`)
     }
 
+    getDetalhesById(id) {
+        return http.get(`/api/gasto/detalhes/${id}`);
+    };
+
     create(data) {
         return http.post('/api/gasto', data)
     }

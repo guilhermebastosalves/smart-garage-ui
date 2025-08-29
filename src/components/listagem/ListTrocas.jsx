@@ -96,6 +96,9 @@ const Trocas = () => {
         navigate(`/editar-troca/${id}`)
     }
 
+    const verDetalhes = (id) => {
+        navigate(`/detalhes-troca/${id}`);
+    }
 
     return (
         <>
@@ -179,6 +182,13 @@ const Trocas = () => {
                                                                 title="Editar Troca" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
+                                                            </button>
+                                                            <button
+                                                                className='btn btn-outline-info btn-sm'
+                                                                onClick={() => { verDetalhes(d.id) }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <i className="bi bi-eye-fill"></i>
                                                             </button>
                                                         </td>
                                                     </tr>

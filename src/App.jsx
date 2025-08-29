@@ -10,6 +10,11 @@ import Estoque from './components/Estoque'
 import Automovel from './components/cadastro/Automovel'
 import Detalhes from './components/Detalhes'
 import DetalhesConsignacao from './components/detalhes/DetalhesConsignacao'
+import DetalhesCompra from './components/detalhes/DetalhesCompra'
+import DetalhesTroca from './components/detalhes/DetalhesTroca'
+import DetalhesVenda from './components/detalhes/DetalhesVenda'
+import DetalhesGasto from './components/detalhes/DetalhesGasto'
+import DetalhesManutencao from './components/detalhes/DetalhesManutencao'
 import Compra from './components/cadastro/Compra';
 import Consignacao from './components/cadastro/Consignacao'
 import EditarAutomovel from './components/editar/EditarAutomovel';
@@ -49,6 +54,11 @@ function App() {
             <Route path="/cadastro/automoveis" element={<Automovel />}></Route>
             <Route path="/detalhes/:id" element={<Detalhes />}></Route>
             <Route path="/detalhes-consignacao/:id" element={<DetalhesConsignacao />}></Route>
+            <Route path="/detalhes-compra/:id" element={<DetalhesCompra />}></Route>
+            <Route path="/detalhes-troca/:id" element={<DetalhesTroca />}></Route>
+            <Route path="/detalhes-venda/:id" element={<DetalhesVenda />}></Route>
+            <Route path="/detalhes-gasto/:id" element={<DetalhesGasto />}></Route>
+            <Route path="/detalhes-manutencao/:id" element={<DetalhesManutencao />}></Route>
             <Route path="/compra" element={<Compra />}></Route>
             <Route path='/consignacao' element={<Consignacao />}></Route>
             <Route path='/editar-automovel/:id' element={<EditarAutomovel />}></Route>

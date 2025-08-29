@@ -85,6 +85,10 @@ const Gastos = () => {
         navigate(`/editar-gasto/${id}`)
     }
 
+    const verDetalhes = (id) => {
+        navigate(`/detalhes-gasto/${id}`);
+    }
+
 
     return (
         <>
@@ -134,7 +138,7 @@ const Gastos = () => {
                                                 <th scope="col">Automóvel</th>
                                                 <th scope="col">Valor</th>
                                                 <th scope="col">Descrição</th>
-                                                <th scope="col">-</th>
+                                                <th scope="col" >Editar</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -153,9 +157,15 @@ const Gastos = () => {
                                                         </td>
                                                         <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td>
                                                         <td className="text-dark fw-bold">
-                                                            <button className='btn btn-outline-primary btn-sm'>+</button>
+                                                            <button
+                                                                className='btn btn-outline-info btn-sm ms-3'
+                                                                onClick={() => { verDetalhes(d.id) }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <i className="bi bi-eye-fill"></i>
+                                                            </button>
                                                         </td>
-                                                        <td>
+                                                        <td className="text-dark fw-bold">
                                                             <button
                                                                 className='btn btn-outline-warning btn-sm'
                                                                 onClick={() => { editarGasto(d.id) }}

@@ -85,6 +85,10 @@ const Manutencao = () => {
         navigate(`/editar-manutencao/${id}`)
     }
 
+    const verDetalhes = (id) => {
+        navigate(`/detalhes-manutencao/${id}`);
+    }
+
 
     return (
         <>
@@ -135,7 +139,7 @@ const Manutencao = () => {
                                                 <th scope="col">Automóvel</th>
                                                 <th scope="col">Valor</th>
                                                 <th scope="col">Descrição</th>
-                                                <th scope="col">-</th>
+                                                <th scope="col">Editar</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -154,8 +158,15 @@ const Manutencao = () => {
                                                             <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
                                                         </td>
                                                         <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td>
-                                                        <td className="text-dark fw-bold">
-                                                            <button className='btn btn-outline-primary btn-sm'>+</button>
+
+                                                        <td>
+                                                            <button
+                                                                className='btn btn-outline-info btn-sm ms-3'
+                                                                onClick={() => { verDetalhes(d.id) }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <i className="bi bi-eye-fill"></i>
+                                                            </button>
                                                         </td>
                                                         <td>
                                                             <button
@@ -227,13 +238,22 @@ const Manutencao = () => {
                                                             <button className='btn btn-outline-primary btn-sm'>+</button>
                                                         </td>
                                                         <td>
-                                                            {/* <button
+                                                            <button
+                                                                className='btn btn-outline-info btn-sm ms-3'
+                                                                onClick={() => { verDetalhes(d.id) }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <i className="bi bi-eye-fill"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button
                                                                 className='btn btn-outline-warning btn-sm'
-                                                                onClick={() => { editarConsignacao(d.id) }}
-                                                                title="Editar Consignação" // Dica para o usuário
+                                                                onClick={() => { editarManutencao(d.id) }}
+                                                                title="Editar Manutenção" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
-                                                            </button> */}
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 );

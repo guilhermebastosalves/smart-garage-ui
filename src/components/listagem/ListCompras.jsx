@@ -84,6 +84,10 @@ const Compras = () => {
         navigate(`/editar-compra/${id}`)
     }
 
+    const verDetalhes = (id) => {
+        navigate(`/detalhes-compra/${id}`);
+    }
+
 
     return (
         <>
@@ -133,7 +137,8 @@ const Compras = () => {
                                                 <th scope="col">Data</th>
                                                 <th scope="col">Automóvel</th>
                                                 <th scope="col">Valor</th>
-                                                <th scope="col">-</th>
+                                                <th scope="col">Detalhes</th>
+                                                <th scope="col">Editar</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -151,6 +156,15 @@ const Compras = () => {
                                                             <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
                                                         </td>
                                                         <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td>
+                                                        <td>
+                                                            <button
+                                                                className='btn btn-outline-info btn-sm ms-3'
+                                                                onClick={() => { verDetalhes(d.id) }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <i className="bi bi-eye-fill"></i>
+                                                            </button>
+                                                        </td>
                                                         <td>
                                                             <button
                                                                 className='btn btn-outline-warning btn-sm'

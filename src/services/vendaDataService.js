@@ -14,6 +14,10 @@ class VendaDataService {
         return http.get(`/api/venda/${id}`);
     }
 
+    getDetalhesById(id) {
+        return http.get(`/api/venda/detalhes/${id}`);
+    };
+
     create(data) {
         return http.post('/api/venda', data);
     }

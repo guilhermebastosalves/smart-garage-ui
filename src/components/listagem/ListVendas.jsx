@@ -86,6 +86,9 @@ const Vendas = () => {
         navigate(`/editar-venda/${id}`)
     }
 
+    const verDetalhes = (id) => {
+        navigate(`/detalhes-venda/${id}`);
+    }
 
     return (
         <>
@@ -156,6 +159,13 @@ const Vendas = () => {
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
                                                             </button>
+                                                            <button
+                                                                className='btn btn-outline-info btn-sm'
+                                                                onClick={() => { verDetalhes(d.id) }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <i className="bi bi-eye-fill"></i>
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 );
@@ -218,6 +228,13 @@ const Vendas = () => {
                                                                 title="Editar Venda" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
+                                                            </button>
+                                                            <button
+                                                                className='btn btn-outline-info btn-sm'
+                                                                onClick={() => { verDetalhes(d.id) }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <i className="bi bi-eye-fill"></i>
                                                             </button>
                                                         </td>
                                                     </tr>

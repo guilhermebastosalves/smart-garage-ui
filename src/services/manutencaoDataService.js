@@ -10,6 +10,9 @@ class ManutencaoDataService {
         return http.get(`/api/manutencao/${id}`)
     }
 
+    getDetalhesById(id) {
+        return http.get(`/api/manutencao/detalhes/${id}`);
+    };
 
     create(data) {
         return http.post('/api/manutencao', data)

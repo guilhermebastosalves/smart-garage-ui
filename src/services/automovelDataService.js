@@ -17,6 +17,11 @@ class AutomovelDataService {
     getByAtivo() {
         return http.get(`api/automovel/ativo`);
     }
+
+    getDetalhesById(id) {
+        return http.get(`/api/automovel/detalhes/${id}`);
+    };
+
     create(data, config) {
         return http.post("/api/automovel", data, config);
     }

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../Header';
-import ConsignacaoDataService from '../../services/consignacaoDataService';
+import GastoDataService from '../../services/gastoDataService';
 
-const DetalhesConsignacao = () => {
+const DetalhesGasto = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -12,13 +12,13 @@ const DetalhesConsignacao = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        ConsignacaoDataService.getDetalhesById(id)
+        GastoDataService.getDetalhesById(id)
             .then(response => {
                 setDetalhes(response.data);
             })
             .catch(e => {
-                console.error("Erro ao buscar detalhes da consignação:", e);
-                setError("Não foi possível carregar os detalhes da consignação. Tente novamente mais tarde.");
+                console.error("Erro ao buscar detalhes do gasto:", e);
+                setError("Não foi possível carregar os detalhes do gasto. Tente novamente mais tarde.");
             })
             .finally(() => {
                 setLoading(false);
@@ -33,7 +33,7 @@ const DetalhesConsignacao = () => {
                     <div className="spinner-border text-primary" role="status">
                         <span className="visually-hidden">Carregando detalhes...</span>
                     </div>
-                    <p className="mt-2">Carregando detalhes da consignação...</p>
+                    <p className="mt-2">Carregando detalhes do gasto...</p>
                 </div>
             </>
         );
@@ -58,8 +58,8 @@ const DetalhesConsignacao = () => {
             <>
                 <Header />
                 <div className="alert alert-warning container mt-5" role="alert">
-                    <h4 className="alert-heading">Consignação Não Encontrada</h4>
-                    <p>Nenhuma informação detalhada foi encontrada para a consignação com ID #{id}.</p>
+                    <h4 className="alert-heading">Gasto Não Encontrado</h4>
+                    <p>Nenhuma informação detalhada foi encontrada para o gasto com ID #{id}.</p>
                     <hr />
                     <button className="btn btn-primary" onClick={() => navigate(-1)}>Voltar</button>
                 </div>
@@ -85,8 +85,8 @@ const DetalhesConsignacao = () => {
                     <div>
                         <h1 className="fw-bold mb-0 text-primary">
                             <i className="bi bi-file-earmark-text me-3"></i>
-                            Detalhes da Consignação</h1>
-                        <p className="text-muted fs-6 mt-1">Visão completa das informações da consignação.</p>
+                            Detalhes do Gasto</h1>
+                        <p className="text-muted fs-6 mt-1">Visão completa das informações do gasto.</p>
                     </div>
                     <button className="btn btn-outline-secondary d-flex align-items-center" onClick={() => navigate(-1)}>
                         <i className="bi bi-arrow-left me-2"></i>
@@ -95,7 +95,7 @@ const DetalhesConsignacao = () => {
                 </div>
 
                 <div className="row g-4">
-                    {/* Card de Informações da Consignação */}
+                    {/* Card de Informações da Venda */}
                     <div className="col-lg-6 col-md-12">
                         <div className="card shadow-sm h-100 border-start border-secondary border-4">
                             <div className="card-header bg-light d-flex align-items-center">
@@ -103,21 +103,11 @@ const DetalhesConsignacao = () => {
                                 <h5 className="mb-0 fw-bold">Detalhes da Operação</h5>
                             </div>
                             <div className="card-body">
-                                <p className="mb-2"><strong>ID da Consignação:</strong> {detalhes.id}</p>
-                                <p className="mb-2"><strong>Data de Início:</strong> {new Date(detalhes.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
-                                <p className="mb-2"><strong>Data de Término:</strong> {detalhes.data_termino ? new Date(detalhes.data_termino).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'Não Finalizada'}</p>
-                                <p className="mb-2"><strong>Valor Acordado:</strong> <span className="text fw-bold fs-6">{formatter.format(detalhes.valor)}</span></p>
+                                <p className="mb-2"><strong>ID do Gasto:</strong> {detalhes.id}</p>
+                                <p className="mb-2"><strong>Data:</strong> {new Date(detalhes.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
+                                <p className="mb-2"><strong>Valor:</strong> <span className="text fw-bold fs-6">{formatter.format(detalhes.valor)}</span></p>
+                                <p className="mb-2"><strong>Descrição:</strong> <span className="text fs-6">{detalhes.descricao}</span></p>
                                 <p className="mb-0">
-                                    <strong>Status:</strong>
-                                    {detalhes.ativo ? (
-                                        <span className="badge bg-primary ms-2 p-2">
-                                            <i className="bi bi-check-circle-fill me-1"></i> Ativa
-                                        </span>
-                                    ) : (
-                                        <span className="badge bg-secondary ms-2 p-2">
-                                            <i className="bi bi-x-circle-fill me-1"></i> Inativa
-                                        </span>
-                                    )}
                                 </p>
                             </div>
                         </div>
@@ -141,29 +131,10 @@ const DetalhesConsignacao = () => {
                         </div>
                     </div>
 
-                    {/* Card de Informações do Consignante */}
-                    {cliente && (
-                        <div className="col-12">
-                            <div className="card shadow-sm border-start border-secondary border-4">
-                                <div className="card-header bg-light d-flex align-items-center">
-                                    <i className="bi bi-person-fill text-primary me-2"></i>
-                                    <h5 className="mb-0 fw-bold">Informações do Consignante (Cliente)</h5>
-                                </div>
-                                <div className="card-body">
-                                    <p className="mb-2"><strong>Nome Completo:</strong> {cliente.nome || 'N/A'}</p>
-                                    {cliente?.fisica?.cpf && <p className="mb-2"><strong>CPF:</strong> {cliente?.fisica?.cpf}</p>}
-                                    {cliente?.juridica?.cnpj && <p className="mb-2"><strong>CNPJ:</strong> {cliente?.juridica.cnpj}</p>}
-                                    {cliente?.juridica?.razao_social && <p className="mb-2"><strong>Razão Social:</strong> {cliente?.juridica.razao_social}</p>}
-                                    <p className="mb-2"><strong>Telefone:</strong> {cliente.telefone || 'N/A'}</p>
-                                    <p className="mb-0"><strong>Email:</strong> {cliente.email || 'N/A'}</p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
         </>
     );
 };
 
-export default DetalhesConsignacao;
+export default DetalhesGasto;
