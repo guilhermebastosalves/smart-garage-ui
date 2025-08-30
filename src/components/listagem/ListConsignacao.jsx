@@ -9,6 +9,8 @@ import MarcaDataService from '../../services/marcaDataService';
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalConsignacao from '../modais/ModalConsignacao';
+import ModalEncerrarConsignacao from '../modais/ModalEncerrarConsignacao';
+import ModalConfirmacao from '../modais/ModalConfirmacao';
 
 
 const Consignacoes = () => {
@@ -17,6 +19,56 @@ const Consignacoes = () => {
 
     const consignacaoLocalStorage = { negocio: "Consignacao" };
     const [showModal, setShowModal] = useState(false);
+
+    const [showEncerrarModal, setShowEncerrarModal] = useState(false);
+    const [consignacaoSelecionada, setConsignacaoSelecionada] = useState(null);
+
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [itemParaDeletar, setItemParaDeletar] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
+    const handleAbrirModalEncerramento = (consignacao) => {
+        setConsignacaoSelecionada(consignacao);
+        setShowEncerrarModal(true);
+    };
+
+    const handleEncerramentoSucesso = (idConsignacaoEncerrada) => {
+        // Remove a consignação da lista de ativos na tela, dando feedback instantâneo
+        setConsignacaoAtivo(prev => prev.filter(c => c.id !== idConsignacaoEncerrada));
+    };
+
+    // Função para abrir o modal de confirmação da exclusão
+    const handleAbrirModalConfirmacao = (consignacao) => {
+        setItemParaDeletar(consignacao);
+        setShowConfirmModal(true);
+    };
+
+    // Função para fechar o modal de exclusão
+    const handleFecharModalConfirmacao = () => {
+        setItemParaDeletar(null);
+        setShowConfirmModal(false);
+    };
+
+    // Função que executa a exclusão
+    const handleDeletarConsignacao = async () => {
+        if (!itemParaDeletar) return;
+
+        setDeleteLoading(true);
+        try {
+            await ConsignacaoDataService.remove(itemParaDeletar?.id);
+
+            // Atualiza a UI removendo o item da lista
+            setConsignacaoAtivo(prev => prev.filter(c => c.id !== itemParaDeletar?.id));
+            setConsignacaoDataInicio(prev => prev.filter(c => c.id !== itemParaDeletar?.id));
+
+            handleFecharModalConfirmacao();
+        } catch (error) {
+            console.error("Erro ao deletar consignação:", error);
+            // Opcional: Adicionar um alerta de erro para o usuário
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
 
     const [consignacaoAtivo, setConsignacaoAtivo] = useState([]);
     const [consignacaoDataInicio, setConsignacaoDataInicio] = useState([]);
@@ -143,10 +195,13 @@ const Consignacoes = () => {
                                         <thead>
                                             <tr>
                                                 <th scope="col">ID</th>
-                                                <th scope="col">Data</th>
+                                                <th scope="col">Data Início</th>
                                                 <th scope="col">Automóvel</th>
                                                 <th scope="col">Valor</th>
-                                                <th scope="col">-</th>
+                                                <th scope="col">Detalhes</th>
+                                                <th scope="col">Editar</th>
+                                                <th scope="col">Encerrar</th>
+                                                <th scope="col">Excluir</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -163,21 +218,41 @@ const Consignacoes = () => {
                                                             <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
                                                             <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
                                                         </td>
-                                                        <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td> {/* Formatar valor */}
+                                                        <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td>
                                                         <td>
                                                             <button
-                                                                className='btn btn-outline-warning btn-sm'
+                                                                className='btn btn-outline-info btn-sm ms-3'
+                                                                onClick={() => { verDetalhes(d.id) }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <i className="bi bi-eye-fill"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                className='btn btn-outline-warning btn-sm ms-2'
                                                                 onClick={() => { editarConsignacao(d.id) }}
                                                                 title="Editar Consignação" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
                                                             </button>
+                                                        </td>
+                                                        <td>
                                                             <button
-                                                                className='btn btn-outline-info btn-sm'
-                                                                onClick={() => { verDetalhes(d.id) }}
-                                                                title="Ver Detalhes"
+                                                                className='btn btn-outline-success btn-sm ms-3'
+                                                                onClick={() => handleAbrirModalEncerramento(d)}
+                                                                title="Encerrar Consignação"
                                                             >
-                                                                <i className="bi bi-eye-fill"></i>
+                                                                <i className="bi bi-check-circle-fill"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                className='btn btn-outline-danger btn-sm'
+                                                                onClick={() => handleAbrirModalConfirmacao(d)}
+                                                                title="Excluir Consignação"
+                                                            >
+                                                                <i className="bi bi-trash-fill"></i>
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -214,10 +289,12 @@ const Consignacoes = () => {
                                         <thead>
                                             <tr>
                                                 <th scope="col">ID</th>
-                                                <th scope="col">Data</th>
+                                                <th scope="col">Data Início</th>
                                                 <th scope="col">Automóvel</th>
                                                 <th scope="col">Valor</th>
-                                                <th scope="col">-</th>
+                                                <th scope="col">Detalhes</th>
+                                                <th scope="col">Editar</th>
+                                                <th scope="col">Encerrar</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -237,19 +314,33 @@ const Consignacoes = () => {
                                                         <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td>
                                                         <td>
                                                             <button
-                                                                className='btn btn-outline-warning btn-sm'
-                                                                onClick={() => { editarConsignacao(d.id) }}
-                                                                title="Editar Consignação" // Dica para o usuário
-                                                            >
-                                                                <i className="bi bi-pencil-fill"></i>
-                                                            </button>
-                                                            <button
                                                                 className='btn btn-outline-info btn-sm'
                                                                 onClick={() => { verDetalhes(d.id) }}
                                                                 title="Ver Detalhes"
                                                             >
                                                                 <i className="bi bi-eye-fill"></i>
                                                             </button>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                className='btn btn-outline-warning btn-sm'
+                                                                onClick={() => { editarConsignacao(d.id) }}
+                                                                title="Editar Consignação" // Dica para o usuário
+                                                            >
+                                                                <i className="bi bi-pencil-fill"></i>
+                                                            </button>
+                                                        </td>
+
+                                                        <td>
+                                                            <td>
+                                                                <button
+                                                                    className='btn btn-outline-success btn-sm ms-3'
+                                                                    onClick={() => handleAbrirModalEncerramento(d)}
+                                                                    title="Encerrar Consignação"
+                                                                >
+                                                                    <i className="bi bi-check-circle-fill"></i>
+                                                                </button>
+                                                            </td>
                                                         </td>
                                                     </tr>
                                                 );
@@ -329,6 +420,28 @@ const Consignacoes = () => {
                     consignacao={consignacaoLocalStorage}
                 />
 
+                {consignacaoSelecionada && (
+                    <ModalEncerrarConsignacao
+                        show={showEncerrarModal}
+                        onHide={() => { setShowEncerrarModal(false) }}
+                        consignacao={consignacaoSelecionada}
+                        onSuccess={handleEncerramentoSucesso}
+                    />
+                )}
+
+                <ModalConfirmacao
+                    show={showConfirmModal}
+                    onHide={handleFecharModalConfirmacao}
+                    onConfirm={handleDeletarConsignacao}
+                    loading={deleteLoading}
+                    titulo="Confirmar Exclusão de Consignação"
+                    corpo={
+                        <>
+                            <p>Você tem certeza que deseja excluir esse registro de consignação?</p>
+                            <p className="text"><strong>Atenção:</strong> Esta ação também <strong>excluirá permanentemente</strong> o automóvel associado a ela. Esta operação <strong>não</strong> pode ser desfeita.</p>
+                        </>
+                    }
+                />
 
             </div>
         </>

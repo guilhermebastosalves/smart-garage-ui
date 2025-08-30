@@ -361,7 +361,16 @@ const EditarManutencao = () => {
                             </div>
                             <div className="col-md-4">
                                 <label for="automovel" class="form-label">Automóvel</label>
-                                <Select styles={customStyles} formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}>
+                                <Select styles={customStyles} formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}
+                                    filterOption={(option, inputValue) => {
+                                        const label = option.label;
+                                        const texto = [
+                                            label.marca,
+                                            label.modelo,
+                                            label.renavam,
+                                        ].filter(Boolean).join(" ").toLowerCase();
+                                        return texto.includes(inputValue.toLowerCase());
+                                    }}>
                                 </Select>
                                 {vazio.includes("automovelId") && <div className="invalid-feedback">Informe o automóvel.</div>}
                             </div>

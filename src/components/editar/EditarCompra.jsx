@@ -409,13 +409,32 @@ const EditarCompra = () => {
                             <div className="col-md-4">
                                 <label for="fornecedor" class="form-label">Proprietario</label>
                                 <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="clienteId" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleProprietarioChange} value={optionsFornecedor.find(option => option.value === formData.clienteId) || null} isClearable={true}
-                                    styles={customStyles}>
+                                    styles={customStyles}
+                                    filterOption={(option, inputValue) => {
+                                        const label = option.label;
+                                        const texto = [
+                                            label.nome,
+                                            label.razaoSocial,
+                                            label.cpf,
+                                            label.cnpj,
+                                        ].filter(Boolean).join(" ").toLowerCase();
+                                        return texto.includes(inputValue.toLowerCase());
+                                    }}>
                                 </Select>
                                 {vazio.includes("clienteId") && <div className="invalid-feedback">Informe o proprietário.</div>}
                             </div>
                             <div className="col-md-4">
                                 <label for="automovel" class="form-label">Automóvel</label>
-                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}>
+                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}
+                                    filterOption={(option, inputValue) => {
+                                        const label = option.label;
+                                        const texto = [
+                                            label.marca,
+                                            label.modelo,
+                                            label.renavam,
+                                        ].filter(Boolean).join(" ").toLowerCase();
+                                        return texto.includes(inputValue.toLowerCase());
+                                    }}>
                                 </Select>
                                 {vazio.includes("automovelId") && <div className="invalid-feedback">Informe o automóvel.</div>}
                             </div>

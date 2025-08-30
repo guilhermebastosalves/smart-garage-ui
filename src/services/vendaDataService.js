@@ -25,6 +25,10 @@ class VendaDataService {
     update(id, data) {
         return http.put(`/api/venda/${id}`, data);
     }
+
+    remove(id) {
+        return http.delete(`/api/venda/${id}`);
+    };
 }
 
 export default new VendaDataService();

@@ -354,7 +354,16 @@ const Gasto = () => {
                             <div className="col-md-4">
                                 <label for="automovel" class="form-label">Automóvel</label>
                                 <Select formatOptionLabel={formatOptionLabel}
-                                    styles={customStyles} isSearchable={true} className={`${hasError("automovel") && "is-invalid"}`} id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setGasto({ ...gasto, automovelId: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === gasto.automovelId) || null} isClearable={true}>
+                                    styles={customStyles} isSearchable={true} className={`${hasError("automovel") && "is-invalid"}`} id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setGasto({ ...gasto, automovelId: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === gasto.automovelId) || null} isClearable={true}
+                                    filterOption={(option, inputValue) => {
+                                        const label = option.label;
+                                        const texto = [
+                                            label.marca,
+                                            label.modelo,
+                                            label.renavam,
+                                        ].filter(Boolean).join(" ").toLowerCase();
+                                        return texto.includes(inputValue.toLowerCase());
+                                    }}>
                                 </Select>
                                 {vazio.includes("automovel") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel.</div>}
                             </div>

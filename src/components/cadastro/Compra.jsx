@@ -60,7 +60,6 @@ const Compra = () => {
         id: null,
         ano_fabricacao: "",
         ano_modelo: "",
-        ativo: false,
         cor: "",
         combustivel: "",
         km: "",
@@ -375,7 +374,6 @@ const Compra = () => {
 
             formData.append("ano_fabricacao", automovel.ano_fabricacao);
             formData.append("ano_modelo", automovel.ano_modelo);
-            formData.append("ativo", automovel.ativo);
             formData.append("cor", automovel.cor);
             formData.append("combustivel", automovel.combustivel);
             formData.append("km", automovel.km);
@@ -606,7 +604,7 @@ const Compra = () => {
                     <fieldset className="mb-5">
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações da Compra</legend>
                         <div className="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="valor" class="form-label">Valor da Compra (R$)</label>
                                 <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeCompra} />
                                 {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>
@@ -615,9 +613,19 @@ const Compra = () => {
                                 }
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="fornecedor" className="form-label">Fornecedor</label>
-                                <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === compra.clienteId) || null} isClearable={true} styles={customStyles}>
+                                <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === compra.clienteId) || null} isClearable={true} styles={customStyles}
+                                    filterOption={(option, inputValue) => {
+                                        const label = option.label;
+                                        const texto = [
+                                            label.nome,
+                                            label.razaoSocial,
+                                            label.cpf,
+                                            label.cnpj
+                                        ].filter(Boolean).join(" ").toLowerCase();
+                                        return texto.includes(inputValue.toLowerCase());
+                                    }}>
                                 </Select>
                                 {
                                     vazio.includes("clienteId") &&
@@ -625,7 +633,7 @@ const Compra = () => {
                                 }
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="data" class="form-label">Data</label><br />
                                 <DatePicker
                                     calendarClassName="custom-datepicker-container"
@@ -648,25 +656,22 @@ const Compra = () => {
                                     <div className="invalid-feedback">Data inválida.</div>
                                 }
                             </div>
-                            <div className="col-md-3 d-flex justify-content-center align-items-end">
-                                <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
-                                    {isSubmitting ? (
-                                        <>
-                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                            Salvando..
-                                        </>
-                                    ) : (
-                                        "Cadastrar Automóvel"
-                                    )}
-                                </button>
-                            </div>
                         </div>
                     </fieldset>
 
                     {/* Botão de Submissão */}
-                    {/* <div className="border d-flex justify-content-end">
-
-                    </div> */}
+                    <div className="d-flex justify-content-end">
+                        <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
+                            {isSubmitting ? (
+                                <>
+                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    Salvando..
+                                </>
+                            ) : (
+                                "Cadastrar Automóvel"
+                            )}
+                        </button>
+                    </div>
                 </form >
             </div >
         </>

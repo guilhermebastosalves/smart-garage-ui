@@ -60,7 +60,6 @@ const Consignacao = () => {
         id: null,
         ano_fabricacao: "",
         ano_modelo: "",
-        ativo: false,
         cor: "",
         combustivel: "",
         km: "",
@@ -375,7 +374,6 @@ const Consignacao = () => {
 
             formData.append("ano_fabricacao", automovel.ano_fabricacao);
             formData.append("ano_modelo", automovel.ano_modelo);
-            // formData.append("ativo", automovel.ativo);
             formData.append("cor", automovel.cor);
             formData.append("combustivel", automovel.combustivel);
             formData.append("km", automovel.km);
@@ -629,7 +627,17 @@ const Consignacao = () => {
                             <div className="col-md-4">
                                 <label for="fornecedor" class="form-label">Proprietario</label>
                                 <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} class="form-select" id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleProprietarioChange} value={optionsFornecedor.find(option => option.value === consignacao.clienteId) || null} isClearable={true}
-                                    styles={customStyles}>
+                                    styles={customStyles}
+                                    filterOption={(option, inputValue) => {
+                                        const label = option.label;
+                                        const texto = [
+                                            label.nome,
+                                            label.razaoSocial,
+                                            label.cpf,
+                                            label.cnpj
+                                        ].filter(Boolean).join(" ").toLowerCase();
+                                        return texto.includes(inputValue.toLowerCase());
+                                    }}>
                                 </Select>
                                 {vazio.includes("clienteId") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o proprietário.</div>}
                             </div>

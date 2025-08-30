@@ -1,11 +1,11 @@
 import Header from '../Header';
-import VendaDataServive from '../../services/vendaDataService';
+import VendaDataService from '../../services/vendaDataService';
 import AutomovelDataService from '../../services/automovelDataService';
 import ModeloDataService from '../../services/modeloDataService';
 import MarcaDataService from '../../services/marcaDataService';
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ModalConsignacao from '../modais/ModalConsignacao';
+import ModalConfirmacao from '../modais/ModalConfirmacao';
 
 
 const Vendas = () => {
@@ -15,6 +15,41 @@ const Vendas = () => {
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
     const [marca, setMarca] = useState([]);
+
+    // Adicione os states para controlar o modal de exclusão
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [itemParaDeletar, setItemParaDeletar] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
+    // Crie as funções para controlar o modal e a exclusão
+    const handleAbrirModalConfirmacao = (venda) => {
+        setItemParaDeletar(venda);
+        setShowConfirmModal(true);
+    };
+
+    const handleFecharModalConfirmacao = () => {
+        setItemParaDeletar(null);
+        setShowConfirmModal(false);
+    };
+
+    const handleDeletarVenda = async () => {
+        if (!itemParaDeletar) return;
+
+        setDeleteLoading(true);
+        try {
+            await VendaDataService.remove(itemParaDeletar.id);
+
+            // Atualiza a UI removendo o item da lista para feedback instantâneo
+            setVenda(prev => prev.filter(v => v.id !== itemParaDeletar.id));
+
+            handleFecharModalConfirmacao();
+        } catch (error) {
+            console.error("Erro ao deletar venda:", error);
+            // Opcional: Adicionar um alerta de erro para o usuário aqui
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
 
     const [opcao, setOpcao] = useState('');
     const navigate = useNavigate();
@@ -31,11 +66,11 @@ const Vendas = () => {
         const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
         // Use Promise.all para esperar todas as chamadas essenciais terminarem
         Promise.all([
-            VendaDataServive.getAll(),
+            VendaDataService.getAll(),
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll(),
-            VendaDataServive.getByData()
+            VendaDataService.getByData()
         ]).then(([vendas, automoveis, modelos, marcas, vendasRecentes]) => {
             setVenda(vendas.data);
             setAutomovel(automoveis.data);
@@ -133,7 +168,9 @@ const Vendas = () => {
                                                 <th scope="col">Data</th>
                                                 <th scope="col">Automóvel</th>
                                                 <th scope="col">Valor</th>
-                                                <th scope="col">-</th>
+                                                <th scope="col">Detalhes</th>
+                                                <th scope="col">Editar</th>
+                                                <th scope="col">Excluir</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -153,18 +190,30 @@ const Vendas = () => {
                                                         <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td>
                                                         <td>
                                                             <button
+                                                                className='btn btn-outline-info btn-sm ms-3'
+                                                                onClick={() => { verDetalhes(d.id) }}
+                                                                title="Ver Detalhes"
+                                                            >
+                                                                <i className="bi bi-eye-fill"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button
                                                                 className='btn btn-outline-warning btn-sm'
                                                                 onClick={() => { editarVenda(d.id) }}
                                                                 title="Editar Venda" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
                                                             </button>
+                                                        </td>
+
+                                                        <td>
                                                             <button
-                                                                className='btn btn-outline-info btn-sm'
-                                                                onClick={() => { verDetalhes(d.id) }}
-                                                                title="Ver Detalhes"
+                                                                className='btn btn-outline-danger btn-sm'
+                                                                onClick={() => handleAbrirModalConfirmacao(d)}
+                                                                title="Cancelar Venda"
                                                             >
-                                                                <i className="bi bi-eye-fill"></i>
+                                                                <i className="bi bi-trash-fill"></i>
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -309,6 +358,20 @@ const Vendas = () => {
                     </div>
                 </div>
             </div>
+
+            <ModalConfirmacao
+                show={showConfirmModal}
+                onHide={handleFecharModalConfirmacao}
+                onConfirm={handleDeletarVenda}
+                loading={deleteLoading}
+                titulo="Confirmar Cancelamento de Venda"
+                corpo={
+                    <>
+                        <p>Você tem certeza que deseja cancelar a venda?</p>
+                        <p > <strong>Atenção:</strong> Esta ação excluirá <strong>permanentemente</strong> o registro da venda. O automóvel associado retornará ao status de "Ativo" no estoque.</p>
+                    </>
+                }
+            />
         </>
     );
 

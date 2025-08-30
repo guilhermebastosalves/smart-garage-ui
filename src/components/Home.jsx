@@ -19,15 +19,6 @@ const Home = () => {
                     <p className="text-muted fs-5">Selecione uma das opções abaixo para começar a gerenciar sua garagem.</p>
                 </div>
 
-                {
-                    user.role === "vendedor" && (
-                        <div>
-                            <p className="fs-3"> voce é vendedor</p>
-                        </div>
-                    )
-
-                }
-
                 {/* Grid de Cards de Ação */}
                 <div className="row row-cols-1 row-cols-md-3 g-4">
 

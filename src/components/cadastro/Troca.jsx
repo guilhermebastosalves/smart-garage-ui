@@ -61,7 +61,6 @@ const Troca = () => {
         id: null,
         ano_fabricacao: "",
         ano_modelo: "",
-        ativo: false,
         cor: "",
         combustivel: "",
         km: "",
@@ -460,7 +459,6 @@ const Troca = () => {
 
             formData.append("ano_fabricacao", automovel.ano_fabricacao);
             formData.append("ano_modelo", automovel.ano_modelo);
-            formData.append("ativo", automovel.ativo);
             formData.append("cor", automovel.cor);
             formData.append("combustivel", automovel.combustivel);
             formData.append("km", automovel.km);
@@ -499,6 +497,13 @@ const Troca = () => {
                 });
 
             setTroca(trocaResp.data);
+
+            const autoFornecidoResp = await AutomovelDataService.update(troca?.automovel_fornecido,
+                { ativo: false }
+            ).catch(e => {
+                console.error("Erro ao inativar automóvel fornecido:", e);
+            });
+
 
             // --- SUCESSO! ---
             setSucesso(true);
@@ -728,14 +733,33 @@ const Troca = () => {
                             </div>
                             <div className="col-md-4">
                                 <label for="fornecedor" class="form-label">Fornecedor</label>
-                                <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("fornecedor") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === troca.clienteId) || null} isClearable={true}>
+                                <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("fornecedor") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === troca.clienteId) || null} isClearable={true}
+                                    filterOption={(option, inputValue) => {
+                                        const label = option.label;
+                                        const texto = [
+                                            label.nome,
+                                            label.razaoSocial,
+                                            label.cpf,
+                                            label.cnpj,
+                                        ].filter(Boolean).join(" ").toLowerCase();
+                                        return texto.includes(inputValue.toLowerCase());
+                                    }}>
                                 </Select>
                                 {vazio.includes("clienteId") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o proprietário.</div>}
                             </div>
 
                             <div className="col-md-4">
                                 <label for="automovel_fornecido" class="form-label">Automóvel Fornecido</label>
-                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovel_fornecido") && "is-invalid"}`} id="automovel_fornecido" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setTroca({ ...troca, automovel_fornecido: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === troca.automovel_fornecido) || null} isClearable={true}>
+                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovel_fornecido") && "is-invalid"}`} id="automovel_fornecido" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setTroca({ ...troca, automovel_fornecido: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === troca.automovel_fornecido) || null} isClearable={true}
+                                    filterOption={(option, inputValue) => {
+                                        const label = option.label;
+                                        const texto = [
+                                            label.marca,
+                                            label.modelo,
+                                            label.renavam,
+                                        ].filter(Boolean).join(" ").toLowerCase();
+                                        return texto.includes(inputValue.toLowerCase());
+                                    }}>
                                 </Select>
                                 {vazio.includes("automovel_fornecido") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel fornecido.</div>}
                             </div>

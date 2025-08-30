@@ -23,8 +23,8 @@ const Estoque = () => {
         setLoading(true);
         // Carrega todos os dados em paralelo para melhor performance
         Promise.all([
-            // AutomovelDataService.getByAtivo(),
-            AutomovelDataService.getAll(),
+            AutomovelDataService.getByAtivo(),
+            // AutomovelDataService.getAll(),
             MarcaDataService.getAll(),
             ModeloDataService.getAll(),
         ]).then(([automoveisRes, marcasRes, modelosRes]) => {
@@ -45,8 +45,8 @@ const Estoque = () => {
         if (!search) return automovel;
 
         return automovel.filter(auto => {
-            const modelo2 = modelo.find(m => m.id === auto.modeloId);
             const marca2 = marca.find(m => m.id === auto.marcaId);
+            const modelo2 = modelo.find(m => m.marcaId === marca2?.id);
             const searchTerm = search.toLowerCase();
 
             return (
@@ -57,6 +57,9 @@ const Estoque = () => {
         });
     }, [search, automovel, modelo, marca]);
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [automoveisFiltrados]);
 
     // Lógica de Paginação
     const [currentPage, setCurrentPage] = useState(1);
@@ -153,7 +156,7 @@ const Estoque = () => {
                         <h1 className="fw-bold mb-0">Estoque de Veículos</h1>
                         <p className="text-muted">Consulte e gerencie todos os veículos disponíveis.</p>
                     </div>
-                    <div className="d-flex align-items-center">
+                    <div className="d-flex align-items-center col-md-3">
                         <input
                             type="search"
                             className="form-control me-2"
@@ -161,9 +164,9 @@ const Estoque = () => {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                        <Link to="/cadastro/automoveis" className="btn btn-success flex-shrink-0">
+                        {/* <Link to="/cadastro/automoveis" className="btn btn-success flex-shrink-0">
                             <i className="bi bi-plus-circle-fill me-2"></i> Cadastrar
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
 

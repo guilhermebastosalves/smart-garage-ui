@@ -7,6 +7,7 @@ import MarcaDataService from '../../services/marcaDataService';
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalCompra from '../modais/ModalCompra';
+import ModalConfirmacao from '../modais/ModalConfirmacao';
 
 
 const Compras = () => {
@@ -20,6 +21,42 @@ const Compras = () => {
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
     const [marca, setMarca] = useState([]);
+
+    // States para controlar o modal de exclusão
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [itemParaDeletar, setItemParaDeletar] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
+
+    // Funções para controlar o modal e a exclusão
+    const handleAbrirModalConfirmacao = (compra) => {
+        setItemParaDeletar(compra);
+        setShowConfirmModal(true);
+    };
+
+    const handleFecharModalConfirmacao = () => {
+        setItemParaDeletar(null);
+        setShowConfirmModal(false);
+    };
+
+    const handleDeletarCompra = async () => {
+        if (!itemParaDeletar) return;
+
+        setDeleteLoading(true);
+        try {
+            await CompraDataService.remove(itemParaDeletar.id);
+
+            // Atualiza a UI removendo o item da lista para feedback instantâneo
+            setCompra(prev => prev.filter(c => c.id !== itemParaDeletar.id));
+
+            handleFecharModalConfirmacao();
+        } catch (error) {
+            console.error("Erro ao deletar compra:", error);
+            // Opcional: Adicionar um alerta de erro para o usuário aqui
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
 
     const [opcao, setOpcao] = useState('');
 
@@ -139,6 +176,7 @@ const Compras = () => {
                                                 <th scope="col">Valor</th>
                                                 <th scope="col">Detalhes</th>
                                                 <th scope="col">Editar</th>
+                                                <th scope="col">Excluir</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -167,11 +205,20 @@ const Compras = () => {
                                                         </td>
                                                         <td>
                                                             <button
-                                                                className='btn btn-outline-warning btn-sm'
+                                                                className='btn btn-outline-warning btn-sm ms-3'
                                                                 onClick={() => { editarCompra(d.id) }}
                                                                 title="Editar Consignação" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                className='btn btn-outline-danger btn-sm ms-3'
+                                                                onClick={() => handleAbrirModalConfirmacao(d)}
+                                                                title="Excluir Compra"
+                                                            >
+                                                                <i className="bi bi-trash-fill"></i>
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -225,6 +272,20 @@ const Compras = () => {
                     show={showModal}
                     onHide={() => setShowModal(false)}
                     compra={compraLocalStorage}
+                />
+
+                <ModalConfirmacao
+                    show={showConfirmModal}
+                    onHide={handleFecharModalConfirmacao}
+                    onConfirm={handleDeletarCompra}
+                    loading={deleteLoading}
+                    titulo="Confirmar Exclusão de Compra"
+                    corpo={
+                        <>
+                            <p>Você tem certeza que deseja excluir a compra ?</p>
+                            <p ><strong>Atenção:</strong> Esta ação também excluirá <strong>permanentemente</strong> o automóvel associado a ela. Esta operação <strong>não </strong> pode ser desfeita.</p>
+                        </>
+                    }
                 />
 
             </div >

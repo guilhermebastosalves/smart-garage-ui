@@ -23,6 +23,10 @@ class CompraDataService {
         return http.put(`/api/compra/${id}`, data);
     }
 
+    remove(id) {
+        return http.delete(`/api/compra/${id}`);
+    };
+
 }
 
 export default new CompraDataService();

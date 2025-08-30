@@ -30,9 +30,17 @@ class ConsignacaoDataService {
         return http.get('/api/consignacao/datainicio');
     }
 
+    encerrar(id, data) {
+        return http.put(`/api/consignacao/encerrar/${id}`, data)
+    }
+
     update(id, data) {
         return http.put(`/api/consignacao/${id}`, data)
     }
+
+    remove(id) {
+        return http.delete(`/api/consignacao/${id}`);
+    };
 }
 
 export default new ConsignacaoDataService();

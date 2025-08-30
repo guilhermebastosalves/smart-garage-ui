@@ -125,11 +125,6 @@ const Venda = () => {
 
         // Tipo
 
-
-
-
-
-
         return { vazioErros, tamanhoErros, tipoErros };
     };
 
@@ -448,13 +443,31 @@ const Venda = () => {
                             </div>
                             <div className="col-md-4">
                                 <label for="fornecedor" class="form-label">Fornecedor</label>
-                                <Select formatOptionLabel={formatOptionLabelFornecedor} styles={customStyles} isSearchable={true} className={`${hasError("fornecedor") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={(option) => setVenda({ ...venda, clienteIdlId: option ? option.value : "" })} value={optionsFornecedor.find(option => option.value === venda.clienteId) || null} isClearable={true}>
+                                <Select formatOptionLabel={formatOptionLabelFornecedor} styles={customStyles} isSearchable={true} className={`${hasError("fornecedor") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={(option) => setVenda({ ...venda, clienteIdlId: option ? option.value : "" })} value={optionsFornecedor.find(option => option.value === venda.clienteId) || null} isClearable={true} filterOption={(option, inputValue) => {
+                                    const label = option.label;
+                                    const texto = [
+                                        label.nome,
+                                        label.razaoSocial,
+                                        label.cpf,
+                                        label.cnpj,
+                                    ].filter(Boolean).join(" ").toLowerCase();
+                                    return texto.includes(inputValue.toLowerCase());
+                                }}>
                                 </Select>
                                 {vazio.includes("clienteId") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o proprietário.</div>}
                             </div>
                             <div className="col-md-4">
                                 <label for="automovel_fornecido" class="form-label">Automóvel Fornecido</label>
-                                <Select formatOptionLabel={formatOptionLabel} styles={customStyles} isSearchable={true} className={`${hasError("automovel_fornecido") && "is-invalid"}`} id="automovel_fornecido" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setVenda({ ...venda, automovelId: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === venda.automovelId) || null} isClearable={true}>
+                                <Select formatOptionLabel={formatOptionLabel} styles={customStyles} isSearchable={true} className={`${hasError("automovel_fornecido") && "is-invalid"}`} id="automovel_fornecido" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setVenda({ ...venda, automovelId: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === venda.automovelId) || null} isClearable={true}
+                                    filterOption={(option, inputValue) => {
+                                        const label = option.label;
+                                        const texto = [
+                                            label.marca,
+                                            label.modelo,
+                                            label.renavam,
+                                        ].filter(Boolean).join(" ").toLowerCase();
+                                        return texto.includes(inputValue.toLowerCase());
+                                    }}>
                                 </Select>
                                 {vazio.includes("automovel_fornecido") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel fornecido.</div>}
                             </div>
