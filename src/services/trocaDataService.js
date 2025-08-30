@@ -22,6 +22,11 @@ class TrocaDataService {
         return http.put(`/api/troca/${id}`, data);
     }
 
+    remove(id) {
+        return http.delete(`/api/troca/${id}`);
+    };
+
+
 }
 
 export default new TrocaDataService();

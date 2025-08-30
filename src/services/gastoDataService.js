@@ -10,6 +10,10 @@ class GastoDataService {
         return http.get(`/api/gasto/${id}`)
     }
 
+    getByData() {
+        return http.get(`/api/gasto/data`)
+    }
+
     getDetalhesById(id) {
         return http.get(`/api/gasto/detalhes/${id}`);
     };
@@ -20,6 +24,10 @@ class GastoDataService {
 
     update(id, data) {
         return http.put(`/api/gasto/${id}`, data)
+    }
+
+    remove(id) {
+        return http.delete(`/api/gasto/${id}`)
     }
 
 }

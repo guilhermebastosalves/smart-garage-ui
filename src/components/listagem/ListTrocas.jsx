@@ -9,6 +9,7 @@ import JuridicaDataService from '../../services/juridicaDataService';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalTroca from '../modais/ModalTroca';
+import ModalConfirmacao from '../modais/ModalConfirmacao';
 
 
 const Trocas = () => {
@@ -24,6 +25,41 @@ const Trocas = () => {
     const [cliente, setCliente] = useState([]);
     const [fisica, setFisica] = useState([]);
     const [juridica, setJuridica] = useState([]);
+
+    // 2. Adicione os states para controlar o modal de exclusão
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [itemParaDeletar, setItemParaDeletar] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
+    // 3. Crie as funções para controlar o modal e a exclusão
+    const handleAbrirModalConfirmacao = (troca) => {
+        setItemParaDeletar(troca);
+        setShowConfirmModal(true);
+    };
+
+    const handleFecharModalConfirmacao = () => {
+        setItemParaDeletar(null);
+        setShowConfirmModal(false);
+    };
+
+    const handleDeletarTroca = async () => {
+        if (!itemParaDeletar) return;
+
+        setDeleteLoading(true);
+        try {
+            await TrocaDataService.remove(itemParaDeletar.id);
+
+            // Atualiza a UI removendo o item da lista para feedback instantâneo
+            setTroca(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+
+            handleFecharModalConfirmacao();
+        } catch (error) {
+            console.error("Erro ao deletar troca:", error);
+            // Opcional: Adicionar um alerta de erro para o usuário aqui
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
 
     const [opcao, setOpcao] = useState('');
     const navigate = useNavigate();
@@ -183,12 +219,23 @@ const Trocas = () => {
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
                                                             </button>
+                                                        </td>
+                                                        <td>
                                                             <button
                                                                 className='btn btn-outline-info btn-sm'
                                                                 onClick={() => { verDetalhes(d.id) }}
                                                                 title="Ver Detalhes"
                                                             >
                                                                 <i className="bi bi-eye-fill"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                className='btn btn-outline-danger btn-sm'
+                                                                onClick={() => handleAbrirModalConfirmacao(d)}
+                                                                title="Excluir Troca"
+                                                            >
+                                                                <i className="bi bi-trash-fill"></i>
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -243,6 +290,26 @@ const Trocas = () => {
                     show={showModal}
                     onHide={() => setShowModal(false)}
                     troca={trocaLocalStorage}
+                />
+
+                {/* 5. Renderize o modal de confirmação */}
+                <ModalConfirmacao
+                    show={showConfirmModal}
+                    onHide={handleFecharModalConfirmacao}
+                    onConfirm={handleDeletarTroca}
+                    loading={deleteLoading}
+                    titulo="Confirmar Exclusão de Troca"
+                    corpo={
+                        <>
+                            <p>Você tem certeza que deseja excluir a troca <strong>#{itemParaDeletar?.id}</strong>?</p>
+                            <p className="text-danger fw-bold">Atenção: Esta ação é complexa e não pode ser desfeita.</p>
+                            <ul>
+                                <li>O registro desta <strong>troca</strong> será excluído.</li>
+                                <li>O automóvel <strong>recebido</strong> pela loja será excluído permanentemente.</li>
+                                <li>O automóvel <strong>fornecido</strong> pelo cliente voltará ao status de "Ativo" no estoque.</li>
+                            </ul>
+                        </>
+                    }
                 />
 
             </div >

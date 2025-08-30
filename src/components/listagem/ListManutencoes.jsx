@@ -5,6 +5,8 @@ import ModeloDataService from '../../services/modeloDataService';
 import MarcaDataService from '../../services/marcaDataService';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ModalConfirmacao from '../modais/ModalConfirmacao';
+
 
 const Manutencao = () => {
 
@@ -15,6 +17,42 @@ const Manutencao = () => {
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
     const [marca, setMarca] = useState([]);
+
+    // 2. Adicione os states para controlar o modal de exclusão
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [itemParaDeletar, setItemParaDeletar] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
+    // 3. Crie as funções para controlar o modal e a exclusão
+    const handleAbrirModalConfirmacao = (troca) => {
+        setItemParaDeletar(troca);
+        setShowConfirmModal(true);
+    };
+
+    const handleFecharModalConfirmacao = () => {
+        setItemParaDeletar(null);
+        setShowConfirmModal(false);
+    };
+
+    const handleDeletarManutencao = async () => {
+        if (!itemParaDeletar) return;
+
+        setDeleteLoading(true);
+        try {
+            await ManutencaoDataService.remove(itemParaDeletar.id);
+
+            // Atualiza a UI removendo o item da lista para feedback instantâneo
+            setManutencao(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+            setManutencaoRecente(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+
+            handleFecharModalConfirmacao();
+        } catch (error) {
+            console.error("Erro ao deletar manutenção:", error);
+            // Opcional: Adicionar um alerta de erro para o usuário aqui
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
 
     const [opcao, setOpcao] = useState('');
 
@@ -31,12 +69,14 @@ const Manutencao = () => {
         // Use Promise.all para esperar todas as chamadas essenciais terminarem
         Promise.all([
             ManutencaoDataService.getAll(),
+            ManutencaoDataService.getAllByDataEnvio(),
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll(),
             // VendaDataServive.getByData()
-        ]).then(([manutencoes, automoveis, modelos, marcas]) => {
+        ]).then(([manutencoes, manutencoesrecentes, automoveis, modelos, marcas]) => {
             setManutencao(manutencoes.data);
+            setManutencaoRecente(manutencoesrecentes.data);
             setAutomovel(automoveis.data);
             setModelo(modelos.data);
             setMarca(marcas.data);
@@ -140,6 +180,7 @@ const Manutencao = () => {
                                                 <th scope="col">Valor</th>
                                                 <th scope="col">Descrição</th>
                                                 <th scope="col">Editar</th>
+                                                <th scope="col">Excluir</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -175,6 +216,15 @@ const Manutencao = () => {
                                                                 title="Editar Manutenção" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                className='btn btn-outline-danger btn-sm'
+                                                                onClick={() => handleAbrirModalConfirmacao(d)}
+                                                                title="Excluir Manutenção"
+                                                            >
+                                                                <i className="bi bi-trash-fill"></i>
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -215,7 +265,8 @@ const Manutencao = () => {
                                                 <th scope="col">Automóvel</th>
                                                 <th scope="col">Valor</th>
                                                 <th scope="col">Descrição</th>
-                                                <th scope="col">-</th>
+                                                <th scope="col">Editar</th>
+                                                <th scope="col">Excluir</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -234,9 +285,6 @@ const Manutencao = () => {
                                                             <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
                                                         </td>
                                                         <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td>
-                                                        <td className="text-dark fw-bold">
-                                                            <button className='btn btn-outline-primary btn-sm'>+</button>
-                                                        </td>
                                                         <td>
                                                             <button
                                                                 className='btn btn-outline-info btn-sm ms-3'
@@ -253,6 +301,15 @@ const Manutencao = () => {
                                                                 title="Editar Manutenção" // Dica para o usuário
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                className='btn btn-outline-danger btn-sm'
+                                                                onClick={() => handleAbrirModalConfirmacao(d)}
+                                                                title="Excluir Manutenção"
+                                                            >
+                                                                <i className="bi bi-trash-fill"></i>
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -327,6 +384,23 @@ const Manutencao = () => {
                     </div>
                 </div>
             </div>
+
+            <ModalConfirmacao
+                show={showConfirmModal}
+                onHide={handleFecharModalConfirmacao}
+                onConfirm={handleDeletarManutencao}
+                loading={deleteLoading}
+                titulo="Confirmar Exclusão de Manutenção"
+                corpo={
+                    <>
+                        <p>Você tem certeza que deseja excluir o registro de manutenção?</p>
+                        <p><strong>Atenção:</strong> Esta ação <strong>não</strong> pode ser desfeita.</p>
+                        <ul>
+                            <li>O registro dessa <strong>manutenção</strong> será excluído <strong>permanentemente</strong>.</li>
+                        </ul>
+                    </>
+                }
+            />
         </>
     );
 

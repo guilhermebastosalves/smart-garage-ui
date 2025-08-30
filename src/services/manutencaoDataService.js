@@ -14,12 +14,20 @@ class ManutencaoDataService {
         return http.get(`/api/manutencao/detalhes/${id}`);
     };
 
+    getAllByDataEnvio() {
+        return http.get('/api/manutencao/dataenvio');
+    }
+
     create(data) {
         return http.post('/api/manutencao', data)
     }
 
     update(id, data) {
         return http.put(`/api/manutencao/${id}`, data)
+    }
+
+    remove(id) {
+        return http.delete(`/api/manutencao/${id}`)
     }
 
 }
