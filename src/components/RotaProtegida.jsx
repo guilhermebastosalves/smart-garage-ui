@@ -1,7 +1,8 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const ProtectedRoute = () => {
+// A função agora aceita uma prop `allowedRoles` que será um array de strings
+const ProtectedRoute = ({ allowedRoles }) => {
     const { user, loading } = useAuth();
 
     if (loading) {
@@ -19,6 +20,18 @@ const ProtectedRoute = () => {
     if (!user) {
         // Se não houver usuário após o loading, redireciona para o login
         return <Navigate to="/" replace />;
+    }
+
+    // --- NOVA LÓGICA DE VERIFICAÇÃO DE CARGO ---
+    // Se 'allowedRoles' foi passado e o cargo do usuário não está na lista,
+    // redireciona para uma página segura (como a home).
+    // if (allowedRoles && !allowedRoles.includes(user.role)) {
+    //     // O usuário está logado, mas não tem permissão para acessar esta página.
+    //     return <Navigate to="/home" replace />; // ou para uma página de "Acesso Negado"
+    // }
+
+    if (allowedRoles && !allowedRoles.includes(user.role)) {
+        return <Navigate to="/acesso-negado" replace />;
     }
 
     // Se houver usuário, renderiza a página solicitada

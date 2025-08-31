@@ -6,6 +6,7 @@ import "../../public/static/style.css";
 import { useAuth } from '../context/AuthContext'; // Importe o hook
 
 const Home = () => {
+
     const { user } = useAuth(); // Pegue o usuário e a função de logout
 
     return (

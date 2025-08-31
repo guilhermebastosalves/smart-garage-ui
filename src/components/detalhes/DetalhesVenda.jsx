@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../Header';
 import VendaDataService from '../../services/vendaDataService';
+import FuncionarioDataService from '../../services/funcionarioDataService';
+
 
 const DetalhesVenda = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
     const [detalhes, setDetalhes] = useState(null);
+    const [funcionario, setFuncionario] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -24,6 +27,19 @@ const DetalhesVenda = () => {
                 setLoading(false);
             });
     }, [id]);
+
+    useEffect(() => {
+        FuncionarioDataService.getAll()
+            .then(response => {
+                setFuncionario(response.data)
+            })
+            .catch(e => {
+                console.error("Erro ao buscar funcionário", e)
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+    }, [])
 
     if (loading) {
         return (
@@ -76,6 +92,9 @@ const DetalhesVenda = () => {
     const { automovel, cliente } = detalhes;
     const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro modelo
 
+    const funcionarioNome = funcionario.find(f => f.id === detalhes?.funcionarioId);
+    console.log(detalhes.funcionarioId);
+
     return (
         <>
             <Header />
@@ -104,6 +123,7 @@ const DetalhesVenda = () => {
                             </div>
                             <div className="card-body">
                                 <p className="mb-2"><strong>ID da Venda:</strong> {detalhes.id}</p>
+                                <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
                                 <p className="mb-2"><strong>Data:</strong> {new Date(detalhes.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
                                 <p className="mb-2"><strong>Valor:</strong> <span className="text fw-bold fs-6">{formatter.format(detalhes.valor)}</span></p>
                                 <p className="mb-2"><strong>Forma de Pagamento:</strong> <span className="text fw-bold fs-6">{detalhes.forma_pagamento}</span></p>

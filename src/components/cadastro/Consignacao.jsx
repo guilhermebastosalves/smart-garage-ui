@@ -12,9 +12,12 @@ import ModeloDataService from "../../services/modeloDataService";
 import MarcaDataService from "../../services/marcaDataService";
 import ConsignacaoDataService from "../../services/consignacaoDataService";
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
+import { useAuth } from '../../context/AuthContext';
 
 
 const Consignacao = () => {
+
+    const { user } = useAuth();
 
     const navigate = useNavigate();
 
@@ -99,7 +102,7 @@ const Consignacao = () => {
         data_fim: "",
         automovelId: "",
         clienteId: "",
-        funcionarioId: ""
+        funcionarioId: user?.id
     };
 
     const [consignacao, setConsignacao] = useState(initialConsignacaoState);
@@ -401,7 +404,7 @@ const Consignacao = () => {
                 data_fim: consignacao.data_fim || null,
                 clienteId: consignacao.clienteId,
                 automovelId: automovelResp?.data.id,
-                // funcionarioId: consignacao.funcionarioId
+                funcionarioId: consignacao.funcionarioId
             }
 
             const consignacaoResp = await ConsignacaoDataService.create(dataConsignacao)

@@ -33,7 +33,7 @@ const EditarTroca = () => {
 
     const [formData, setFormData] = useState({
         // Campos do Automóvel
-        valor: "", data: "", forma_pagamento: "",
+        valor: "", data: "", forma_pagamento: "", comissao: "",
 
 
         // IDs das associações
@@ -117,6 +117,21 @@ const EditarTroca = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    // COMISSAO EM CIMA DO VALOR DO AUTOMÓVEL, VALOR ESSE QUE A PRINCÍPIO NÃO É EDITÁVEL
+
+    // useEffect(() => {
+    //     // Só atualiza se o usuário não digitou manualmente
+    //     // if (!troca.comissao) {
+    //     let comissao = "";
+    //     if (formData?.valor !== "") {
+    //         comissao = formData?.valor < 50000 ? 300 : formData?.valor >= 100000 ? 700 : 500;
+    //     }
+    //     setFormData(prev => ({
+    //         ...prev,
+    //         comissao: comissao
+    //     }));
+    //     // }
+    // }, [formData?.valor]);
 
     // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -140,10 +155,11 @@ const EditarTroca = () => {
         let tipoErros = [];
 
         // Vazio
-        // if (!formData.data) vazioErros.push("data");
+        if (!formData.data) vazioErros.push("data");
         // if (!formData.valor) vazioErros.push("valor");
-        // if (!formData.clienteId) vazioErros.push("clienteId");
-        // if (!formData.automovelId) vazioErros.push("automovelId");
+        if (!formData.clienteId) vazioErros.push("clienteId");
+        if (!formData.automovelId) vazioErros.push("automovelId");
+        if (!formData.automovel_fornecido) vazioErros.push("automovel_fornecido");
 
         // Tipo
         // if (formData.valor && isNaN(formData.valor)) tipoErros.push("valor");
@@ -409,10 +425,16 @@ const EditarTroca = () => {
                             </div>
                             <div className="col-md-4">
                                 <label for="forma_pagamento" class="form-label">Forma de Pagamento</label>
-                                <Select className={`${hasError("forma_pagamento") && "is-invalid"}`} id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === formData.forma_pagamento)} onChange={(option) => setFormData({ ...formData, forma_pagamento: option.value })} options={optionsFormaPagamento} isClearable={true}>
+                                <Select className={`${hasError("forma_pagamento") && "is-invalid"}`} id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === formData.forma_pagamento) || null} onChange={(option) => setFormData(prevFormData => ({ ...prevFormData, forma_pagamento: option ? option.value : null }))} options={optionsFormaPagamento} isClearable={true}>
                                 </Select>
                                 {vazio.includes("forma_pagamento") && <div id="formapagamentohelp" class="form-text text-danger ms-1">Informe a forma de pagamento.</div>}
                             </div>
+                            {/* <div className="col-md-4">
+                                <label for="comissao" class="form-label">Comissão</label>
+                                <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={formData.comissao ?? ""} />
+                                {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
+                                {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
+                            </div> */}
                             <div className="col-md-4">
                                 <label for="data" class="form-label">Data</label><br />
                                 <DatePicker

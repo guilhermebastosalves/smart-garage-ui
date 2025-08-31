@@ -3,16 +3,18 @@ import ManutencaoDataService from '../../services/manutencaoDataService';
 import AutomovelDataService from '../../services/automovelDataService';
 import ModeloDataService from '../../services/modeloDataService';
 import MarcaDataService from '../../services/marcaDataService';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalConfirmacao from '../modais/ModalConfirmacao';
+import ModalFinalizarManutencao from '../modais/ModalFinalizarManutencao';
 
 
 const Manutencao = () => {
 
     const navigate = useNavigate();
 
-    const [manutencao, setManutencao] = useState([]);
+    const [manutencaoAtiva, setManutencaoAtiva] = useState([]);
+    const [manutencaoInativa, setManutencaoInativa] = useState([]);
     const [manutencaoRecente, setManutencaoRecente] = useState([]);
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
@@ -42,7 +44,8 @@ const Manutencao = () => {
             await ManutencaoDataService.remove(itemParaDeletar.id);
 
             // Atualiza a UI removendo o item da lista para feedback instantâneo
-            setManutencao(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+            setManutencaoAtiva(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+            setManutencaoInativa(prev => prev.filter(t => t.id !== itemParaDeletar.id));
             setManutencaoRecente(prev => prev.filter(t => t.id !== itemParaDeletar.id));
 
             handleFecharModalConfirmacao();
@@ -54,7 +57,25 @@ const Manutencao = () => {
         }
     };
 
-    const [opcao, setOpcao] = useState('');
+
+    //FINALIAR MANUTENCAO
+    const [showFinalizarModal, setShowFinalizarModal] = useState(false);
+    const [manutencaoSelecionada, setManutencaoSelecionada] = useState(null);
+
+    // Funções para o novo modal
+    const handleAbrirModalFinalizar = (manutencao) => {
+        setManutencaoSelecionada(manutencao);
+        setShowFinalizarModal(true);
+    };
+
+    const handleFinalizacaoSucesso = (idManutencaoFinalizada) => {
+        // Remove a manutenção da lista de ativos para feedback instantâneo
+        setManutencaoAtiva(prev => prev.filter(m => m.id !== idManutencaoFinalizada));
+    };
+
+
+
+    const [opcao, setOpcao] = useState('ativas');
 
     const handleInputChangeOpcao = event => {
         const { value } = event.target;
@@ -68,15 +89,17 @@ const Manutencao = () => {
         const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
         // Use Promise.all para esperar todas as chamadas essenciais terminarem
         Promise.all([
-            ManutencaoDataService.getAll(),
+            ManutencaoDataService.getByAtivo(),
+            ManutencaoDataService.getByInativo(),
             ManutencaoDataService.getAllByDataEnvio(),
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll(),
             // VendaDataServive.getByData()
-        ]).then(([manutencoes, manutencoesrecentes, automoveis, modelos, marcas]) => {
-            setManutencao(manutencoes.data);
-            setManutencaoRecente(manutencoesrecentes.data);
+        ]).then(([ativas, inativas, recentes, automoveis, modelos, marcas]) => {
+            setManutencaoAtiva(ativas.data);
+            setManutencaoInativa(inativas.data);
+            setManutencaoRecente(recentes.data);
             setAutomovel(automoveis.data);
             setModelo(modelos.data);
             setMarca(marcas.data);
@@ -90,36 +113,38 @@ const Manutencao = () => {
         });
     }, []);
 
+    // 2. UNIFICAÇÃO DA FONTE DE DADOS
+    const listaAtual = useMemo(() => {
+        switch (opcao) {
+            case 'inativas':
+                return manutencaoInativa;
+            case 'data_envio':
+                return manutencaoRecente;
+            case 'ativas':
+            default:
+                return manutencaoAtiva;
+        }
+    }, [opcao, manutencaoAtiva, manutencaoInativa, manutencaoRecente]);
+
+    // 3. RESETA A PÁGINA QUANDO O FILTRO MUDA
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [opcao]);
+
 
     const [currentPage, setCurrentPage] = useState(1);
     const recordsPerPage = 10;
     const lastIndex = currentPage * recordsPerPage;
     const firstIndex = lastIndex - recordsPerPage;
 
-    const recordsManutencoes = manutencao.slice(firstIndex, lastIndex);
-    const npageManutencoes = Math.ceil(manutencao.length / recordsPerPage);
-    const numbersManutencoes = [...Array(npageManutencoes + 1).keys()].slice(1);
+    const records = listaAtual.slice(firstIndex, lastIndex);
+    const npage = Math.ceil(listaAtual.length / recordsPerPage);
+    const numbers = [...Array(npage + 1).keys()].slice(1);
 
-    const recordsManutencoesRecentes = manutencaoRecente.slice(firstIndex, lastIndex);
-    const npageManutencoesRecentes = Math.ceil(manutencaoRecente.length / recordsPerPage);
-    const numbersManutencoesRecentes = [...Array(npageManutencoesRecentes + 1).keys()].slice(1);
-
-
-    function nextPage() {
-        if (currentPage !== npageManutencoes) {
-            setCurrentPage(currentPage + 1);
-        }
-    }
-
-    function prePage() {
-        if (currentPage !== 1) {
-            setCurrentPage(currentPage - 1)
-        }
-    }
-
-    function changeCPage(id) {
-        setCurrentPage(id)
-    }
+    // Funções de controle da paginação (agora funcionam para qualquer lista)
+    const changeCPage = (n) => setCurrentPage(n);
+    const prePage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1); };
+    const nextPage = () => { if (currentPage < npage) setCurrentPage(currentPage + 1); };
 
     const editarManutencao = (id) => {
         navigate(`/editar-manutencao/${id}`)
@@ -150,237 +175,119 @@ const Manutencao = () => {
                         <h5 className="mb-0">Manutenções</h5>
                         {/* Filtro/Dropdown vai aqui */}
                         <select name="opcao" id="opcao" className="form-select w-auto" onChange={handleInputChangeOpcao}>
-                            <option value="">Padrão</option>
-                            <option value="recente">Mais Recentes</option>
+                            <option value="ativas">Ativas</option>
+                            <option value="inativas">Finalizadas</option>
+                            <option value="data_envio">Mais Recentes</option>
                         </select>
                     </div>
 
                     <div className="card-body">
-                        {/* Sua lógica de renderização da tabela ou mensagem "Sem resultados" vai aqui dentro */}
-                        {opcao === '' && (
-                            manutencao.length > 0 ? (
-                                <>
-                                    {loading &&
-
-                                        <div className="d-flex justify-content-center align-items-center" style={{ height: '300px' }}>
-                                            <div className="spinner-border text-primary" role="status">
-                                                <span className="visually-hidden">Carregando...</span>
-                                            </div>
-                                        </div>
-
-                                    }
-
-                                    <table className="table mt-4">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">ID</th>
-                                                <th scope="col">Data Envio</th>
-                                                <th scope="col">Previsão de Retorno</th>
-                                                <th scope="col">Automóvel</th>
-                                                <th scope="col">Valor</th>
-                                                <th scope="col">Descrição</th>
-                                                <th scope="col">Editar</th>
-                                                <th scope="col">Excluir</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {recordsManutencoes.map((d, i) => {
-                                                const auto = automovel.find(a => a.id === d.automovelId);
-                                                const nomeMarca = marca.find(m => m.id === auto?.marcaId);
-                                                const noModelo = modelo.find(mo => mo.marcaId === nomeMarca?.id);
-
-                                                return (
-                                                    <tr key={d.id} className="align-middle">
-                                                        <th scope="row">{d.id}</th>
-                                                        <td>{new Date(d.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td> {/* Formatar data */}
-                                                        <td>{new Date(d.previsao_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                                                        <td>
-                                                            <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
-                                                            <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
-                                                        </td>
-                                                        <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td>
-
-                                                        <td>
-                                                            <button
-                                                                className='btn btn-outline-info btn-sm ms-3'
-                                                                onClick={() => { verDetalhes(d.id) }}
-                                                                title="Ver Detalhes"
-                                                            >
-                                                                <i className="bi bi-eye-fill"></i>
-                                                            </button>
-                                                        </td>
-                                                        <td>
-                                                            <button
-                                                                className='btn btn-outline-warning btn-sm'
-                                                                onClick={() => { editarManutencao(d.id) }}
-                                                                title="Editar Manutenção" // Dica para o usuário
-                                                            >
-                                                                <i className="bi bi-pencil-fill"></i>
-                                                            </button>
-                                                        </td>
-                                                        <td>
-                                                            <button
-                                                                className='btn btn-outline-danger btn-sm'
-                                                                onClick={() => handleAbrirModalConfirmacao(d)}
-                                                                title="Excluir Manutenção"
-                                                            >
-                                                                <i className="bi bi-trash-fill"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
-                                </>
-                            ) : (
-
-                                <div className="text-center p-5">
-                                    <i className="bi bi-journal-x" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
-                                    <h4 className="mt-3">Nenhuma manutenção encontrada</h4>
+                        {loading ? (
+                            <div className="d-flex justify-content-center align-items-center" style={{ height: '300px' }}>
+                                <div className="spinner-border text-primary" role="status">
+                                    <span className="visually-hidden">Carregando...</span>
                                 </div>
+                            </div>
+                        ) : records.length > 0 ? (
+                            <table className="table mt-4 table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Data Envio</th>
+                                        <th scope="col">Previsão de Retorno</th>
+                                        <th scope="col">Automóvel</th>
+                                        <th scope="col">Valor</th>
+                                        <th scope="col" className="text-center" style={{ width: '180px' }}>Ações
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {records.map((d) => {
+                                        const auto = automovel.find(a => a.id === d.automovelId);
+                                        const nomeMarca = marca.find(m => m.id === auto?.marcaId);
+                                        const noModelo = modelo.find(mo => mo.marcaId === nomeMarca?.id);
 
-                            )
-                        )}
+                                        return (
+                                            <tr key={d.id} className="align-middle">
+                                                <th scope="row">{d.id}</th>
+                                                <td>{new Date(d.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                                                <td>{d.previsao_retorno ? new Date(d.previsao_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</td>
+                                                <td>
+                                                    <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
+                                                    <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
+                                                </td>
+                                                <td className="text-dark fw-bold">{d.valor && `${parseFloat(d.valor).toLocaleString('pt-BR', {
+                                                    style: 'currency',
+                                                    currency: 'BRL'
+                                                })}`}</td>
+                                                <td className='text-center'>
+                                                    <button
+                                                        className='btn btn-outline-info btn-sm me-2'
+                                                        onClick={() => { verDetalhes(d.id) }}
+                                                        title="Ver Detalhes"
+                                                    >
+                                                        <i className="bi bi-eye-fill"></i>
+                                                    </button>
 
-                        {opcao === 'recente' && (
-                            manutencaoRecente.length > 0 ? (
-                                <>
-                                    {loading &&
+                                                    <button
+                                                        className='btn btn-outline-warning btn-sm me-2'
+                                                        onClick={() => { editarManutencao(d.id) }}
+                                                        title="Editar Manutenção" // Dica para o usuário
+                                                    >
+                                                        <i className="bi bi-pencil-fill"></i>
+                                                    </button>
 
-                                        <div className="d-flex justify-content-center align-items-center" style={{ height: '300px' }}>
-                                            <div className="spinner-border text-primary" role="status">
-                                                <span className="visually-hidden">Carregando...</span>
-                                            </div>
-                                        </div>
+                                                    {d.ativo && (
+                                                        <button
+                                                            className='btn btn-outline-success btn-sm me-2'
+                                                            onClick={() => handleAbrirModalFinalizar(d)}
+                                                            title="Finalizar Manutenção"
+                                                        >
+                                                            <i className="bi bi-check-circle-fill"></i>
+                                                        </button>
+                                                    )}
 
-                                    }
 
-                                    <table className="table mt-4">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">ID</th>
-                                                <th scope="col">Data Envio</th>
-                                                <th scope="col">Previsão de Retorno</th>
-                                                <th scope="col">Automóvel</th>
-                                                <th scope="col">Valor</th>
-                                                <th scope="col">Descrição</th>
-                                                <th scope="col">Editar</th>
-                                                <th scope="col">Excluir</th>
+                                                    <button
+                                                        className='btn btn-outline-danger btn-sm'
+                                                        onClick={() => handleAbrirModalConfirmacao(d)}
+                                                        title="Excluir Manutenção"
+                                                    >
+                                                        <i className="bi bi-trash-fill"></i>
+                                                    </button>
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            {recordsManutencoesRecentes.map((d, i) => {
-                                                const auto = automovel.find(a => a.id === d.automovelId);
-                                                const nomeMarca = marca.find(m => m.id === auto?.marcaId);
-                                                const noModelo = modelo.find(mo => mo.marcaId === nomeMarca?.id);
-
-                                                return (
-                                                    <tr key={d.id} className="align-middle">
-                                                        <th scope="row">{d.id}</th>
-                                                        <td>{new Date(d.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                                                        <td>{new Date(d.previsao_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                                                        <td>
-                                                            <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
-                                                            <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
-                                                        </td>
-                                                        <td className="text-dark fw-bold">{`R$ ${d.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</td>
-                                                        <td>
-                                                            <button
-                                                                className='btn btn-outline-info btn-sm ms-3'
-                                                                onClick={() => { verDetalhes(d.id) }}
-                                                                title="Ver Detalhes"
-                                                            >
-                                                                <i className="bi bi-eye-fill"></i>
-                                                            </button>
-                                                        </td>
-                                                        <td>
-                                                            <button
-                                                                className='btn btn-outline-warning btn-sm'
-                                                                onClick={() => { editarManutencao(d.id) }}
-                                                                title="Editar Manutenção" // Dica para o usuário
-                                                            >
-                                                                <i className="bi bi-pencil-fill"></i>
-                                                            </button>
-                                                        </td>
-                                                        <td>
-                                                            <button
-                                                                className='btn btn-outline-danger btn-sm'
-                                                                onClick={() => handleAbrirModalConfirmacao(d)}
-                                                                title="Excluir Manutenção"
-                                                            >
-                                                                <i className="bi bi-trash-fill"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
-                                </>
-                            ) : (
-
-                                <div className="text-center p-5">
-                                    <i className="bi bi-journal-x" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
-                                    <h4 className="mt-3">Nenhuma manutenção encontrada</h4>
-
-                                </div>
-
-                            )
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <div className="text-center p-5">
+                                <i className="bi bi-journal-x" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
+                                <h4 className="mt-3">Nenhuma manutenção encontrada</h4>
+                                <p className="text-muted">Não há registros que correspondam ao filtro selecionado.</p>
+                            </div>
                         )}
                     </div>
 
                     <div className="card-footer bg-light">
-                        {/* Sua paginação vai aqui */}
-                        {opcao === '' && (
-                            manutencao.length > 0 ? (
-                                <>
-                                    <nav className="col-md-9 mt-3"></nav>
-                                    <nav className="mt-3 col-md-3">
-                                        <ul className="pagination">
-                                            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                <span className="page-link pointer" href="#" onClick={prePage}>Previous</span>
-                                            </li>
-                                            {numbersManutencoes.map((n, i) => (
-                                                <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={i}>
-                                                    <span className="page-link pointer" href="#" onClick={() => changeCPage(n)}>
-                                                        {n}
-                                                    </span>
-                                                </li>
-                                            ))}
-                                            <li className={`page-item ${currentPage === npageManutencoes ? 'disabled' : ''}`}>
-                                                <span className="page-link pointer" href="#" onClick={nextPage}>Next</span>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </>
-                            ) : (""))
-                        }
-
-                        {opcao === 'recente' && (
-                            manutencaoRecente.length > 0 ? (
-                                <>
-                                    <nav className="col-md-9 mt-3"></nav>
-                                    <nav className="mt-3 col-md-3">
-                                        <ul className="pagination">
-                                            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                <span className="page-link pointer" href="#" onClick={prePage}>Previous</span>
-                                            </li>
-                                            {numbersManutencoesRecentes.map((n, i) => (
-                                                <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={i}>
-                                                    <span className="page-link pointer" href="#" onClick={() => changeCPage(n)}>
-                                                        {n}
-                                                    </span>
-                                                </li>
-                                            ))}
-                                            <li className={`page-item ${currentPage === npageManutencoesRecentes ? 'disabled' : ''}`}>
-                                                <span className="page-link pointer" href="#" onClick={nextPage}>Next</span>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </>
-                            ) : (""))
-                        }
+                        {!loading && listaAtual.length > 0 && npage > 1 && (
+                            <nav className="d-flex justify-content-center">
+                                <ul className="pagination mb-0">
+                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                        <button className="page-link" onClick={prePage}>Anterior</button>
+                                    </li>
+                                    {numbers.map((n) => (
+                                        <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={n}>
+                                            <button className="page-link" onClick={() => changeCPage(n)}>{n}</button>
+                                        </li>
+                                    ))}
+                                    <li className={`page-item ${currentPage === npage ? 'disabled' : ''}`}>
+                                        <button className="page-link" onClick={nextPage}>Próximo</button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        )}
                     </div>
                 </div>
             </div>
@@ -401,6 +308,15 @@ const Manutencao = () => {
                     </>
                 }
             />
+
+            {manutencaoSelecionada && (
+                <ModalFinalizarManutencao
+                    show={showFinalizarModal}
+                    onHide={() => setShowFinalizarModal(false)}
+                    manutencao={manutencaoSelecionada}
+                    onSuccess={handleFinalizacaoSucesso}
+                />
+            )}
         </>
     );
 

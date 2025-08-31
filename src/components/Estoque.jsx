@@ -1,7 +1,6 @@
 import Header from "./Header";
 import { useState } from "react";
 import { useMemo } from "react";
-import React from "react";
 import { useEffect } from "react";
 import AutomovelDataService from "../services/automovelDataService";
 import MarcaDataService from "../services/marcaDataService";
@@ -15,20 +14,29 @@ const Estoque = () => {
     const navigate = useNavigate();
 
     const [automovel, setAutomovel] = useState([]);
+    const [automovelInativo, setAutomovelInativo] = useState([]);
     const [marca, setMarca] = useState([]);
     const [modelo, setModelo] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [opcao, setOpcao] = useState('ativos');
+
+    const handleInputChangeOpcao = event => {
+        const { value } = event.target;
+        setOpcao(value);
+    }
 
     useEffect(() => {
         setLoading(true);
         // Carrega todos os dados em paralelo para melhor performance
         Promise.all([
             AutomovelDataService.getByAtivo(),
-            // AutomovelDataService.getAll(),
+            AutomovelDataService.getByInativo(),
             MarcaDataService.getAll(),
             ModeloDataService.getAll(),
-        ]).then(([automoveisRes, marcasRes, modelosRes]) => {
+        ]).then(([automoveisRes, automoveisInativos, marcasRes, modelosRes]) => {
             setAutomovel(automoveisRes.data);
+            setAutomovelInativo(automoveisInativos.data);
             setMarca(marcasRes.data);
             setModelo(modelosRes.data);
         }).catch(e => {
@@ -40,11 +48,14 @@ const Estoque = () => {
 
     const [search, setSearch] = useState("");
 
-    // Hook 'useMemo' para calcular a lista filtrada de forma eficiente
+    // 1. UNIFICAÇÃO DA LÓGICA DE FILTRAGEM
     const automoveisFiltrados = useMemo(() => {
-        if (!search) return automovel;
+        // Primeiro, seleciona a lista base (ativos ou inativos)
+        const listaBase = opcao === 'ativos' ? automovel : automovelInativo;
 
-        return automovel.filter(auto => {
+        if (!search) return listaBase;
+
+        return listaBase.filter(auto => {
             const marca2 = marca.find(m => m.id === auto.marcaId);
             const modelo2 = modelo.find(m => m.marcaId === marca2?.id);
             const searchTerm = search.toLowerCase();
@@ -55,24 +66,30 @@ const Estoque = () => {
                 auto.ano_fabricacao.toString().includes(searchTerm)
             );
         });
-    }, [search, automovel, modelo, marca]);
+    }, [search, opcao, automovel, automovelInativo, modelo, marca]);
 
+    // 2. RESETA A PÁGINA QUANDO O FILTRO MUDA
+    // Isso corrige o bug de buscar em uma página que não existe mais
     useEffect(() => {
         setCurrentPage(1);
-    }, [automoveisFiltrados]);
+    }, [automoveisFiltrados, opcao]);
+
 
     // Lógica de Paginação
     const [currentPage, setCurrentPage] = useState(1);
     const recordsPerPage = 6;
     const lastIndex = currentPage * recordsPerPage;
     const firstIndex = lastIndex - recordsPerPage;
+
+    // As variáveis de paginação agora dependem da lista filtrada unificada
     const records = automoveisFiltrados.slice(firstIndex, lastIndex);
     const npage = Math.ceil(automoveisFiltrados.length / recordsPerPage);
     const numbers = [...Array(npage + 1).keys()].slice(1);
 
+    // As funções de paginação agora funcionam para ambas as listas
     const changeCPage = (n) => setCurrentPage(n);
-    const prePage = () => { if (currentPage !== 1) setCurrentPage(currentPage - 1) };
-    const nextPage = () => { if (currentPage !== npage) setCurrentPage(currentPage + 1) };
+    const prePage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1) };
+    const nextPage = () => { if (currentPage < npage) setCurrentPage(currentPage + 1) };
 
 
     const detalhesAutomovel = (id) => {
@@ -93,55 +110,69 @@ const Estoque = () => {
 
         if (records.length === 0) {
             return (
-                <div className="col-12 text-center p-5">
-                    <i className="bi bi-search" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
-                    <h4 className="mt-3">Nenhum veículo encontrado</h4>
-                    <p className="text-muted">Tente ajustar os termos da sua busca ou adicione um novo veículo ao estoque.</p>
-                </div>
+                <>
+                    <div className="col-md-4 mt-5"></div>
+                    <div className="col-12 text-center p-5 mt-5">
+                        <i className="bi bi-search" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
+                        <h4 className="mt-3">Nenhum veículo encontrado</h4>
+                        <p className="text-muted">Tente ajustar os termos da sua busca ou adicione um novo veículo ao estoque.</p>
+                    </div>
+                </>
             );
         }
 
         return (
             <>
-                {records.map((auto) => {
-                    const modelo2 = modelo.find(m => m.marcaId === auto.marcaId);
-                    const marca2 = marca.find(m => m.id === auto.marcaId);
+                {loading ? (
+                    <div className="col-12 d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="visually-hidden">Carregando...</span>
+                        </div>
+                    </div>
+                ) : records.length > 0 ? (
+                    records.map((auto) => {
+                        const modelo2 = modelo.find(m => m.marcaId === auto.marcaId);
+                        const marca2 = marca.find(m => m.id === auto.marcaId);
 
-                    return (
-                        <div key={auto.id} className="col">
-                            <div className="card h-100 card-hover">
-                                {/* Imagem do Carro */}
-
-                                {/* <img src={auto.imagem !== null ? `http://localhost:3000/${auto.imagem}` : "/fotos/no-photos.png"} className={`card-img-top car-image ${auto.imagem === null ? "img-pequena" : ""}`} alt={`${marca2?.nome} ${modelo2?.nome}`} /> */}
-                                {auto.imagem ? (
-                                    <img
-                                        src={`http://localhost:3000/${auto.imagem}`}
-                                        className="card-img-top car-image"
-                                        alt={`${marca2?.nome} ${modelo2?.nome}`}
-                                    />
-                                ) : (
-                                    <div className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
-                                        <i class="bi bi-camera fs-1"></i>
+                        return (
+                            <div key={auto.id} className="col">
+                                <div className="card h-100 card-hover">
+                                    {auto.imagem ? (
+                                        <img
+                                            src={`http://localhost:3000/${auto.imagem}`}
+                                            className="card-img-top car-image"
+                                            alt={`${marca2?.nome} ${modelo2?.nome}`}
+                                        />
+                                    ) : (
+                                        <div className="d-flex justify-content-center align-items-center" style={{ height: "200px" }}>
+                                            <i className="bi bi-camera fs-1 text-muted"></i>
+                                        </div>
+                                    )}
+                                    <div className="card-body d-flex flex-column">
+                                        <h5 className="card-title">{marca2?.nome} {modelo2?.nome}</h5>
+                                        <p className="card-text text-muted">{auto.ano_fabricacao} &bull; {auto.cor}</p>
+                                        <h4 className="mb-3">
+                                            {auto.valor && `${parseFloat(auto.valor).toLocaleString('pt-BR', {
+                                                style: 'currency',
+                                                currency: 'BRL'
+                                            })}`}
+                                        </h4>
+                                        <button onClick={() => navigate(`/detalhes/${auto.id}`)} className="btn btn-primary mt-auto">
+                                            Ver Detalhes
+                                        </button>
                                     </div>
-                                )}
-
-                                <div className="card-body d-flex flex-column">
-                                    <h5 className="card-title">{marca2?.nome} {modelo2?.nome}</h5>
-                                    <p className="card-text text-muted">{auto.ano_fabricacao} &bull; {auto.cor}</p>
-                                    <h4 className="mb-3">
-                                        {auto.valor && `${parseFloat(auto.valor).toLocaleString('pt-BR', {
-                                            style: 'currency',
-                                            currency: 'BRL'
-                                        })}`}
-                                    </h4>
-                                    <button onClick={() => navigate(`/detalhes/${auto.id}`)} className="btn btn-primary mt-auto">
-                                        Ver Detalhes
-                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })
+                ) : (
+                    <div className="col-12 text-center p-5">
+                        <i className="bi bi-search" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
+                        <h4 className="mt-3">Nenhum veículo encontrado</h4>
+                        <p className="text-muted">Não há veículos que correspondam aos filtros selecionados.</p>
+                    </div>
+                )}
+
             </>
         );
     };
@@ -151,12 +182,18 @@ const Estoque = () => {
             <Header />
             <div className="container py-5">
                 {/* Cabeçalho da Página */}
-                <div className="d-flex justify-content-between align-items-center mb-4">
+                <div className="d-flex justify-content-between align-items-center">
                     <div>
                         <h1 className="fw-bold mb-0">Estoque de Veículos</h1>
                         <p className="text-muted">Consulte e gerencie todos os veículos disponíveis.</p>
                     </div>
-                    <div className="d-flex align-items-center col-md-3">
+                    <div className="d-flex align-items-center col-md-4">
+                        <div className="me-3 col-md-3">
+                            <select name="opcao" id="opcao" className="form-select me-2" value={opcao} onChange={handleInputChangeOpcao}>
+                                <option value="ativos">Ativos</option>
+                                <option value="inativos">Inativos</option>
+                            </select>
+                        </div>
                         <input
                             type="search"
                             className="form-control me-2"
@@ -164,11 +201,9 @@ const Estoque = () => {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                        {/* <Link to="/cadastro/automoveis" className="btn btn-success flex-shrink-0">
-                            <i className="bi bi-plus-circle-fill me-2"></i> Cadastrar
-                        </Link> */}
                     </div>
                 </div>
+
 
                 {/* Grid de Conteúdo */}
                 <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -176,7 +211,7 @@ const Estoque = () => {
                 </div>
 
                 {/* Paginação */}
-                {!loading && records.length > 0 && npage > 1 && (
+                {!loading && automoveisFiltrados.length > 0 && npage > 1 && (
                     <nav className="d-flex justify-content-center mt-5">
                         <ul className="pagination">
                             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
@@ -184,15 +219,16 @@ const Estoque = () => {
                             </li>
                             {numbers.map((n) => (
                                 <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={n}>
-                                    <span className="page-link pointer" href="#" onClick={() => changeCPage(n)}>{n}</span>
+                                    <button className="page-link" onClick={() => changeCPage(n)}>{n}</button>
                                 </li>
                             ))}
                             <li className={`page-item ${currentPage === npage ? 'disabled' : ''}`}>
-                                <span className="page-link pointer" href="#" onClick={nextPage}>Próximo</span>
+                                <button className="page-link" onClick={nextPage}>Próximo</button>
                             </li>
                         </ul>
                     </nav>
                 )}
+
             </div>
         </>
     );

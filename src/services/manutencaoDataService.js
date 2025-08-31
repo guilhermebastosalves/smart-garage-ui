@@ -10,6 +10,14 @@ class ManutencaoDataService {
         return http.get(`/api/manutencao/${id}`)
     }
 
+    getByAtivo() {
+        return http.get(`api/manutencao/ativo`);
+    }
+
+    getByInativo() {
+        return http.get(`api/manutencao/inativo`);
+    }
+
     getDetalhesById(id) {
         return http.get(`/api/manutencao/detalhes/${id}`);
     };
@@ -21,6 +29,10 @@ class ManutencaoDataService {
     create(data) {
         return http.post('/api/manutencao', data)
     }
+
+    finalizar(id, data) {
+        return http.put(`/api/manutencao/finalizar/${id}`, data);
+    };
 
     update(id, data) {
         return http.put(`/api/manutencao/${id}`, data)

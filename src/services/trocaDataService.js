@@ -10,6 +10,10 @@ class TrocaDataService {
         return http.get(`api/troca/${id}`);
     }
 
+    getByData() {
+        return http.get('/api/troca/data');
+    }
+
     getDetalhesById(id) {
         return http.get(`/api/troca/detalhes/${id}`);
     };

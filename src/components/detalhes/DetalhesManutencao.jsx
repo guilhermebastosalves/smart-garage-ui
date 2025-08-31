@@ -105,7 +105,7 @@ const DetalhesManutencao = () => {
                             <div className="card-body">
                                 <p className="mb-2"><strong>ID do Gasto:</strong> {detalhes.id}</p>
                                 <p className="mb-2"><strong>Data de Envio:</strong> {detalhes?.data_envio ? new Date(detalhes?.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</p>
-                                <p className="mb-2"><strong>Data de Retorno:</strong> {detalhes?.data_retorno ? new Date(detalhes?.retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</p>
+                                <p className="mb-2"><strong>Data de Retorno:</strong> {detalhes?.data_retorno ? new Date(detalhes?.data_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</p>
                                 <p className="mb-2"><strong>Valor:</strong> <span className="text fw-bold fs-6">{formatter.format(detalhes.valor)}</span></p>
                                 <p className="mb-2"><strong>Descrição:</strong> <span className="text fs-6">{detalhes.descricao}</span></p>
                                 <p className="mb-0">

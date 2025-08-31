@@ -13,9 +13,12 @@ import TrocaDataService from "../../services/trocaDataService";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaTag } from "react-icons/fa";
+import { useAuth } from '../../context/AuthContext';
 
 
 const Troca = () => {
+
+    const { user } = useAuth();
 
     const navigate = useNavigate();
 
@@ -100,10 +103,10 @@ const Troca = () => {
         comissao: "",
         forma_pagamento: "",
         valor: "",
-        data: "",
+        data: null,
         automovelId: "",
         clienteId: "",
-        funcionarioId: "",
+        funcionarioId: user?.id,
         automovel_fornecido: ""
     };
 
@@ -115,6 +118,20 @@ const Troca = () => {
             clienteId: clienteId || ""
         }));
     }, [clienteId]);
+
+    useEffect(() => {
+        // Só atualiza se o usuário não digitou manualmente
+        // if (!troca.comissao) {
+        let comissao = "";
+        if (automovel?.valor !== "") {
+            comissao = automovel?.valor < 50000 ? 300 : automovel?.valor >= 100000 ? 700 : 500;
+        }
+        setTroca(prev => ({
+            ...prev,
+            comissao: comissao
+        }));
+        // }
+    }, [automovel?.valor]);
 
     const handleInputChangeTroca = event => {
         const { name, value } = event.target;
@@ -480,18 +497,18 @@ const Troca = () => {
             const automovelId = automovelResp.data.id;
             if (!automovelId) throw new Error("Falha ao obter ID do automóvel.");
 
-            var dataTroca = {
-                comissao: troca.comissao,
-                valor: troca.valor,
-                data: troca.data,
-                forma_pagamento: troca.forma_pagamento,
-                clienteId: troca.clienteId,
-                automovelId: automovelResp?.data.id,
-                automovel_fornecido: troca.automovel_fornecido,
-                // funcionarioId: troca.funcionarioId
-            }
+            const trocaData = new FormData();
 
-            const trocaResp = await TrocaDataService.create(dataTroca)
+            trocaData.append("comissao", troca.comissao);
+            trocaData.append("valor", troca.valor);
+            trocaData.append("data", troca.data);
+            trocaData.append("forma_pagamento", troca.forma_pagamento);
+            trocaData.append("clienteId", troca.clienteId);
+            trocaData.append("automovelId", automovelResp?.data.id);
+            trocaData.append("automovel_fornecido", troca.automovel_fornecido);
+            trocaData.append("funcionarioId", troca.funcionarioId);
+
+            const trocaResp = await TrocaDataService.create(trocaData)
                 .catch(e => {
                     console.error("Erro ao criar troca:", e);
                 });
@@ -507,7 +524,7 @@ const Troca = () => {
 
             // --- SUCESSO! ---
             setSucesso(true);
-            setMensagemSucesso("Operação de consignação realizada com sucesso!");
+            setMensagemSucesso("Operação de troca realizada com sucesso!");
 
             // --- ETAPA 6: Redirecionamento ---
             if (automovel.origem === "Compra") {
@@ -710,7 +727,7 @@ const Troca = () => {
                             </div>
                             <div className="col-md-4">
                                 <label for="comissao" class="form-label">Comissão</label>
-                                <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" onChange={handleInputChangeTroca} />
+                                <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={troca.comissao} />
                                 {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
                                 {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
                             </div>

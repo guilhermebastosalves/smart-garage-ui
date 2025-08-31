@@ -14,8 +14,12 @@ import VendaDataService from "../../services/vendaDataService";
 import ConsignacaoDataService from "../../services/consignacaoDataService";
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaTag } from "react-icons/fa";
+import { useAuth } from '../../context/AuthContext';
+
 
 const Venda = () => {
+
+    const { user } = useAuth();
 
     const location = useLocation();
     const automovelId = location.state?.automovelId;
@@ -44,7 +48,7 @@ const Venda = () => {
         forma_pagamento: "",
         automovelId: "",
         clienteId: "",
-        // funcionarioId: ""
+        funcionarioId: user?.id
     };
 
     const [venda, setVenda] = useState(initialVendaState);
@@ -56,6 +60,16 @@ const Venda = () => {
             automovelId: automovelId || ""
         }));
     }, [clienteId, automovelId]);
+
+    useEffect(() => {
+        if (automovel?.valor && !venda.valor) {
+            setVenda(prev => ({
+                ...prev,
+                valor: automovel.valor
+            }));
+        }
+    }, [automovel?.valor]);
+
 
 
     const handleInputChangeVenda = event => {
@@ -235,7 +249,7 @@ const Venda = () => {
     const optionsFormaPagamento = [
         {
             label: "Cartão",
-            value: "Cartao"
+            value: "Cartão"
         },
         {
             label: "Dinheiro",
@@ -306,17 +320,17 @@ const Venda = () => {
 
         try {
 
-            var dataVenda = {
-                comissao: venda.comissao,
-                valor: automovel?.valor,
-                data: venda.data,
-                forma_pagamento: venda.forma_pagamento,
-                clienteId: venda.clienteId,
-                automovelId: venda.automovelId,
-                // funcionarioId: troca.funcionarioId
-            }
+            const formData = new FormData();
 
-            const vendaResp = await VendaDataService.create(dataVenda)
+            formData.append("comissao", automovel?.valor < 50000 ? 300 : automovel?.valor > 100000 ? 700 : 500);
+            formData.append("valor", venda.valor);
+            formData.append("data", venda.data);
+            formData.append("forma_pagamento", venda.forma_pagamento);
+            formData.append("clienteId", venda.clienteId);
+            formData.append("automovelId", venda.automovelId);
+            formData.append("funcionarioId", venda.funcionarioId);
+
+            const vendaResp = await VendaDataService.create(formData)
                 .catch(e => {
                     console.error("Erro ao criar venda:", e);
                 });
@@ -409,7 +423,7 @@ const Venda = () => {
                         <div className="row g-3">
                             <div className="col-md-4">
                                 <label for="valor" class="form-label">Valor</label>
-                                <input type="text" className={`form-control ${hasError("valor_diferenca") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeVenda} value={automovel?.valor} />
+                                <input type="text" className={`form-control ${hasError("valor_diferenca") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={(e) => setVenda({ ...venda, valor: e.target.value })} value={venda.valor} />
                                 {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                 {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
                             </div>
@@ -421,7 +435,7 @@ const Venda = () => {
                             </div>
                             <div className="col-md-4">
                                 <label for="comissao" class="form-label">Comissão</label>
-                                <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" onChange={handleInputChangeVenda} />
+                                <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" onChange={handleInputChangeVenda} value={automovel?.valor < 50000 ? 300 : automovel?.valor > 100000 ? 700 : 500} />
                                 {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
                                 {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
                             </div>
@@ -458,7 +472,7 @@ const Venda = () => {
                             </div>
                             <div className="col-md-4">
                                 <label for="automovel_fornecido" class="form-label">Automóvel Fornecido</label>
-                                <Select formatOptionLabel={formatOptionLabel} styles={customStyles} isSearchable={true} className={`${hasError("automovel_fornecido") && "is-invalid"}`} id="automovel_fornecido" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setVenda({ ...venda, automovelId: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === venda.automovelId) || null} isClearable={true}
+                                <Select formatOptionLabel={formatOptionLabel} styles={customStyles} isSearchable={true} className={`${hasError("automovel_fornecido") && "is-invalid"}`} id="automovel_fornecido" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} value={optionsAutomovel.find(option => option.value === venda.automovelId) || null} isClearable={true}
                                     filterOption={(option, inputValue) => {
                                         const label = option.label;
                                         const texto = [

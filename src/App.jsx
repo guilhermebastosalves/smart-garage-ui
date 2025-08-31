@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import Login from './components/Login'
 import Home from './components/Home'
 import Venda from './components/cadastro/Venda'
@@ -33,8 +34,26 @@ import ListVendas from './components/listagem/ListVendas';
 import ListGastos from "./components/listagem/ListGastos";
 import ListManutencoes from "./components/listagem/ListManutencoes";
 import ProtectedRoute from './components/RotaProtegida'; // Importe a rota protegida
+import AcessoNegado from './components/AcessoNegado'
 
 function App() {
+
+  const location = useLocation();
+
+  useEffect(() => {
+    // Esta função será executada toda vez que a URL (location) mudar
+
+    // Remove a classe que os modais do Bootstrap adicionam
+    document.body.classList.remove('modal-open');
+
+    // Garante que o estilo de overflow seja restaurado para o padrão
+    document.body.style.overflow = 'auto';
+
+    // NOVO: Remove o padding de compensação da barra de rolagem
+    document.body.style.paddingRight = ''; // Define como string vazia para remover o estilo inline
+
+  }, [location]); // A "lista de dependências" garante que o efeito rode a cada navegação
+
 
   return (
     <>
@@ -46,10 +65,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />}></Route>
             <Route path="/venda" element={<Venda />}></Route>
-            <Route path="/gastos" element={<Gasto />}></Route>
             <Route path="/troca" element={<Troca />}></Route>
-            <Route path="/manutencao" element={<Manutencao />}></Route>
-            <Route path="/relatorios" element={<Relatorios />}></Route>
             <Route path="/estoque" element={<Estoque />}></Route>
             <Route path="/cadastro/automoveis" element={<Automovel />}></Route>
             <Route path="/detalhes/:id" element={<Detalhes />}></Route>
@@ -57,8 +73,6 @@ function App() {
             <Route path="/detalhes-compra/:id" element={<DetalhesCompra />}></Route>
             <Route path="/detalhes-troca/:id" element={<DetalhesTroca />}></Route>
             <Route path="/detalhes-venda/:id" element={<DetalhesVenda />}></Route>
-            <Route path="/detalhes-gasto/:id" element={<DetalhesGasto />}></Route>
-            <Route path="/detalhes-manutencao/:id" element={<DetalhesManutencao />}></Route>
             <Route path="/compra" element={<Compra />}></Route>
             <Route path='/consignacao' element={<Consignacao />}></Route>
             <Route path='/editar-automovel/:id' element={<EditarAutomovel />}></Route>
@@ -66,17 +80,27 @@ function App() {
             <Route path='/editar-compra/:id' element={<EditarCompra />}></Route>
             <Route path='/editar-troca/:id' element={<EditarTroca />}></Route>
             <Route path='/editar-venda/:id' element={<EditarVenda />}></Route>
-            <Route path='/editar-gasto/:id' element={<EditarGasto />}></Route>
-            <Route path='/editar-manutencao/:id' element={<EditarManutencao />}></Route>
             <Route path='/historico' element={<Historico />}></Route>
             <Route path='/cliente' element={<Cliente />}></Route>
             <Route path='/listagem/compras' element={<ListCompras />}></Route>
             <Route path='/listagem/consignacoes' element={<ListConsignacao />}></Route>
             <Route path='/listagem/trocas' element={<ListTrocas />}></Route>
             <Route path='/listagem/vendas' element={<ListVendas />}></Route>
+            <Route path="/acesso-negado" element={<AcessoNegado />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={['gerente']} />}>
+            <Route path="/relatorios" element={<Relatorios />}></Route>
+            <Route path="/manutencao" element={<Manutencao />}></Route>
+            <Route path="/gastos" element={<Gasto />}></Route>
+            <Route path="/detalhes-gasto/:id" element={<DetalhesGasto />}></Route>
+            <Route path="/detalhes-manutencao/:id" element={<DetalhesManutencao />}></Route>
+            <Route path='/editar-gasto/:id' element={<EditarGasto />}></Route>
+            <Route path='/editar-manutencao/:id' element={<EditarManutencao />}></Route>
             <Route path='/listagem/gastos' element={<ListGastos />}></Route>
             <Route path='/listagem/manutencoes' element={<ListManutencoes />}></Route>
           </Route>
+
         </Routes>
       </div >
     </>

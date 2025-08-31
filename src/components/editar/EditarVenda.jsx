@@ -33,7 +33,7 @@ const EditarVenda = () => {
 
     const [formData, setFormData] = useState({
         // Campos do Automóvel
-        valor: "", data: "", forma_pagamento: "",
+        valor: "", data: "", forma_pagamento: "", comissao: "",
 
 
         // IDs das associações
@@ -112,6 +112,21 @@ const EditarVenda = () => {
         const { name, value } = event.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
+
+
+    useEffect(() => {
+        // Só atualiza se o usuário não digitou manualmente
+        // if (!troca.comissao) {
+        let comissao = "";
+        if (formData?.valor !== "") {
+            comissao = formData?.valor < 50000 ? 300 : formData?.valor >= 100000 ? 700 : 500;
+        }
+        setFormData(prev => ({
+            ...prev,
+            comissao: comissao
+        }));
+        // }
+    }, [formData?.valor]);
 
 
     // NOVO ESTADO PARA O BOTÃO
@@ -310,6 +325,7 @@ const EditarVenda = () => {
             const vendaData = new FormData();
             vendaData.append("data", formData.data);
             vendaData.append("valor", formData.valor);
+            vendaData.append("comissao", formData.comissao);
             vendaData.append("forma_pagamento", formData.forma_pagamento);
             vendaData.append("clienteId", formData.clienteId);
             vendaData.append("automovelId", formData.automovelId);
@@ -351,7 +367,7 @@ const EditarVenda = () => {
     const optionsFormaPagamento = [
         {
             label: "Cartão",
-            value: "Cartao"
+            value: "Cartão"
         },
         {
             label: "Dinheiro",
@@ -410,6 +426,12 @@ const EditarVenda = () => {
                                 {vazio.includes("forma_pagamento") && <div id="formapagamentohelp" class="form-text text-danger ms-1">Informe a forma de pagamento.</div>}
                             </div>
                             <div className="col-md-4">
+                                <label for="comissao" class="form-label">Comissão</label>
+                                <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={formData.comissao ?? ""} />
+                                {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
+                                {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
+                            </div>
+                            <div className="col-md-4">
                                 <label for="data" class="form-label">Data</label><br />
                                 <DatePicker
                                     calendarClassName="custom-datepicker-container"
@@ -454,7 +476,7 @@ const EditarVenda = () => {
                             </div>
                             <div className="col-md-4">
                                 <label for="automovel" class="form-label">Automóvel</label>
-                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}
+                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}
                                     filterOption={(option, inputValue) => {
                                         const label = option.label;
                                         const texto = [

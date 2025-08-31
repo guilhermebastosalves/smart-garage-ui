@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../Header';
 import ConsignacaoDataService from '../../services/consignacaoDataService';
+import FuncionarioDataService from '../../services/funcionarioDataService';
 
 const DetalhesConsignacao = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
     const [detalhes, setDetalhes] = useState(null);
+    const [funcionario, setFuncionario] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -24,6 +26,19 @@ const DetalhesConsignacao = () => {
                 setLoading(false);
             });
     }, [id]);
+
+    useEffect(() => {
+        FuncionarioDataService.getAll()
+            .then(response => {
+                setFuncionario(response.data)
+            })
+            .catch(e => {
+                console.error("Erro ao buscar funcionário", e)
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+    }, [])
 
     if (loading) {
         return (
@@ -74,7 +89,10 @@ const DetalhesConsignacao = () => {
 
     // Variáveis auxiliares para facilitar o acesso aos dados
     const { automovel, cliente } = detalhes;
-    const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro modelo
+    const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro 
+
+    const funcionarioNome = funcionario.find(f => f.id === detalhes?.funcionarioId);
+    console.log(detalhes.funcionarioId);
 
     return (
         <>
@@ -104,6 +122,7 @@ const DetalhesConsignacao = () => {
                             </div>
                             <div className="card-body">
                                 <p className="mb-2"><strong>ID da Consignação:</strong> {detalhes.id}</p>
+                                <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
                                 <p className="mb-2"><strong>Data de Início:</strong> {new Date(detalhes.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
                                 <p className="mb-2"><strong>Data de Término:</strong> {detalhes.data_termino ? new Date(detalhes.data_termino).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'Não Finalizada'}</p>
                                 <p className="mb-2"><strong>Valor Acordado:</strong> <span className="text fw-bold fs-6">{formatter.format(detalhes.valor)}</span></p>
