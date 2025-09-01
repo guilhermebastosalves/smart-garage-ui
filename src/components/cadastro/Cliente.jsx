@@ -236,7 +236,7 @@ const Cliente = () => {
 
         // Vazio
         if (!cliente.nome) vazioErros.push("nome");
-        if (!cliente.data_cadastro) vazioErros.push("data");
+        // if (!cliente.data_cadastro) vazioErros.push("data");
         if (!cliente.email) vazioErros.push("email");
         if (!cliente.telefone) vazioErros.push("telefone");
 
@@ -276,7 +276,7 @@ const Cliente = () => {
 
         // Vazio
         if (!cliente.nome) vazioErros.push("nome");
-        if (!cliente.data_cadastro) vazioErros.push("data");
+        // if (!cliente.data_cadastro) vazioErros.push("data");
         if (!cliente.email) vazioErros.push("email");
         if (!cliente.telefone) vazioErros.push("telefone");
 
@@ -344,13 +344,13 @@ const Cliente = () => {
             if (verificacao.data.erro) {
                 setErro(verificacao.data.erro); // erro vindo do back
                 setMensagemErro(verificacao.data.mensagemErro);
-                // return; // não continua
                 throw new Error(verificacao.data.mensagemErro);
             }
 
             var dataCliente = {
                 ativo: cliente.ativo,
-                data_cadastro: cliente.data_cadastro,
+                // data_cadastro: cliente.data_cadastro,
+                data_cadastro: new Date(),
                 nome: cliente.nome,
                 email: cliente.email,
                 telefone: cliente.telefone
@@ -468,9 +468,22 @@ const Cliente = () => {
         }
 
         try {
+
+            const verificacao = await JuridicaDataService.duplicidade({
+                cnpj: juridica.cnpj
+            })
+
+            if (verificacao.data.erro) {
+                setErro(verificacao.data.erro); // erro vindo do back
+                setMensagemErro(verificacao.data.mensagemErro);
+                // return; // não continua
+                throw new Error(verificacao.data.mensagemErro);
+            }
+
             var dataCliente = {
                 ativo: cliente.ativo,
-                data_cadastro: cliente.data_cadastro,
+                // data_cadastro: cliente.data_cadastro,
+                data_cadastro: new Date(),
                 nome: cliente.nome,
                 email: cliente.email,
                 telefone: cliente.telefone
@@ -538,6 +551,9 @@ const Cliente = () => {
 
             setEndereco(enderecoResp.data);
 
+            setSucesso(true);
+            setMensagemSucesso("Cliente cadastrado com sucesso!");
+
             setTimeout(() => {
                 if (modeloNegocio?.negocio === "Venda") {
                     navigate('/venda', { state: { clienteId: clienteJuridicaResp.data.id, automovelId: automovelId } });
@@ -557,11 +573,15 @@ const Cliente = () => {
 
             }, 1500);
         } catch (error) {
-            console.error("Erro ao salvar cliente jurídico:", error);
+            // Se qualquer 'await' falhar, o código vem para cá
+            console.error("Erro no processo de salvamento:", error);
             setErro(true);
-            setMensagemErro("Ocorreu um erro ao cadastrar o cliente.");
-            // CORREÇÃO: Desativa o estado de submissão em caso de erro na API
-            setIsSubmitting(false);
+            // Tenta pegar a mensagem de erro da resposta da API, ou usa uma mensagem padrão
+            const mensagem = error.response?.data?.mensagemErro || error.message || "Ocorreu um erro inesperado.";
+            setMensagemErro(mensagem);
+        } finally {
+            // Este bloco será executado sempre no final, tanto em caso de sucesso quanto de erro
+            setIsSubmitting(false); // Reabilita o botão aqui!
         }
 
     }
@@ -574,26 +594,11 @@ const Cliente = () => {
         <>
             <Header />
             {/* Cabeçalho da Página */}
-            <div className="mb-4">
+            <div className={`mb-4 mt-3 container`}>
                 <h1 className="fw-bold">Cadastro de Automóvel</h1>
                 <p className="text-muted">Preencha os dados abaixo para registrar um novo veículo no sistema.</p>
             </div>
             <div className="container">
-
-                {/* Alertas */}
-                {erro && (
-                    <div className="alert alert-danger d-flex align-items-center" role="alert">
-                        <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                        <div>{mensagemErro}</div>
-                    </div>
-                )}
-                {sucesso && (
-                    <div className="alert alert-success d-flex align-items-center" role="alert">
-                        <i className="bi bi-check-circle-fill me-2"></i>
-                        <div>{mensagemSucesso}</div>
-                    </div>
-                )}
-
                 <div className={`row mt-5 ${sucesso && "d-none"}`}>
                     <ButtonGroup className="mb-2">
                         {radios.map((radio, idx) => (
@@ -613,6 +618,20 @@ const Cliente = () => {
                     </ButtonGroup>
 
                 </div>
+
+                {/* Alertas */}
+                {erro && (
+                    <div className="alert alert-danger d-flex align-items-center mt-3" role="alert">
+                        <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div>{mensagemErro}</div>
+                    </div>
+                )}
+                {sucesso && (
+                    <div className="alert alert-success d-flex align-items-center" role="alert">
+                        <i className="bi bi-check-circle-fill me-2"></i>
+                        <div>{mensagemSucesso}</div>
+                    </div>
+                )}
 
                 {opcao === 'fisica' &&
 
@@ -653,7 +672,7 @@ const Cliente = () => {
                                     {vazio.includes("rg") && <div className="invalid-feedback">Informe o RG.</div>}
                                     {tamanho.includes("rg") && <div className="invalid-feedback">RG inválido (deve ter 9 caracteres numéricos).</div>}
                                 </div>
-                                <div class="col-md-4 ">
+                                {/* <div class="col-md-4 ">
                                     <label for="data" class="form-label">Data cadastro</label><br />
                                     <DatePicker
                                         calendarClassName="custom-datepicker-container"
@@ -669,7 +688,7 @@ const Cliente = () => {
                                     {vazio.includes("data") && <div className="invalid-feedback">Informe a data de cadastro.</div>}
                                     {tipo.includes("data") && <div className="invalid-feedback">Data inválida.</div>}
 
-                                </div>
+                                </div> */}
                             </div>
                         </fieldset>
 
@@ -781,7 +800,7 @@ const Cliente = () => {
 
                                     {vazio.includes("nome_responsavel") && <div className="invalid-feedback">Informe o nome do responsável.</div>}
                                 </div>
-                                <div class="col-md-4">
+                                {/* <div class="col-md-4">
                                     <label for="data" class="form-label">Data cadastro</label><br />
                                     <DatePicker
                                         calendarClassName="custom-datepicker-container"
@@ -797,7 +816,7 @@ const Cliente = () => {
 
                                     {vazio.includes("data") && <div className="invalid-feedback">Informe a data.</div>}
                                     {tipo.includes("data") && <div className="invalid-feedback">Data inválida.</div>}
-                                </div>
+                                </div> */}
                             </div>
                         </fieldset>
 

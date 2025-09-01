@@ -8,6 +8,7 @@ const DetalhesCompra = () => {
     const navigate = useNavigate();
 
     const [detalhes, setDetalhes] = useState(null);
+    const [funcionario, setFuncionario] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 

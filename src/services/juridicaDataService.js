@@ -17,6 +17,10 @@ class JuridicaDataService {
     create(data) {
         return http.post('/api/juridica', data);
     }
+
+    duplicidade(data) {
+        return http.post("/api/juridica/verificar", data);
+    }
 }
 
 export default new JuridicaDataService();

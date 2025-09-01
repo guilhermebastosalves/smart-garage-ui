@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../Header';
 import TrocaDataService from '../../services/trocaDataService';
 import AutomovelDataService from '../../services/automovelDataService';
+import FuncionarioDataService from '../../services/funcionarioDataService';
 
 const DetalhesCompra = () => {
     const { id } = useParams();
@@ -10,6 +11,7 @@ const DetalhesCompra = () => {
 
     const [detalhes, setDetalhes] = useState(null);
     const [automovelFornecido, setAutomovelFornecido] = useState(null);
+    const [funcionario, setFuncionario] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -39,6 +41,19 @@ const DetalhesCompra = () => {
                 setLoading(false);
             });
     }, [id]);
+
+    useEffect(() => {
+        FuncionarioDataService.getAll()
+            .then(response => {
+                setFuncionario(response.data)
+            })
+            .catch(e => {
+                console.error("Erro ao buscar funcionário", e)
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+    }, [])
 
     if (loading) {
         return (
@@ -92,6 +107,9 @@ const DetalhesCompra = () => {
     const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro modelo
     const modeloDoAutomovelFornecido = automovelFornecido?.modelos?.[0];
 
+    const funcionarioNome = funcionario.find(f => f.id === detalhes?.funcionarioId);
+
+
 
     return (
         <>
@@ -121,6 +139,7 @@ const DetalhesCompra = () => {
                             </div>
                             <div className="card-body">
                                 <p className="mb-2"><strong>ID da Compra:</strong> {detalhes.id}</p>
+                                <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
                                 <p className="mb-2"><strong>Data:</strong> {new Date(detalhes.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
                                 <p className="mb-2"><strong>Valor de Diferença:</strong> <span className="text fw-bold fs-6">{formatter.format(detalhes.valor)}</span></p>
                                 <p className="mb-2"><strong>Forma de Pagamento:</strong> <span className="text fw-bold fs-6">{detalhes.forma_pagamento}</span></p>

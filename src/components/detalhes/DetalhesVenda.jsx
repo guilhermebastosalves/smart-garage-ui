@@ -93,7 +93,6 @@ const DetalhesVenda = () => {
     const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro modelo
 
     const funcionarioNome = funcionario.find(f => f.id === detalhes?.funcionarioId);
-    console.log(detalhes.funcionarioId);
 
     return (
         <>
