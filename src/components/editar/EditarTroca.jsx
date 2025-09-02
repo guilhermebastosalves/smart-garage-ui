@@ -195,8 +195,12 @@ const EditarTroca = () => {
         // Define o ícone e o título principal com base no tipo de fornecedor
         const isPessoaJuridica = label.tipo === 'juridica';
         const IconePrincipal = isPessoaJuridica ? FaBuilding : FaUserTie;
-        const titulo = isPessoaJuridica ? label.razaoSocial : label.nome;
-        const subtitulo = isPessoaJuridica ? label.nome : '';
+
+        // const titulo = label.nome;
+
+        // --- LÓGICA CORRIGIDA ---
+        // CORREÇÃO 1: Se for PJ, tenta usar a Razão Social. Se for nula, usa o Nome como fallback.
+        const titulo = isPessoaJuridica ? (label.razaoSocial || label.nome) : label.nome;
 
         return (
             <div className="d-flex align-items-center">
@@ -214,8 +218,6 @@ const EditarTroca = () => {
                             <>
                                 <FaFileContract className="me-1" />
                                 <span>CNPJ: {label.cnpj}</span>
-                                {subtitulo && <span className="mx-2">|</span>}
-                                {subtitulo && <span>({subtitulo})</span>}
                             </>
                         ) : (
                             <>

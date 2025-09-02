@@ -142,3 +142,10 @@ body {
 .react-datepicker__input-container input {
     width: 100%;
 }
+
+.navbar-logo {
+    height: 3.8rem;
+    /* Ex: 40px. Ajuste conforme necessário. */
+    width: auto;
+    /* A largura se ajustará automaticamente. */
+}

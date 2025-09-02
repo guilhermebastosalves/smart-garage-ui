@@ -17,7 +17,8 @@ const Header = () => {
         <>
             <nav className="navbar navbar-color">
                 <div className="container-fluid mx-5">
-                    <a className="navbar-brand fs-4" href="#">Smart Garage</a>
+                    <img src="/static/img/logo.png" alt="Smart Garage Logo" className="navbar-logo" />
+                    {/* <a className="navbar-brand fs-4" href="#">Smart Garage</a> */}
                     <button className="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
