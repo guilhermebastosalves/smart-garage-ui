@@ -168,9 +168,11 @@ const EditarConsignacao = () => {
 
         // Define o ícone e o título principal com base no tipo de fornecedor
         const isPessoaJuridica = label.tipo === 'juridica';
+
         const IconePrincipal = isPessoaJuridica ? FaBuilding : FaUserTie;
         const titulo = isPessoaJuridica ? label.razaoSocial : label.nome;
-        const subtitulo = isPessoaJuridica ? label.nome : '';
+        // const subtitulo = isPessoaJuridica ? label.razaoSocial : '';
+
 
         return (
             <div className="d-flex align-items-center">
@@ -188,8 +190,8 @@ const EditarConsignacao = () => {
                             <>
                                 <FaFileContract className="me-1" />
                                 <span>CNPJ: {label.cnpj}</span>
-                                {subtitulo && <span className="mx-2">|</span>}
-                                {subtitulo && <span>({subtitulo})</span>}
+                                {/* {subtitulo && <span className="mx-2">|</span>}
+                                {subtitulo && <span>({subtitulo})</span>} */}
                             </>
                         ) : (
                             <>
@@ -205,7 +207,7 @@ const EditarConsignacao = () => {
 
     const optionsAutomovel = automovel?.map((d) => {
         const nomeMarca = marca?.find(marca => marca.id === d.marcaId);
-        const nomeModelo = modelo?.find(modelo => modelo.marcaId === nomeMarca.id);
+        const nomeModelo = modelo?.find(modelo => modelo.id === d.modeloId);
 
         return {
             // value: d.id,

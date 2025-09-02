@@ -3,14 +3,19 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../Header';
 import VendaDataService from '../../services/vendaDataService';
 import FuncionarioDataService from '../../services/funcionarioDataService';
-
+import EnderecoDataService from '../../services/enderecoDataService';
+import CidadeDataService from '../../services/cidadeDataService';
+import EstadoDataService from '../../services/estadoDataService';
 
 const DetalhesVenda = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const [detalhes, setDetalhes] = useState(null);
-    const [funcionario, setFuncionario] = useState(null);
+    const [detalhes, setDetalhes] = useState('');
+    const [funcionario, setFuncionario] = useState([]);
+    const [endereco, setEndereco] = useState([]);
+    const [cidade, setCidade] = useState([]);
+    const [estado, setEstado] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -28,18 +33,36 @@ const DetalhesVenda = () => {
             });
     }, [id]);
 
+    // useEffect(() => {
+    //     FuncionarioDataService.getAll()
+    //         .then(response => {
+    //             setFuncionario(response.data)
+    //         })
+    //         .catch(e => {
+    //             console.error("Erro ao buscar funcionário", e)
+    //         })
+    //         .finally(() => {
+    //             setLoading(false)
+    //         })
+    // }, [])
+
     useEffect(() => {
-        FuncionarioDataService.getAll()
-            .then(response => {
-                setFuncionario(response.data)
-            })
-            .catch(e => {
-                console.error("Erro ao buscar funcionário", e)
-            })
-            .finally(() => {
-                setLoading(false)
-            })
-    }, [])
+        setLoading(true);
+        // Carrega todos os dados em paralelo para melhor performance
+        Promise.all([
+            FuncionarioDataService.getAll(),
+            EnderecoDataService.getAll(),
+            CidadeDataService.getAll(),
+            EstadoDataService.getAll()
+        ]).then(([funcionarios, enderecos, cidades, estados]) => {
+            setFuncionario(funcionarios.data);
+            setEndereco(enderecos.data);
+            setCidade(cidades.data);
+            setEstado(estados.data);
+        }).catch(e => {
+            console.error("Erro ao carregar dados:", e);
+        })
+    }, []);
 
     if (loading) {
         return (
@@ -90,9 +113,12 @@ const DetalhesVenda = () => {
 
     // Variáveis auxiliares para facilitar o acesso aos dados
     const { automovel, cliente } = detalhes;
-    const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro modelo
+    // const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro modelo
 
-    const funcionarioNome = funcionario.find(f => f.id === detalhes?.funcionarioId);
+    const funcionarioNome = funcionario?.find(f => f.id === detalhes?.funcionarioId);
+    const enderecoInfo = endereco?.find(e => e.clienteId === cliente?.id)
+    const cidadeInfo = cidade?.find(c => c.id === enderecoInfo?.cidadeId)
+    const estadoInfo = estado?.find(e => e.id === cidadeInfo?.estadoId)
 
     return (
         <>
@@ -142,7 +168,7 @@ const DetalhesVenda = () => {
                             </div>
                             <div className="card-body">
                                 <p className="mb-2"><strong>Marca:</strong> {automovel?.marca?.nome || 'N/A'}</p>
-                                <p className="mb-2"><strong>Modelo:</strong> {modeloDoAutomovel?.nome || 'N/A'}</p>
+                                <p className="mb-2"><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</p>
                                 <p className="mb-2"><strong>Ano/Modelo:</strong> {`${automovel?.ano_fabricacao || 'N/A'}/${automovel?.ano_modelo || 'N/A'}`}</p>
                                 <p className="mb-2"><strong>Placa:</strong> {automovel?.placa || 'N/A'}</p>
                                 <p className="mb-2"><strong>Cor:</strong> {automovel?.cor || 'N/A'}</p>
@@ -165,7 +191,12 @@ const DetalhesVenda = () => {
                                     {cliente?.juridica?.cnpj && <p className="mb-2"><strong>CNPJ:</strong> {cliente?.juridica.cnpj}</p>}
                                     {cliente?.juridica?.razao_social && <p className="mb-2"><strong>Razão Social:</strong> {cliente?.juridica.razao_social}</p>}
                                     <p className="mb-2"><strong>Telefone:</strong> {cliente.telefone || 'N/A'}</p>
-                                    <p className="mb-0"><strong>Email:</strong> {cliente.email || 'N/A'}</p>
+                                    <p className="mb-2"><strong>Email:</strong> {cliente.email || 'N/A'}</p>
+                                    <p className="mb-0"><strong>Endereço:</strong> {
+                                        enderecoInfo
+                                            ? `${enderecoInfo.logradouro}, ${enderecoInfo.bairro}, ${enderecoInfo.numero} - ${cidadeInfo?.nome || ''} (${estadoInfo?.uf || ''})`
+                                            : 'N/A'
+                                    }</p>
                                 </div>
                             </div>
                         </div>

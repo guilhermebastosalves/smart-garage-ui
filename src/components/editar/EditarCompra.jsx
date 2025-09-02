@@ -209,7 +209,7 @@ const EditarCompra = () => {
 
     const optionsAutomovel = automovelOpt?.map((d) => {
         const nomeMarca = marcaOpt?.find(marca => marca.id === d.marcaId);
-        const nomeModelo = modeloOpt?.find(modelo => modelo.marcaId === nomeMarca.id);
+        const nomeModelo = modeloOpt?.find(modelo => modelo.id === d.modeloId);
 
         return {
             // value: d.id,

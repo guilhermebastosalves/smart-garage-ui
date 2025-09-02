@@ -34,7 +34,10 @@ import ListVendas from './components/listagem/ListVendas';
 import ListGastos from "./components/listagem/ListGastos";
 import ListManutencoes from "./components/listagem/ListManutencoes";
 import ProtectedRoute from './components/RotaProtegida'; // Importe a rota protegida
-import AcessoNegado from './components/AcessoNegado'
+import AcessoNegado from './components/AcessoNegado';
+
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Importe o CSS
 
 function App() {
 
@@ -102,6 +105,20 @@ function App() {
           </Route>
 
         </Routes>
+
+
+        {/* <ToastContainer
+          position="top-right"
+          autoClose={5000} // Fecha após 5 segundos
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        /> */}
       </div >
     </>
   )

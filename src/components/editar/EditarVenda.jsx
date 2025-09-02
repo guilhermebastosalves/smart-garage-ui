@@ -226,7 +226,7 @@ const EditarVenda = () => {
 
     const optionsAutomovel = automovel?.map((d) => {
         const nomeMarca = marca?.find(marca => marca.id === d.marcaId);
-        const nomeModelo = modelo?.find(modelo => modelo.marcaId === nomeMarca.id);
+        const nomeModelo = modelo?.find(modelo => modelo.id === d.modeloId);
 
         return {
             // value: d.id,
@@ -476,7 +476,7 @@ const EditarVenda = () => {
                             </div>
                             <div className="col-md-4">
                                 <label for="automovel" class="form-label">Automóvel</label>
-                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}
+                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}
                                     filterOption={(option, inputValue) => {
                                         const label = option.label;
                                         const texto = [

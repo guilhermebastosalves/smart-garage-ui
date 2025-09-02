@@ -11,7 +11,7 @@ function ModalTroca({ show, onHide, troca }) {
 
 
     const handleRedirect = (path, state) => {
-        localStorage.setItem("Troca", JSON.stringify(troca));
+        sessionStorage.setItem("NegocioAtual", JSON.stringify(troca));
         onHide(); // Fecha o modal
         navigate(path, { state });
 

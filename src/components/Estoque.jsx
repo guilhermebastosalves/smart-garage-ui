@@ -57,7 +57,7 @@ const Estoque = () => {
 
         return listaBase.filter(auto => {
             const marca2 = marca.find(m => m.id === auto.marcaId);
-            const modelo2 = modelo.find(m => m.marcaId === marca2?.id);
+            const modelo2 = modelo.find(m => m.id === auto.modeloId);
             const searchTerm = search.toLowerCase();
 
             return (
@@ -131,7 +131,7 @@ const Estoque = () => {
                     </div>
                 ) : records.length > 0 ? (
                     records.map((auto) => {
-                        const modelo2 = modelo.find(m => m.marcaId === auto.marcaId);
+                        const modelo2 = modelo.find(m => m.id === auto.modeloId);
                         const marca2 = marca.find(m => m.id === auto.marcaId);
 
                         return (

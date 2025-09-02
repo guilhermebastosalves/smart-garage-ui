@@ -6,6 +6,11 @@ class ModeloDataService {
         return http.get("/api/modelo");
     }
 
+    getByMarca(marcaId) {
+        return http.get(`/api/modelo/por-marca/${marcaId}`);
+    };
+
+
     create(data) {
         return http.post("/api/modelo", data);
     }

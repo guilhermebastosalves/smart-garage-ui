@@ -29,25 +29,32 @@ const Troca = () => {
 
     const [modeloNegocio, setModeloNegocio] = useState(null);
 
+    // useEffect(() => {
+
+    //     const compra = sessionStorage.getItem("Compra");
+    //     const consignacao = sessionStorage.getItem("Consignacao");
+    //     const troca = sessionStorage.getItem("Troca");
+
+    //     if (compra) {
+    //         setModeloNegocio(JSON.parse(compra));
+    //         // localStorage.removeItem("Compra"); // Opcional: apaga após usar
+    //     }
+
+    //     else if (consignacao) {
+    //         setModeloNegocio(JSON.parse(consignacao));
+    //         // localStorage.removeItem("Consignacao"); // Opcional: apaga após usar
+    //     }
+
+    //     else if (troca) {
+    //         setModeloNegocio(JSON.parse(troca));
+    //         // localStorage.removeItem("Troca"); // Opcional: apaga após usar
+    //     }
+    // }, []);
+
     useEffect(() => {
-
-        const compra = localStorage.getItem("Compra");
-        const consignacao = localStorage.getItem("Consignacao");
-        const troca = localStorage.getItem("Troca");
-
-        if (compra) {
-            setModeloNegocio(JSON.parse(compra));
-            localStorage.removeItem("Compra"); // Opcional: apaga após usar
-        }
-
-        if (consignacao) {
-            setModeloNegocio(JSON.parse(consignacao));
-            localStorage.removeItem("Consignacao"); // Opcional: apaga após usar
-        }
-
-        if (troca) {
-            setModeloNegocio(JSON.parse(troca));
-            localStorage.removeItem("Troca"); // Opcional: apaga após usar
+        const negocio = sessionStorage.getItem("NegocioAtual");
+        if (negocio) {
+            setModeloNegocio(JSON.parse(negocio));
         }
     }, []);
 
@@ -72,26 +79,63 @@ const Troca = () => {
         renavam: "",
         valor: "",
         marcaId: "",
-        imagem: ""
-    };
-
-
-    const initialMarcaState = {
-        id: null,
-        marca: ""
-    };
-
-    const initialModeloState = {
-        id: null,
-        modelo: "",
-        marcaId: ""
+        imagem: "",
+        modeloId: ""
     };
 
     const [automovel, setAutomovel] = useState(initialAutomovelState);
+
+
+
+    // States para as opções dos selects
+    const [marcasOptions, setMarcasOptions] = useState([]);
+    const [modelosOptions, setModelosOptions] = useState([]);
+    const [isModelosLoading, setIsModelosLoading] = useState(false);
+
+    // Busca as marcas ao carregar a página
+    useEffect(() => {
+        MarcaDataService.getAll().then(response => {
+            setMarcasOptions(response.data.map(m => ({ value: m.id, label: m.nome })));
+        });
+        // ... (busque clientes, etc. aqui também)
+    }, []);
+
+    // 2. EFEITO EM CASCATA: Busca os modelos quando uma marca é selecionada
+    useEffect(() => {
+        // Se nenhuma marca estiver selecionada, limpa as opções de modelo
+        if (!automovel.marcaId) {
+            setModelosOptions([]);
+            setAutomovel(prev => ({ ...prev, modeloId: '' })); // Limpa o modelo selecionado
+            return;
+        }
+
+        setIsModelosLoading(true);
+        ModeloDataService.getByMarca(automovel.marcaId)
+            .then(response => {
+                const options = response.data.map(modelo => ({
+                    value: modelo.id,
+                    label: modelo.nome
+                }));
+                setModelosOptions(options);
+            })
+            .catch(e => console.error("Erro ao buscar modelos:", e))
+            .finally(() => setIsModelosLoading(false));
+
+    }, [automovel.marcaId]); // Roda toda vez que o marcaId mudar
+
+    // const initialMarcaState = {
+    //     id: null,
+    //     marca: ""
+    // };
+
+    // const initialModeloState = {
+    //     id: null,
+    //     modelo: "",
+    //     marcaId: ""
+    // };
+
     const [automovelOpt, setAutomovelOpt] = useState([]);
-    const [modelo, setModelo] = useState(initialModeloState);
     const [modeloOpt, setModeloOpt] = useState([]);
-    const [marca, setMarca] = useState(initialMarcaState);
     const [marcaOpt, setMarcaOpt] = useState([]);
 
     const [cliente, setCliente] = useState([]);
@@ -152,15 +196,55 @@ const Troca = () => {
         setAutomovel({ ...automovel, [name]: value });
     };
 
-    const handleInputChangeModelo = event => {
-        const { name, value } = event.target;
-        setModelo({ ...modelo, [name]: value });
+    // const handleInputChangeModelo = event => {
+    //     const { name, value } = event.target;
+    //     setModelo({ ...modelo, [name]: value });
+    // };
+
+    // const handleInputChangeMarca = event => {
+    //     const { name, value } = event.target;
+    //     setMarca({ ...marca, [name]: value });
+    // };
+
+    const handleSelectChange = (selectedOption, fieldName) => {
+        setAutomovel(prev => ({ ...prev, [fieldName]: selectedOption ? selectedOption.value : '' }));
     };
 
-    const handleInputChangeMarca = event => {
-        const { name, value } = event.target;
-        setMarca({ ...marca, [name]: value });
-    };
+    useEffect(() => {
+        // 1. Pega e converte o valor do NOVO automóvel (que está sendo cadastrado)
+        // Usamos parseFloat para garantir que é um número. Se for inválido, será NaN.
+        const valorCarroNovo = parseFloat(automovel.valor);
+
+        // 2. Encontra as informações do automóvel FORNECIDO na lista já carregada
+        // Isto evita uma chamada desnecessária à API.
+        const carroFornecidoInfo = automovelOpt.find(
+            (carro) => carro.id === troca.automovel_fornecido
+        );
+
+        // Pega e converte o valor do automóvel FORNECIDO
+        const valorCarroFornecido = carroFornecidoInfo
+            ? parseFloat(carroFornecidoInfo.valor)
+            : NaN;
+
+        // 3. Verifica se ambos os valores são números válidos
+        if (!isNaN(valorCarroNovo) && !isNaN(valorCarroFornecido)) {
+            // Se ambos são válidos, calcula a diferença
+            const diferenca = valorCarroNovo - valorCarroFornecido;
+
+            // Atualiza o estado da 'troca' de forma segura, sem apagar os outros campos
+            setTroca(prevTroca => ({
+                ...prevTroca,
+                valor: diferenca.toString() // Converte para string para o input
+            }));
+        } else {
+            // Se um dos valores for limpo ou inválido, limpa o campo de diferença
+            setTroca(prevTroca => ({
+                ...prevTroca,
+                valor: "" // Define como string vazia
+            }));
+        }
+        // 4. O efeito roda sempre que um dos valores de origem mudar
+    }, [automovel.valor, troca.automovel_fornecido, automovelOpt]);
 
     const [loading, setLoading] = useState(true);
 
@@ -173,7 +257,7 @@ const Troca = () => {
             ClienteDataService.getAll(),
             FisicaDataService.getAll(),
             JuridicaDataService.getAll(),
-            AutomovelDataService.getAll(),
+            AutomovelDataService.getByAtivo(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll()
         ]).then(([clientes, fisica, juridica, automoveis, modelos, marcas]) => {
@@ -229,8 +313,8 @@ const Troca = () => {
         if (!automovel.km) vazioErros.push("km");
         if (!automovel.combustivel) vazioErros.push("combustivel");
         if (!automovel.cor) vazioErros.push("cor");
-        if (!modelo.modelo) vazioErros.push("modelo");
-        if (!marca.marca) vazioErros.push("marca");
+        if (!automovel.modeloId) vazioErros.push("modelo");
+        if (!automovel.marcaId) vazioErros.push("marca");
 
         // Tamanho
         if (automovel.renavam && (automovel.renavam.length !== 11 || isNaN(automovel.renavam))) tamanhoErros.push("renavam");
@@ -315,7 +399,7 @@ const Troca = () => {
 
     const optionsAutomovel = automovelOpt?.map((d) => {
         const nomeMarca = marcaOpt?.find(marca => marca.id === d.marcaId);
-        const nomeModelo = modeloOpt?.find(modelo => modelo.marcaId === nomeMarca.id);
+        const nomeModelo = modeloOpt?.find(modelo => modelo.id === d.modeloId);
 
         return {
             // value: d.id,
@@ -405,6 +489,12 @@ const Troca = () => {
     // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
+    useEffect(() => {
+        if (erro) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [erro]);
+
 
     const saveTroca = async (e) => {
 
@@ -445,31 +535,31 @@ const Troca = () => {
             }
 
             // --- ETAPA 2: Criação da Marca ---
-            var dataMarca = {
-                nome: marca.marca
-            }
+            // var dataMarca = {
+            //     nome: marca.marca
+            // }
 
-            const marcaResp = await MarcaDataService.create(dataMarca)
-                .catch(e => {
-                    console.error("Erro ao criar marca:", e);
-                });
+            // const marcaResp = await MarcaDataService.create(dataMarca)
+            //     .catch(e => {
+            //         console.error("Erro ao criar marca:", e);
+            //     });
 
-            setMarca(marcaResp.data);
-            const marcaId = marcaResp.data.id;
-            if (!marcaId) throw new Error("Falha ao obter ID da marca.");
+            // setMarca(marcaResp.data);
+            // const marcaId = marcaResp.data.id;
+            // if (!marcaId) throw new Error("Falha ao obter ID da marca.");
 
-            // --- ETAPA 3: Criação do Modelo ---
-            var dataModelo = {
-                nome: modelo.modelo,
-                marcaId: marcaResp?.data.id
-            }
+            // // --- ETAPA 3: Criação do Modelo ---
+            // var dataModelo = {
+            //     nome: modelo.modelo,
+            //     marcaId: marcaResp?.data.id
+            // }
 
-            const modeloResp = await ModeloDataService.create(dataModelo)
-                .catch(e => {
-                    console.error("Erro ao criar marca:", e);
-                });
+            // const modeloResp = await ModeloDataService.create(dataModelo)
+            //     .catch(e => {
+            //         console.error("Erro ao criar marca:", e);
+            //     });
 
-            setModelo(modeloResp.data);
+            // setModelo(modeloResp.data);
 
             // --- ETAPA 4: Criação do Automóvel ---
             const formData = new FormData();
@@ -483,7 +573,8 @@ const Troca = () => {
             formData.append("placa", automovel.placa);
             formData.append("renavam", automovel.renavam);
             formData.append("valor", automovel.valor);
-            formData.append("marcaId", marcaResp?.data.id);
+            formData.append("marcaId", automovel.marcaId);
+            formData.append("modeloId", automovel.modeloId);
             formData.append("file", automovel.file); // importante: nome "file" igual ao backend
 
             const automovelResp = await AutomovelDataService.create(formData, {
@@ -525,6 +616,13 @@ const Troca = () => {
             // --- SUCESSO! ---
             setSucesso(true);
             setMensagemSucesso("Operação de troca realizada com sucesso!");
+
+            // sessionStorage.removeItem("Venda");
+            // sessionStorage.removeItem("Consignacao");
+            // sessionStorage.removeItem("Compra");
+            // sessionStorage.removeItem("Troca");
+
+            sessionStorage.removeItem("NegocioAtual");
 
             // --- ETAPA 6: Redirecionamento ---
             if (automovel.origem === "Compra") {
@@ -600,12 +698,28 @@ const Troca = () => {
                         <div className="row g-3">
                             <div className="col-md-4">
                                 <label htmlFor="marca" className="form-label">Marca</label>
-                                <input type="text" className={`form-control ${hasError("marca") && "is-invalid"}`} id="marca" name="marca" onChange={handleInputChangeMarca} />
+                                {/* <input type="text" className={`form-control ${hasError("marca") && "is-invalid"}`} id="marca" name="marca" onChange={handleInputChangeMarca} /> */}
+                                <Select
+                                    placeholder="Selecione uma marca..."
+                                    options={marcasOptions}
+                                    value={marcasOptions.find(option => option.value === automovel.marcaId) || null}
+                                    onChange={(option) => handleSelectChange(option, 'marcaId')}
+                                    isClearable isSearchable
+                                />
                                 {vazio.includes("marca") && <div className="invalid-feedback">Informe a marca.</div>}
                             </div>
                             <div className="col-md-4">
                                 <label htmlFor="modelo" className="form-label">Modelo</label>
-                                <input type="text" className={`form-control ${hasError("modelo") && "is-invalid"}`} id="modelo" name="modelo" onChange={handleInputChangeModelo} />
+                                {/* <input type="text" className={`form-control ${hasError("modelo") && "is-invalid"}`} id="modelo" name="modelo" onChange={handleInputChangeModelo} /> */}
+                                <Select
+                                    placeholder="Selecione um modelo..."
+                                    options={modelosOptions}
+                                    value={modelosOptions.find(option => option.value === automovel.modeloId) || null}
+                                    onChange={(option) => handleSelectChange(option, 'modeloId')}
+                                    isDisabled={!automovel.marcaId} // Desabilita se nenhuma marca for selecionada
+                                    isLoading={isModelosLoading}   // Mostra um spinner enquanto carrega
+                                    isClearable isSearchable
+                                />
                                 {vazio.includes("modelo") && <div className="invalid-feedback">Informe o modelo.</div>}
                             </div>
                             <div className="col-md-4">
@@ -715,13 +829,14 @@ const Troca = () => {
                         <div className="row g-3">
                             <div className="col-md-4">
                                 <label for="valor" class="form-label">Valor Diferença</label>
-                                <input type="text" className={`form-control ${hasError("valor_diferenca") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeTroca} />
+                                <input type="text" className={`form-control ${hasError("valor_diferenca") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeTroca} value={troca.valor || null} />
                                 {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                 {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
                             </div>
                             <div className="col-md-4">
                                 <label for="forma_pagamento" class="form-label">Forma de Pagamento</label>
-                                <Select className={`${hasError("forma_pagamento") && "is-invalid"}`} id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === troca.forma_pagamento)} onChange={(option) => setTroca({ ...troca, forma_pagamento: option.value })} options={optionsFormaPagamento} isClearable={true}>
+                                <Select className={`${hasError("forma_pagamento") && "is-invalid"}`} id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === troca.forma_pagamento)} onChange={(option) => setTroca({ ...troca, forma_pagamento: option ? option.value : null })} options={optionsFormaPagamento} isClearable={true}
+                                    isDisabled={!troca.valor || troca.valor === 0 || troca.valor === "0"}>
                                 </Select>
                                 {vazio.includes("forma_pagamento") && <div id="formapagamentohelp" class="form-text text-danger ms-1">Informe a forma de pagamento.</div>}
                             </div>

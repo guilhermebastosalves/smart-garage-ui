@@ -82,7 +82,7 @@ const Detalhes = () => {
     }
 
     const marcaNome = marca.find(m => m.id === automovel?.marcaId);
-    const modeloNome = modelo.find(m => m.marcaId === marcaNome?.id);
+    const modeloNome = modelo.find(m => m.id === automovel?.modeloId);
 
     return (
         <>
@@ -137,6 +137,9 @@ const Detalhes = () => {
 
                                 <dt className="col-sm-4">KM</dt>
                                 <dd className="col-sm-8">{automovel && automovel.km} </dd>
+
+                                <dt className="col-sm-4">Combustível</dt>
+                                <dd className="col-sm-8">{automovel && automovel.combustivel} </dd>
                             </dl>
 
                             <hr />

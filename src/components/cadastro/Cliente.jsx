@@ -25,40 +25,74 @@ const Cliente = () => {
     const location = useLocation();
     const automovelId = location.state?.automovelId;
 
-    const [cliente, setCliente] = useState('');
-    const [fisica, setFisica] = useState('');
-    const [juridica, setJuridica] = useState('');
-    const [endereco, setEndereco] = useState('');
-    const [cidade, setCidade] = useState('');
-    const [estado, setEstado] = useState('');
+    const initialClienteState = { nome: "", email: "", telefone: "" };
+    const initialFisicaState = { cpf: "", rg: "" };
+    const initialJuridicaState = { cnpj: "", razao_social: "", nome_responsavel: "" };
+    const initialEnderecoState = { cep: "", logradouro: "", bairro: "", numero: "" };
+    const initialCidadeState = { nome: "" };
+    const initialEstadoState = { uf: "" };
+
+    const [cliente, setCliente] = useState(initialClienteState);
+    const [fisica, setFisica] = useState(initialFisicaState);
+    const [juridica, setJuridica] = useState(initialJuridicaState);
+    const [endereco, setEndereco] = useState(initialEnderecoState);
+    const [cidade, setCidade] = useState(initialCidadeState);
+    const [estado, setEstado] = useState(initialEstadoState);
     const [opcao, setOpcao] = useState('fisica');
+
+    const resetFormulario = () => {
+        setCliente(initialClienteState);
+        setFisica(initialFisicaState);
+        setJuridica(initialJuridicaState);
+        setEndereco(initialEnderecoState);
+        setCidade(initialCidadeState);
+        setEstado(initialEstadoState);
+        // Também limpa as mensagens de erro/validação
+        setVazio([]);
+        setTamanho([]);
+        setTipo([]);
+        setErro(false);
+        setMensagemErro('');
+    };
 
 
     const [modeloNegocio, setModeloNegocio] = useState(null);
 
+    // useEffect(() => {
+
+    //     // const venda = localStorage.getItem("Venda");
+    //     // const consignacao = localStorage.getItem("Consignacao");
+    //     // const compra = localStorage.getItem("Compra");
+    //     // const troca = localStorage.getItem("Troca");
+
+    //     const venda = sessionStorage.getItem("Venda");
+    //     const consignacao = sessionStorage.getItem("Consignacao");
+    //     const compra = sessionStorage.getItem("Compra");
+    //     const troca = sessionStorage.getItem("Troca");
+
+    //     if (venda) {
+    //         setModeloNegocio(JSON.parse(venda));
+    //         // localStorage.removeItem("Venda"); // Opcional: apaga após usar
+    //     }
+
+    //     else if (consignacao) {
+    //         setModeloNegocio(JSON.parse(consignacao));
+    //         // localStorage.removeItem("Consignacao"); // Opcional: apaga após usar
+    //     }
+    //     else if (troca) {
+    //         setModeloNegocio(JSON.parse(troca));
+    //         // localStorage.removeItem("Troca"); // Opcional: apaga após usar
+    //     }
+    //     else if (compra) {
+    //         setModeloNegocio(JSON.parse(compra));
+    //         // localStorage.removeItem("Compra"); // Opcional: apaga após usar
+    //     }
+    // }, []);
+
     useEffect(() => {
-
-        const venda = localStorage.getItem("Venda");
-        const consignacao = localStorage.getItem("Consignacao");
-        const compra = localStorage.getItem("Compra");
-        const troca = localStorage.getItem("Troca");
-
-        if (venda) {
-            setModeloNegocio(JSON.parse(venda));
-            localStorage.removeItem("Venda"); // Opcional: apaga após usar
-        }
-
-        if (consignacao) {
-            setModeloNegocio(JSON.parse(consignacao));
-            localStorage.removeItem("Consignacao"); // Opcional: apaga após usar
-        }
-        if (troca) {
-            setModeloNegocio(JSON.parse(troca));
-            localStorage.removeItem("Troca"); // Opcional: apaga após usar
-        }
-        if (compra) {
-            setModeloNegocio(JSON.parse(compra));
-            localStorage.removeItem("Compra"); // Opcional: apaga após usar
+        const negocio = sessionStorage.getItem("NegocioAtual");
+        if (negocio) {
+            setModeloNegocio(JSON.parse(negocio));
         }
     }, []);
 
@@ -310,6 +344,13 @@ const Cliente = () => {
     };
 
 
+    useEffect(() => {
+        if (erro) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [erro, mensagemErro]);
+
+
     const saveCliente = async (e) => {
 
         // Prevents the default page refresh
@@ -348,12 +389,22 @@ const Cliente = () => {
             }
 
             var dataCliente = {
-                ativo: cliente.ativo,
+                // ativo: cliente.ativo,
                 // data_cadastro: cliente.data_cadastro,
                 data_cadastro: new Date(),
                 nome: cliente.nome,
                 email: cliente.email,
                 telefone: cliente.telefone
+            }
+
+            const verificacaoemail = await ClienteDataService.duplicidade({
+                email: cliente.email
+            })
+
+            if (verificacaoemail.data.erro) {
+                setErro(verificacaoemail.data.erro); // erro vindo do back
+                setMensagemErro(verificacaoemail.data.mensagemErro);
+                throw new Error(verificacaoemail.data.mensagemErro);
             }
 
             const clienteResp = await ClienteDataService.create(dataCliente)
@@ -418,20 +469,27 @@ const Cliente = () => {
             setSucesso(true);
             setMensagemSucesso("Cliente cadastrado com sucesso!");
 
+            // sessionStorage.removeItem("Venda");
+            // sessionStorage.removeItem("Consignacao");
+            // sessionStorage.removeItem("Compra");
+            // sessionStorage.removeItem("Troca");
+
+            sessionStorage.removeItem("NegocioAtual");
+
             setTimeout(() => {
                 if (modeloNegocio?.negocio === "Venda") {
                     navigate('/venda', { state: { clienteId: clienteResp.data.id, automovelId: automovelId } });
                 }
                 if (modeloNegocio?.negocio === "Consignacao") {
-                    localStorage.setItem("Consignacao", JSON.stringify(consignacao));
+                    sessionStorage.setItem("NegocioAtual", JSON.stringify(consignacao));
                     navigate('/consignacao', { state: { clienteId: clienteResp.data.id } });
                 }
                 if (modeloNegocio?.negocio === "Compra") {
-                    localStorage.setItem("Compra", JSON.stringify(compra));
+                    sessionStorage.setItem("NegocioAtual", JSON.stringify(compra));
                     navigate('/compra', { state: { clienteId: clienteResp.data.id } });
                 }
                 if (modeloNegocio?.negocio === "Troca") {
-                    localStorage.setItem("Troca", JSON.stringify(troca));
+                    sessionStorage.setItem("NegocioAtual", JSON.stringify(troca));
                     navigate('/troca', { state: { clienteId: clienteResp.data.id } });
                 }
 
@@ -470,7 +528,8 @@ const Cliente = () => {
         try {
 
             const verificacao = await JuridicaDataService.duplicidade({
-                cnpj: juridica.cnpj
+                cnpj: juridica.cnpj,
+                razao_social: juridica.razao_social
             })
 
             if (verificacao.data.erro) {
@@ -481,12 +540,22 @@ const Cliente = () => {
             }
 
             var dataCliente = {
-                ativo: cliente.ativo,
+                // ativo: cliente.ativo,
                 // data_cadastro: cliente.data_cadastro,
                 data_cadastro: new Date(),
                 nome: cliente.nome,
                 email: cliente.email,
                 telefone: cliente.telefone
+            }
+
+            const verificacaoemail = await ClienteDataService.duplicidade({
+                email: cliente.email
+            })
+
+            if (verificacaoemail.data.erro) {
+                setErro(verificacaoemail.data.erro); // erro vindo do back
+                setMensagemErro(verificacaoemail.data.mensagemErro);
+                throw new Error(verificacaoemail.data.mensagemErro);
             }
 
             const clienteJuridicaResp = await ClienteDataService.create(dataCliente)
@@ -554,20 +623,28 @@ const Cliente = () => {
             setSucesso(true);
             setMensagemSucesso("Cliente cadastrado com sucesso!");
 
+            // sessionStorage.removeItem("Venda");
+            // sessionStorage.removeItem("Consignacao");
+            // sessionStorage.removeItem("Compra");
+            // sessionStorage.removeItem("Troca");
+
+            sessionStorage.removeItem("NegocioAtual");
+
+
             setTimeout(() => {
                 if (modeloNegocio?.negocio === "Venda") {
                     navigate('/venda', { state: { clienteId: clienteJuridicaResp.data.id, automovelId: automovelId } });
                 }
                 if (modeloNegocio?.negocio === "Consignacao") {
-                    localStorage.setItem("Consignacao", JSON.stringify(consignacao));
+                    sessionStorage.setItem("NegocioAtual", JSON.stringify(consignacao));
                     navigate('/consignacao', { state: { clienteId: clienteJuridicaResp.data.id } });
                 }
                 if (modeloNegocio?.negocio === "Compra") {
-                    localStorage.setItem("Compra", JSON.stringify(compra));
+                    sessionStorage.setItem("NegocioAtual", JSON.stringify(compra));
                     navigate('/compra', { state: { clienteId: clienteJuridicaResp.data.id } });
                 }
                 if (modeloNegocio?.negocio === "Troca") {
-                    localStorage.setItem("Troca", JSON.stringify(troca));
+                    sessionStorage.setItem("NegocioAtual", JSON.stringify(troca));
                     navigate('/troca', { state: { clienteId: clienteJuridicaResp.data.id } });
                 }
 
@@ -595,29 +672,10 @@ const Cliente = () => {
             <Header />
             {/* Cabeçalho da Página */}
             <div className={`mb-4 mt-3 container`}>
-                <h1 className="fw-bold">Cadastro de Automóvel</h1>
-                <p className="text-muted">Preencha os dados abaixo para registrar um novo veículo no sistema.</p>
+                <h1 className="fw-bold">Cadastro de Cliente</h1>
+                <p className="text-muted">Preencha os dados abaixo para registrar um novo cliente no sistema.</p>
             </div>
             <div className="container">
-                <div className={`row mt-5 ${sucesso && "d-none"}`}>
-                    <ButtonGroup className="mb-2">
-                        {radios.map((radio, idx) => (
-                            <ToggleButton
-                                key={idx}
-                                id={`radio-${idx}`}
-                                type="radio"
-                                variant="outline-primary"
-                                name="radio"
-                                value={radio.value}
-                                checked={radioValue === radio.value}
-                                onChange={(e) => { setRadioValue(e.currentTarget.value); setOpcao(radio.value) }}
-                            >
-                                {radio.name}
-                            </ToggleButton>
-                        ))}
-                    </ButtonGroup>
-
-                </div>
 
                 {/* Alertas */}
                 {erro && (
@@ -632,6 +690,31 @@ const Cliente = () => {
                         <div>{mensagemSucesso}</div>
                     </div>
                 )}
+
+                <div className={`row mt-4 ${sucesso && "d-none"}`}>
+                    <ButtonGroup className="mb-2">
+                        {radios.map((radio, idx) => (
+                            <ToggleButton
+                                key={idx}
+                                id={`radio-${idx}`}
+                                type="radio"
+                                variant="outline-primary"
+                                name="radio"
+                                value={radio.value}
+                                checked={radioValue === radio.value}
+                                onChange={(e) => {
+                                    setRadioValue(e.currentTarget.value);
+                                    setOpcao(radio.value);
+                                    resetFormulario();
+                                }}
+                            >
+                                {radio.name}
+                            </ToggleButton>
+                        ))}
+                    </ButtonGroup>
+
+                </div>
+
 
                 {opcao === 'fisica' &&
 

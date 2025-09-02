@@ -179,14 +179,14 @@ const Compras = () => {
                                     {records.map((d) => {
                                         const auto = automovel.find(a => a.id === d.automovelId);
                                         const nomeMarca = marca.find(m => m.id === auto?.marcaId);
-                                        const noModelo = modelo.find(mo => mo.marcaId === nomeMarca?.id);
+                                        const nomeModelo = modelo.find(mo => mo.id === auto?.modeloId);
 
                                         return (
                                             <tr key={d.id} className="align-middle">
                                                 <th scope="row">{d.id}</th>
                                                 <td>{new Date(d.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                                                 <td>
-                                                    <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
+                                                    <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${nomeModelo?.nome ?? ''}`}</div>
                                                     <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
                                                 </td>
                                                 <td className="text-dark fw-bold">{d.valor && `${parseFloat(d.valor).toLocaleString('pt-BR', {

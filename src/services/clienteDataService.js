@@ -13,6 +13,10 @@ class ClienteDataService {
     create(data) {
         return http.post('/api/cliente', data);
     }
+
+    duplicidade(data) {
+        return http.post("/api/cliente/verificar", data);
+    }
 }
 
 export default new ClienteDataService();

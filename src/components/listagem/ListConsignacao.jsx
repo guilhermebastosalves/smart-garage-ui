@@ -31,7 +31,8 @@ const Consignacoes = () => {
 
     const handleEncerramentoSucesso = (idConsignacaoEncerrada) => {
         // Remove a consignação da lista de ativos na tela, dando feedback instantâneo
-        setConsignacaoAtivo(prev => prev.filter(c => c.id !== idConsignacaoEncerrada));
+        // setConsignacaoAtivo(prev => prev.filter(c => c.id !== idConsignacaoEncerrada));
+        fetchData();
     };
 
     // Função para abrir o modal de confirmação da exclusão
@@ -53,10 +54,11 @@ const Consignacoes = () => {
         setDeleteLoading(true);
         try {
             await ConsignacaoDataService.remove(itemParaDeletar?.id);
+            fetchData();
 
             // Atualiza a UI removendo o item da lista
-            setConsignacaoAtivo(prev => prev.filter(c => c.id !== itemParaDeletar?.id));
-            setConsignacaoDataInicio(prev => prev.filter(c => c.id !== itemParaDeletar?.id));
+            // setConsignacaoAtivo(prev => prev.filter(c => c.id !== itemParaDeletar?.id));
+            // setConsignacaoDataInicio(prev => prev.filter(c => c.id !== itemParaDeletar?.id));
 
             handleFecharModalConfirmacao();
         } catch (error) {
@@ -83,32 +85,65 @@ const Consignacoes = () => {
 
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     setLoading(true);
+    //     const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
+    //     // Use Promise.all para esperar todas as chamadas essenciais terminarem
+    //     Promise.all([
+    //         ConsignacaoDataService.getByAtivo(),
+    //         ConsignacaoDataService.getByInativo(),
+    //         AutomovelDataService.getAll(),
+    //         ModeloDataService.getAll(),
+    //         MarcaDataService.getAll(),
+    //         ConsignacaoDataService.getAllByDataInicio()
+    //     ]).then(([ativos, inativos, automoveis, modelos, marcas, datainicio]) => {
+    //         setConsignacaoAtivo(ativos.data);
+    //         setConsignacaoInativo(inativos.data)
+    //         setAutomovel(automoveis.data);
+    //         setModelo(modelos.data);
+    //         setMarca(marcas.data);
+    //         setConsignacaoDataInicio(datainicio.data)
+    //     }).catch((err) => {
+    //         console.error("Erro ao carregar dados:", err);
+    //         setLoading(false); // Garante que o loading não fica travado
+    //     }).finally(() => {
+    //         setLoading(false); // Esconde o loading quando tudo terminar
+    //         clearTimeout(timeout);
+    //     });
+    // }, []);
+
+
+    // 1. EXTRAIA A LÓGICA DE BUSCA PARA UMA FUNÇÃO REUTILIZÁVEL
+    // Usamos useCallback para evitar que a função seja recriada a cada renderização
+    const fetchData = useCallback(() => {
         setLoading(true);
-        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-        // Use Promise.all para esperar todas as chamadas essenciais terminarem
         Promise.all([
             ConsignacaoDataService.getByAtivo(),
             ConsignacaoDataService.getByInativo(),
+            ConsignacaoDataService.getAllByDataInicio(),
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll(),
-            ConsignacaoDataService.getAllByDataInicio()
-        ]).then(([ativos, inativos, automoveis, modelos, marcas, datainicio]) => {
+        ]).then(([ativos, inativos, recentes, automoveis, modelos, marcas]) => {
             setConsignacaoAtivo(ativos.data);
-            setConsignacaoInativo(inativos.data)
+            setConsignacaoInativo(inativos.data);
+            setConsignacaoDataInicio(recentes.data);
             setAutomovel(automoveis.data);
             setModelo(modelos.data);
             setMarca(marcas.data);
-            setConsignacaoDataInicio(datainicio.data)
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
+            tLoading(false); // Garante que o loading não fica travado
         }).finally(() => {
-            setLoading(false); // Esconde o loading quando tudo terminar
-            clearTimeout(timeout);
+            setLoading(false);
         });
-    }, []);
+    }, []); // O array vazio [] garante que a função só seja criada uma vez
+
+
+    // 2. CHAME A FUNÇÃO DE BUSCA QUANDO O COMPONENTE MONTAR
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]); // Depende da função fetchData
 
 
     // 2. UNIFICAÇÃO DA FONTE DE DADOS
@@ -201,14 +236,14 @@ const Consignacoes = () => {
                                     {records.map((d) => {
                                         const auto = automovel.find(a => a.id === d.automovelId);
                                         const nomeMarca = marca.find(m => m.id === auto?.marcaId);
-                                        const noModelo = modelo.find(mo => mo.marcaId === nomeMarca?.id);
+                                        const nomeModelo = modelo.find(mo => mo.id === auto?.modeloId);
 
                                         return (
                                             <tr key={d.id} className="align-middle">
                                                 <th scope="row">{d.id}</th>
                                                 <td>{new Date(d.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                                                 <td>
-                                                    <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
+                                                    <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${nomeModelo?.nome ?? ''}`}</div>
                                                     <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
                                                 </td>
                                                 <td className="text-dark fw-bold">{d.valor && `${parseFloat(d.valor).toLocaleString('pt-BR', {

@@ -32,10 +32,6 @@ const EditarAutomovel = () => {
         marcaId: null,
         modeloId: null,
 
-        // Nomes para os inputs de edição
-        marcaNome: "",
-        modeloNome: "",
-
         // Arquivo de imagem
         file: null
     });
@@ -48,27 +44,65 @@ const EditarAutomovel = () => {
             setFormData(prev => ({ ...prev, ...automovel }));
 
             // 2. Busca a marca com base no automovel.marcaId
-            if (automovel?.marcaId) {
-                // Carrega a marca
-                MarcaDataService.getById(automovel.marcaId).then(marcaResp => {
-                    setFormData(prev => ({ ...prev, marcaNome: marcaResp.data.nome }));
+            // if (automovel?.marcaId) {
+            //     // Carrega a marca
+            //     MarcaDataService.getById(automovel.marcaId).then(marcaResp => {
+            //         setFormData(prev => ({ ...prev, marcaNome: marcaResp.data.nome }));
 
-                    // Carrega TODOS os modelos e encontra o primeiro da marca
-                    ModeloDataService.getAll().then(modelosResp => {
-                        const primeiroModelo = modelosResp.data.find(m => m.marcaId === automovel?.marcaId);
-                        if (primeiroModelo) {
-                            setFormData(prev => ({
-                                ...prev,
-                                modeloNome: primeiroModelo.nome,
-                                modeloId: primeiroModelo.id // Salva o ID do primeiro modelo
-                            }));
-                        }
-                    });
-                });
-            }
+            //         // Carrega TODOS os modelos e encontra o primeiro da marca
+            //         ModeloDataService.getAll().then(modelosResp => {
+            //             const primeiroModelo = modelosResp.data.find(m => m.marcaId === automovel?.marcaId);
+            //             if (primeiroModelo) {
+            //                 setFormData(prev => ({
+            //                     ...prev,
+            //                     modeloNome: primeiroModelo.nome,
+            //                     modeloId: primeiroModelo.id // Salva o ID do primeiro modelo
+            //                 }));
+            //             }
+            //         });
+            //     });
+            // }
 
         }).catch(e => console.error("Erro ao carregar dados:", e));
     }, [id]); // Roda apenas uma vez quando o ID muda
+
+
+    // Busca as marcas ao carregar a página
+    useEffect(() => {
+        MarcaDataService.getAll().then(response => {
+            setMarcasOptions(response.data.map(m => ({ value: m.id, label: m.nome })));
+        });
+        // ... (busque clientes, etc. aqui também)
+    }, []);
+
+    // 2. EFEITO EM CASCATA: Busca os modelos quando uma marca é selecionada
+    useEffect(() => {
+        // Se nenhuma marca estiver selecionada, limpa as opções de modelo
+        if (!formData.marcaId) {
+            setModelosOptions([]);
+            setFormData(prev => ({ ...prev, modeloId: '' })); // Limpa o modelo selecionado
+            return;
+        }
+
+        setIsModelosLoading(true);
+        ModeloDataService.getByMarca(formData.marcaId)
+            .then(response => {
+                const options = response.data.map(modelo => ({
+                    value: modelo.id,
+                    label: modelo.nome
+                }));
+                setModelosOptions(options);
+            })
+            .catch(e => console.error("Erro ao buscar modelos:", e))
+            .finally(() => setIsModelosLoading(false));
+
+    }, [formData.marcaId]); // Roda toda vez que o marcaId mudar
+
+
+    // States para as opções dos selects
+    const [marcasOptions, setMarcasOptions] = useState([]);
+    const [modelosOptions, setModelosOptions] = useState([]);
+    const [isModelosLoading, setIsModelosLoading] = useState(false);
 
 
     const handleInputChange = (event) => {
@@ -78,6 +112,10 @@ const EditarAutomovel = () => {
 
     const handleFileChange = (event) => {
         setFormData(prev => ({ ...prev, file: event.target.files[0] }));
+    };
+
+    const handleSelectChange = (selectedOption, fieldName) => {
+        setFormData(prev => ({ ...prev, [fieldName]: selectedOption ? selectedOption.value : '' }));
     };
 
 
@@ -114,8 +152,8 @@ const EditarAutomovel = () => {
         if (!formData.km) vazioErros.push("km");
         if (!formData.combustivel) vazioErros.push("combustivel");
         if (!formData.cor) vazioErros.push("cor");
-        if (!formData.modeloNome) vazioErros.push("modelo");
-        if (!formData.marcaNome) vazioErros.push("marca");
+        if (!formData.modeloId) vazioErros.push("modelo");
+        if (!formData.marcaId) vazioErros.push("marca");
 
         // Tamanho
         if (formData.renavam && (formData.renavam.length !== 11 || isNaN(formData.renavam))) tamanhoErros.push("renavam");
@@ -158,14 +196,14 @@ const EditarAutomovel = () => {
             // --- ETAPA 1: ATUALIZAR MARCA (se o nome mudou) ---
             // Aqui você pode adicionar uma lógica para verificar se o nome da marca foi realmente alterado
             // antes de fazer a chamada à API, para evitar chamadas desnecessárias.
-            if (formData.marcaId) {
-                await MarcaDataService.update(formData.marcaId, { nome: formData.marcaNome });
-            }
+            // if (formData.marcaId) {
+            //     await MarcaDataService.update(formData.marcaId, { nome: formData.marcaNome });
+            // }
 
             // --- ETAPA 2: ATUALIZAR MODELO (se o nome mudou) ---
-            if (formData.modeloId) {
-                await ModeloDataService.update(formData.modeloId, { nome: formData.modeloNome });
-            }
+            // if (formData.modeloId) {
+            //     await ModeloDataService.update(formData.modeloId, { nome: formData.modeloNome });
+            // }
 
             // --- ETAPA 3: ATUALIZAR AUTOMÓVEL ---
             const automovelData = new FormData();
@@ -178,7 +216,8 @@ const EditarAutomovel = () => {
             automovelData.append("placa", formData.placa);
             automovelData.append("renavam", formData.renavam);
             automovelData.append("valor", formData.valor);
-            automovelData.append("marcaId", formData.marcaId); // O ID da marca não muda
+            automovelData.append("marcaId", formData.marcaId);
+            automovelData.append("modeloId", formData.modeloId);
             automovelData.append("file", formData.file);
 
 
@@ -234,12 +273,28 @@ const EditarAutomovel = () => {
                         <div className="row g-3">
                             <div className="col-md-4">
                                 <label htmlFor="marca" className="form-label">Marca</label>
-                                <input value={formData.marcaNome ?? ""} type="text" className={`form-control ${hasError("marca") && "is-invalid"}`} id="marcaNome" name="marcaNome" onChange={handleInputChange} />
+                                {/* <input value={formData.marcaNome ?? ""} type="text" className={`form-control ${hasError("marca") && "is-invalid"}`} id="marcaNome" name="marcaNome" onChange={handleInputChange} /> */}
+                                <Select
+                                    placeholder="Selecione uma marca..."
+                                    options={marcasOptions}
+                                    value={marcasOptions.find(option => option.value === formData.marcaId) || null}
+                                    onChange={(option) => handleSelectChange(option, 'marcaId')}
+                                    isClearable isSearchable
+                                />
                                 {vazio.includes("marca") && <div className="invalid-feedback">Informe a marca.</div>}
                             </div>
                             <div className="col-md-4">
                                 <label htmlFor="modelo" className="form-label">Modelo</label>
-                                <input value={formData.modeloNome ?? ""} type="text" className={`form-control ${hasError("modelo") && "is-invalid"}`} id="modeloNome" name="modeloNome" onChange={handleInputChange} />
+                                {/* <input value={formData.modeloNome ?? ""} type="text" className={`form-control ${hasError("modelo") && "is-invalid"}`} id="modeloNome" name="modeloNome" onChange={handleInputChange} /> */}
+                                <Select
+                                    placeholder="Selecione um modelo..."
+                                    options={modelosOptions}
+                                    value={modelosOptions.find(option => option.value === formData.modeloId) || null}
+                                    onChange={(option) => handleSelectChange(option, 'modeloId')}
+                                    isDisabled={!formData.marcaId} // Desabilita se nenhuma marca for selecionada
+                                    isLoading={isModelosLoading}   // Mostra um spinner enquanto carrega
+                                    isClearable isSearchable
+                                />
                                 {vazio.includes("modelo") && <div className="invalid-feedback">Informe o modelo.</div>}
                             </div>
                             <div className="col-md-4">

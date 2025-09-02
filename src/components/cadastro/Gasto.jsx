@@ -134,7 +134,7 @@ const Gasto = () => {
 
     const optionsAutomovel = automovel?.map((d) => {
         const nomeMarca = marca?.find(marca => marca.id === d.marcaId);
-        const nomeModelo = modelo?.find(modelo => modelo.marcaId === nomeMarca.id);
+        const nomeModelo = modelo?.find(modelo => modelo.id === d.modeloId);
 
         return {
             // value: d.id,
@@ -168,6 +168,7 @@ const Gasto = () => {
                 <div className="small text-muted d-flex align-items-center mt-1">
                     <FaRegIdCard className="me-1" />
                     <span>Renavam: {label.renavam}</span>
+                    {/* <span>Placa: {label.placa}</span> */}
                     <span className="mx-2">|</span>
                     <FaCalendarAlt className="me-1" />
                     <span>Ano: {label.ano}</span>
@@ -184,11 +185,16 @@ const Gasto = () => {
         try {
 
             const autoResp = await AutomovelDataService.getByRenavam(renavam)
-                .catch(e => {
-                    console.error("Erro ao buscar automovel:", e);
-                });
+            // .catch(e => {
+            //     console.error("Erro ao buscar automovel:", e);
+            // });
 
-            console.log(autoResp?.data);
+            if (autoResp.data.erro) {
+                setErro(autoResp.data.erro); // erro vindo do back
+                setMensagemErro(autoResp.data.mensagemErro);
+                throw new Error(autoResp.data.mensagemErro);
+
+            }
 
             if (autoResp && autoResp.data) {
 
@@ -202,6 +208,10 @@ const Gasto = () => {
         } catch (error) {
             // Se qualquer 'await' falhar, o código vem para cá
             console.error("Erro no processo de busca pelo automovel:", error);
+            setErro(true);
+            // Tenta pegar a mensagem de erro da resposta da API, ou usa uma mensagem padrão
+            const mensagem = error.response?.data?.mensagemErro || error.message || "Ocorreu um erro inesperado.";
+            setMensagemErro(mensagem);
         }
     }
 
@@ -281,12 +291,12 @@ const Gasto = () => {
                 </div>
 
                 {/* Alertas */}
-                {erro && (
+                {/* {erro && (
                     <div className="alert alert-danger d-flex align-items-center" role="alert">
                         <i className="bi bi-exclamation-triangle-fill me-2"></i>
                         <div>{mensagemErro}</div>
                     </div>
-                )}
+                )} */}
                 {sucesso && (
                     <div className="alert alert-success d-flex align-items-center" role="alert">
                         <i className="bi bi-check-circle-fill me-2"></i>
@@ -312,6 +322,14 @@ const Gasto = () => {
                                 Buscar
                             </button>
                         </div>
+                        <div className="col-md-3"></div>
+                        {erro && (
+                            <div className="d-flex align-items-center col-md-3" role="alert">
+                                <i className="bi text-danger bi-exclamation-triangle-fill me-2"></i>
+                                <div class="form-text text-danger">{mensagemErro}</div>
+                            </div>
+                        )}
+
                     </div>
                 </form>
 

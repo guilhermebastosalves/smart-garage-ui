@@ -10,7 +10,7 @@ function ModalCadastro({ show, onHide, consignacao }) {
     const [cadastro, setCadastro] = useState(false);
 
     const handleRedirect = (path, state) => {
-        localStorage.setItem("Consignacao", JSON.stringify(consignacao));
+        sessionStorage.setItem("NegocioAtual", JSON.stringify(consignacao));
         onHide(); // Fecha o modal
         navigate(path, { state });
     };

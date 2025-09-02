@@ -11,7 +11,8 @@ function ModalCompra({ show, onHide, compra }) {
 
 
     const handleRedirect = (path, state) => {
-        localStorage.setItem("Compra", JSON.stringify(compra));
+        // localStorage.setItem("Compra", JSON.stringify(compra));
+        sessionStorage.setItem("NegocioAtual", JSON.stringify(compra));
         onHide(); // Fecha o modal
         navigate(path, { state });
     };

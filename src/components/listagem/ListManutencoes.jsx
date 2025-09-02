@@ -3,7 +3,7 @@ import ManutencaoDataService from '../../services/manutencaoDataService';
 import AutomovelDataService from '../../services/automovelDataService';
 import ModeloDataService from '../../services/modeloDataService';
 import MarcaDataService from '../../services/marcaDataService';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalConfirmacao from '../modais/ModalConfirmacao';
 import ModalFinalizarManutencao from '../modais/ModalFinalizarManutencao';
@@ -70,7 +70,8 @@ const Manutencao = () => {
 
     const handleFinalizacaoSucesso = (idManutencaoFinalizada) => {
         // Remove a manutenção da lista de ativos para feedback instantâneo
-        setManutencaoAtiva(prev => prev.filter(m => m.id !== idManutencaoFinalizada));
+        // setManutencaoAtiva(prev => prev.filter(m => m.id !== idManutencaoFinalizada));
+        fetchData();
     };
 
 
@@ -84,10 +85,38 @@ const Manutencao = () => {
 
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     setLoading(true);
+    //     const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
+    //     // Use Promise.all para esperar todas as chamadas essenciais terminarem
+    //     Promise.all([
+    //         ManutencaoDataService.getByAtivo(),
+    //         ManutencaoDataService.getByInativo(),
+    //         ManutencaoDataService.getAllByDataEnvio(),
+    //         AutomovelDataService.getAll(),
+    //         ModeloDataService.getAll(),
+    //         MarcaDataService.getAll(),
+    //         // VendaDataServive.getByData()
+    //     ]).then(([ativas, inativas, recentes, automoveis, modelos, marcas]) => {
+    //         setManutencaoAtiva(ativas.data);
+    //         setManutencaoInativa(inativas.data);
+    //         setManutencaoRecente(recentes.data);
+    //         setAutomovel(automoveis.data);
+    //         setModelo(modelos.data);
+    //         setMarca(marcas.data);
+    //         // setVendaRecente(vendasRecentes.data)
+    //     }).catch((err) => {
+    //         console.error("Erro ao carregar dados:", err);
+    //         setLoading(false); // Garante que o loading não fica travado
+    //     }).finally(() => {
+    //         setLoading(false); // Esconde o loading quando tudo terminar
+    //         clearTimeout(timeout);
+    //     });
+    // }, []);
+
+
+    const fetchData = useCallback(() => {
         setLoading(true);
-        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-        // Use Promise.all para esperar todas as chamadas essenciais terminarem
         Promise.all([
             ManutencaoDataService.getByAtivo(),
             ManutencaoDataService.getByInativo(),
@@ -109,9 +138,15 @@ const Manutencao = () => {
             setLoading(false); // Garante que o loading não fica travado
         }).finally(() => {
             setLoading(false); // Esconde o loading quando tudo terminar
-            clearTimeout(timeout);
         });
     }, []);
+
+    // 2. CHAME A FUNÇÃO DE BUSCA QUANDO O COMPONENTE MONTAR
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]); // Depende da função fetchData
+
+
 
     // 2. UNIFICAÇÃO DA FONTE DE DADOS
     const listaAtual = useMemo(() => {
@@ -194,7 +229,10 @@ const Manutencao = () => {
                                     <tr>
                                         <th scope="col">ID</th>
                                         <th scope="col">Data Envio</th>
-                                        <th scope="col">Previsão de Retorno</th>
+                                        {/* <th scope="col">Previsão de Retorno</th> */}
+                                        <th scope="col">
+                                            {opcao === 'ativas' ? 'Previsão de Retorno' : 'Data Retorno'}
+                                        </th>
                                         <th scope="col">Automóvel</th>
                                         <th scope="col">Valor</th>
                                         <th scope="col" className="text-center" style={{ width: '180px' }}>Ações
@@ -205,13 +243,23 @@ const Manutencao = () => {
                                     {records.map((d) => {
                                         const auto = automovel.find(a => a.id === d.automovelId);
                                         const nomeMarca = marca.find(m => m.id === auto?.marcaId);
-                                        const noModelo = modelo.find(mo => mo.marcaId === nomeMarca?.id);
+                                        const noModelo = modelo.find(mo => mo.id === auto?.modeloId);
 
                                         return (
                                             <tr key={d.id} className="align-middle">
                                                 <th scope="row">{d.id}</th>
                                                 <td>{new Date(d.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                                                <td>{d.previsao_retorno ? new Date(d.previsao_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</td>
+                                                {/* <td>{d.previsao_retorno ? new Date(d.previsao_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</td> */}
+                                                <td>
+                                                    {d.ativo ?
+                                                        // Se estiver ativa, mostra a previsão
+                                                        (d.previsao_retorno ? new Date(d.previsao_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A')
+                                                        :
+                                                        // Se estiver finalizada, mostra a data de retorno real
+                                                        (d.data_retorno ? new Date(d.data_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A')
+                                                    }
+                                                </td>
+
                                                 <td>
                                                     <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
                                                     <small className="text-muted">{`Placa: ${auto?.placa}`}</small>

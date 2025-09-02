@@ -74,7 +74,7 @@ const DetalhesManutencao = () => {
 
     // Variáveis auxiliares para facilitar o acesso aos dados
     const { automovel, cliente } = detalhes;
-    const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro modelo
+    // const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro modelo
 
     return (
         <>
@@ -123,7 +123,7 @@ const DetalhesManutencao = () => {
                             </div>
                             <div className="card-body">
                                 <p className="mb-2"><strong>Marca:</strong> {automovel?.marca?.nome || 'N/A'}</p>
-                                <p className="mb-2"><strong>Modelo:</strong> {modeloDoAutomovel?.nome || 'N/A'}</p>
+                                <p className="mb-2"><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</p>
                                 <p className="mb-2"><strong>Ano/Modelo:</strong> {`${automovel?.ano_fabricacao || 'N/A'}/${automovel?.ano_modelo || 'N/A'}`}</p>
                                 <p className="mb-2"><strong>Placa:</strong> {automovel?.placa || 'N/A'}</p>
                                 <p className="mb-2"><strong>Cor:</strong> {automovel?.cor || 'N/A'}</p>
