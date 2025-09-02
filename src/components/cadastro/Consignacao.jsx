@@ -26,27 +26,6 @@ const Consignacao = () => {
 
     const [modeloNegocio, setModeloNegocio] = useState(null);
 
-    // useEffect(() => {
-
-    //     const compra = sessionStorage.getItem("Compra");
-    //     const consignacao = sessionStorage.getItem("Consignacao");
-    //     const troca = sessionStorage.getItem("Troca");
-
-    //     if (compra) {
-    //         setModeloNegocio(JSON.parse(compra));
-    //         // localStorage.removeItem("Compra"); // Opcional: apaga após usar
-    //     }
-
-    //     else if (consignacao) {
-    //         setModeloNegocio(JSON.parse(consignacao));
-    //         // localStorage.removeItem("Consignacao"); // Opcional: apaga após usar
-    //     }
-
-    //     else if (troca) {
-    //         setModeloNegocio(JSON.parse(troca));
-    //         // localStorage.removeItem("Troca"); // Opcional: apaga após usar
-    //     }
-    // }, []);
 
     useEffect(() => {
         const negocio = sessionStorage.getItem("NegocioAtual");
@@ -210,6 +189,7 @@ const Consignacao = () => {
         if (!consignacao.valor) vazioErros.push("valor");
         if (!consignacao.data_inicio) vazioErros.push("data_inicio");
         if (!consignacao.clienteId) vazioErros.push("clienteId");
+        if (!consignacao.valor) vazioErros.push("valorConsig");
 
         if (!automovel.valor) vazioErros.push("valor");
         if (!automovel.ano_fabricacao) vazioErros.push("ano_fabricacao");
@@ -263,7 +243,34 @@ const Consignacao = () => {
     });
 
 
-    const customStyles = {
+    // const customStyles = {
+    //     option: (provided, state) => ({
+    //         ...provided,
+    //         padding: 15,
+    //         fontSize: '1rem',
+    //         fontWeight: state.isSelected ? 'bold' : 'normal',
+    //         backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
+    //         color: 'black',
+    //         whiteSpace: 'pre-wrap', // quebra linhas se necessário
+    //     }),
+    //     control: (provided) => ({
+    //         ...provided,
+    //         // minHeight: '45px',
+    //         fontSize: '1rem',
+    //     }),
+    //     singleValue: (provided) => ({
+    //         ...provided,
+    //         fontWeight: 'bold',
+    //         color: '#333',
+    //     }),
+    //     menu: (provided) => ({
+    //         ...provided,
+    //         zIndex: 9999, // garante que fique acima de outros elementos
+    //     }),
+    // };
+
+
+    const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
             padding: 15,
@@ -271,12 +278,16 @@ const Consignacao = () => {
             fontWeight: state.isSelected ? 'bold' : 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
             color: 'black',
-            whiteSpace: 'pre-wrap', // quebra linhas se necessário
+            whiteSpace: 'pre-wrap',
         }),
         control: (provided) => ({
             ...provided,
-            // minHeight: '45px',
             fontSize: '1rem',
+            // Adiciona a borda vermelha se o campo tiver erro
+            borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
+            '&:hover': {
+                borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
+            }
         }),
         singleValue: (provided) => ({
             ...provided,
@@ -285,9 +296,10 @@ const Consignacao = () => {
         }),
         menu: (provided) => ({
             ...provided,
-            zIndex: 9999, // garante que fique acima de outros elementos
+            zIndex: 9999,
         }),
-    };
+    });
+
 
     const formatOptionLabelFornecedor = ({ value, label }) => {
 
@@ -537,8 +549,11 @@ const Consignacao = () => {
                                     value={marcasOptions.find(option => option.value === automovel.marcaId) || null}
                                     onChange={(option) => handleSelectChange(option, 'marcaId')}
                                     isClearable isSearchable
+                                    styles={getCustomStyles("marca")}
                                 />
-                                {vazio.includes("marca") && <div className="invalid-feedback">Informe a marca.</div>}
+
+                                {vazio.includes("marca") && <div className="form-text text-danger ms-1">Informe a marca.</div>}
+
                             </div>
                             <div className="col-md-4">
                                 <label htmlFor="modelo" className="form-label">Modelo</label>
@@ -551,8 +566,10 @@ const Consignacao = () => {
                                     isDisabled={!automovel.marcaId} // Desabilita se nenhuma marca for selecionada
                                     isLoading={isModelosLoading}   // Mostra um spinner enquanto carrega
                                     isClearable isSearchable
+                                    styles={getCustomStyles("marca")}
                                 />
-                                {vazio.includes("modelo") && <div className="invalid-feedback">Informe o modelo.</div>}
+                                {vazio.includes("marca") && <div className="form-text text-danger ms-1">Informe o modelo.</div>}
+
                             </div>
                             <div className="col-md-4">
                                 <label htmlFor="cor" className="form-label">Cor</label>
@@ -611,7 +628,7 @@ const Consignacao = () => {
                                 {tamanho.includes("renavam") && <div className="invalid-feedback">Renavam inválido (deve ter 11 dígitos numéricos).</div>}
                             </div>
                             <div className="col-md-4">
-                                <label htmlFor="valor" className="form-label">Valor (R$)</label>
+                                <label htmlFor="valor" className={`form-label ${hasError("valor") && "is-invalid"}`}>Valor (R$)</label>
                                 <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} />
                                 {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
                                 {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
@@ -661,15 +678,15 @@ const Consignacao = () => {
                         <div className="row g-3">
                             <div className="col-md-4">
                                 <label for="valor" class="form-label">Valor</label>
-                                <input type="text" class="form-control" id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeConsignacao} />
-                                {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
-                                {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
+                                <input type="text" class={`form-control ${hasError("valorConsig") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeConsignacao} />
+                                {vazio.includes("valorConsig") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
+                                {tipo.includes("valorConsig") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
                             </div>
                             <div className="col-md-4">
                                 <label for="data" class="form-label">Data Inicio</label><br />
                                 <DatePicker
                                     style={{ width: "100%;" }}
-                                    className="form-control"
+                                    className={`form-control ${hasError("data_inicio") && "is-invalid"}`}
                                     calendarClassName="custom-datepicker-container"
                                     type="text"
                                     aria-describedby="dataHelp"
@@ -681,11 +698,12 @@ const Consignacao = () => {
                                 />
                                 {vazio.includes("data_inicio") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
                                 {tipo.includes("data_inicio") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
+
                             </div>
                             <div className="col-md-4">
                                 <label for="fornecedor" class="form-label">Proprietario</label>
                                 <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} class="form-select" id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleProprietarioChange} value={optionsFornecedor.find(option => option.value === consignacao.clienteId) || null} isClearable={true}
-                                    styles={customStyles}
+                                    styles={getCustomStyles("clienteId")}
                                     filterOption={(option, inputValue) => {
                                         const label = option.label;
                                         const texto = [
@@ -697,7 +715,7 @@ const Consignacao = () => {
                                         return texto.includes(inputValue.toLowerCase());
                                     }}>
                                 </Select>
-                                {vazio.includes("clienteId") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o proprietário.</div>}
+                                {vazio.includes("clienteId") && <div className="form-text text-danger ms-1">Informe o fornecedor.</div>}
                             </div>
                         </div>
                     </fieldset>

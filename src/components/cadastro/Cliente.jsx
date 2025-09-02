@@ -58,37 +58,6 @@ const Cliente = () => {
 
     const [modeloNegocio, setModeloNegocio] = useState(null);
 
-    // useEffect(() => {
-
-    //     // const venda = localStorage.getItem("Venda");
-    //     // const consignacao = localStorage.getItem("Consignacao");
-    //     // const compra = localStorage.getItem("Compra");
-    //     // const troca = localStorage.getItem("Troca");
-
-    //     const venda = sessionStorage.getItem("Venda");
-    //     const consignacao = sessionStorage.getItem("Consignacao");
-    //     const compra = sessionStorage.getItem("Compra");
-    //     const troca = sessionStorage.getItem("Troca");
-
-    //     if (venda) {
-    //         setModeloNegocio(JSON.parse(venda));
-    //         // localStorage.removeItem("Venda"); // Opcional: apaga após usar
-    //     }
-
-    //     else if (consignacao) {
-    //         setModeloNegocio(JSON.parse(consignacao));
-    //         // localStorage.removeItem("Consignacao"); // Opcional: apaga após usar
-    //     }
-    //     else if (troca) {
-    //         setModeloNegocio(JSON.parse(troca));
-    //         // localStorage.removeItem("Troca"); // Opcional: apaga após usar
-    //     }
-    //     else if (compra) {
-    //         setModeloNegocio(JSON.parse(compra));
-    //         // localStorage.removeItem("Compra"); // Opcional: apaga após usar
-    //     }
-    // }, []);
-
     useEffect(() => {
         const negocio = sessionStorage.getItem("NegocioAtual");
         if (negocio) {
@@ -270,7 +239,6 @@ const Cliente = () => {
 
         // Vazio
         if (!cliente.nome) vazioErros.push("nome");
-        // if (!cliente.data_cadastro) vazioErros.push("data");
         if (!cliente.email) vazioErros.push("email");
         if (!cliente.telefone) vazioErros.push("telefone");
 
@@ -288,7 +256,7 @@ const Cliente = () => {
 
 
         // Tamanho
-        if (cliente.telefone && (cliente.telefone.length !== 11 || isNaN(cliente.telefone))) tamanhoErros.push("telefone");
+        if (cliente.telefone && (isNaN(cliente.telefone))) tamanhoErros.push("telefone");
 
         if (fisica.cpf && (fisica.cpf != '' && (fisica.cpf.length !== 11) || isNaN(fisica.cpf))) tamanhoErros.push("cpf");
         if (fisica.rg && (fisica.rg != '' && (fisica.rg.length !== 9) || isNaN(fisica.rg))) tamanhoErros.push("rg");
