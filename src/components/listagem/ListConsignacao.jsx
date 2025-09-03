@@ -174,6 +174,9 @@ const Consignacoes = () => {
     const npage = Math.ceil(listaAtual.length / recordsPerPage);
     const numbers = [...Array(npage + 1).keys()].slice(1);
 
+    console.log(npage)
+    console.log(listaAtual.length)
+
     // Funções de controle da paginação (agora funcionam para qualquer lista)
     const changeCPage = (n) => setCurrentPage(n);
     const prePage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1); };
@@ -277,15 +280,15 @@ const Consignacoes = () => {
                             <nav className="d-flex justify-content-center">
                                 <ul className="pagination mb-0">
                                     <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                        <button className="page-link" onClick={prePage}>Anterior</button>
+                                        <span className="page-link pointer" onClick={prePage}>Anterior</span>
                                     </li>
                                     {numbers.map((n) => (
                                         <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={n}>
-                                            <button className="page-link" onClick={() => changeCPage(n)}>{n}</button>
+                                            <span className="page-link pointer" onClick={() => changeCPage(n)}>{n}</span>
                                         </li>
                                     ))}
                                     <li className={`page-item ${currentPage === npage ? 'disabled' : ''}`}>
-                                        <button className="page-link" onClick={nextPage}>Próximo</button>
+                                        <span className="page-link pointer" onClick={nextPage}>Próximo</span>
                                     </li>
                                 </ul>
                             </nav>

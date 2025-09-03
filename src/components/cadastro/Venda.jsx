@@ -12,8 +12,8 @@ import ModeloDataService from "../../services/modeloDataService";
 import MarcaDataService from "../../services/marcaDataService";
 import VendaDataService from "../../services/vendaDataService";
 import ConsignacaoDataService from "../../services/consignacaoDataService";
-import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
-import { FaCar, FaRegIdCard, FaCalendarAlt, FaTag } from "react-icons/fa";
+import { FaBuilding, FaUserTie, FaIdCard } from "react-icons/fa";
+import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileContract, FaFileSignature } from "react-icons/fa";
 import { useAuth } from '../../context/AuthContext';
 
 
@@ -77,6 +77,10 @@ const Venda = () => {
         setVenda({ ...venda, [name]: value });
     }
 
+    const handleSelectChange = (selectedOption, fieldName) => {
+        setVenda(prev => ({ ...prev, [fieldName]: selectedOption ? selectedOption.value : '' }));
+    };
+
     const [loading, setLoading] = useState(true);
 
     const [automovelOpt, setAutomovelOpt] = useState([]);
@@ -134,10 +138,18 @@ const Venda = () => {
         let tipoErros = [];
 
         // Vazio
+        if (!venda.valor) vazioErros.push("valor");
+        if (!venda.data) vazioErros.push("data");
+        if (!venda.clienteId) vazioErros.push("clienteId");
+        if (!venda.comissao) vazioErros.push("comissao");
+        if (!venda.automovelId) vazioErros.push("automovelId");
+        if (!venda.forma_pagamento) vazioErros.push("forma_pagamento");
 
         // Tamanho
 
         // Tipo
+        if (venda.data && venda.data > new Date()) tipoErros.push("data");
+        if (venda.valor && (isNaN(venda.valor) || venda.valor <= 0)) tipoErros.push("valor");
 
         return { vazioErros, tamanhoErros, tipoErros };
     };
@@ -267,31 +279,50 @@ const Venda = () => {
         }
     ];
 
-    const customStyles = {
+    const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
             padding: 15,
             fontSize: '1rem',
-            fontWeight: state.isSelected ? 'bold' : 'normal',
+            fontWeight: 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
             color: 'black',
-            whiteSpace: 'pre-wrap', // quebra linhas se necessário
+            whiteSpace: 'pre-wrap',
         }),
         control: (provided) => ({
             ...provided,
-            // minHeight: '45px',
             fontSize: '1rem',
+            // Adiciona a borda vermelha se o campo tiver erro
+            borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
+            '&:hover': {
+                borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
+            }
         }),
         singleValue: (provided) => ({
             ...provided,
-            fontWeight: 'bold',
+            fontWeight: 'normal',
             color: '#333',
         }),
         menu: (provided) => ({
             ...provided,
-            zIndex: 9999, // garante que fique acima de outros elementos
+            zIndex: 9999,
         }),
-    };
+    });
+
+
+    useEffect(() => {
+        // Só atualiza se o usuário não digitou manualmente
+        // if (!troca.comissao) {
+        let comissao = "";
+        if (venda?.valor !== "") {
+            comissao = venda?.valor < 50000 ? 300 : venda?.valor >= 100000 ? 700 : 500;
+        }
+        setVenda(prev => ({
+            ...prev,
+            comissao: comissao
+        }));
+        // }
+    }, [venda?.valor]);
 
     // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
@@ -372,7 +403,7 @@ const Venda = () => {
             setMensagemSucesso("Operação de venda realizada com sucesso!");
 
             setTimeout(() => {
-                navigate('/home');
+                navigate('/listagem/vendas');
             }, 1500);
 
 
@@ -419,78 +450,85 @@ const Venda = () => {
                 {/* Formulário com Seções */}
                 <form onSubmit={saveVenda} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
-                    {/* Seção 4: Troca */}
-                    <fieldset className="mb-5">
-                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Detalhes Venda</legend>
-                        <div className="row g-3">
-                            <div className="col-md-4">
-                                <label for="valor" class="form-label">Valor</label>
-                                <input type="text" className={`form-control ${hasError("valor_diferenca") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={(e) => setVenda({ ...venda, valor: e.target.value })} value={venda.valor} />
-                                {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
-                                {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label for="forma_pagamento" class="form-label">Forma de Pagamento</label>
-                                <Select className={`${hasError("forma_pagamento") && "is-invalid"}`} id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === venda.forma_pagamento)} onChange={(option) => setVenda({ ...venda, forma_pagamento: option.value })} options={optionsFormaPagamento} isClearable={true}>
-                                </Select>
-                                {vazio.includes("forma_pagamento") && <div id="formapagamentohelp" class="form-text text-danger ms-1">Informe a forma de pagamento.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label for="comissao" class="form-label">Comissão</label>
-                                <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" onChange={handleInputChangeVenda} value={automovel?.valor < 50000 ? 300 : automovel?.valor > 100000 ? 700 : 500} />
-                                {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
-                                {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label for="data" class="form-label">Data</label><br />
-                                <DatePicker
-                                    calendarClassName="custom-datepicker-container"
-                                    className={`form-control ${hasError("data") && "is-invalid"}`}
-                                    type="text"
-                                    aria-describedby="dataHelp"
-                                    id="data"
-                                    name="data"
-                                    selected={venda.data}
-                                    onChange={(date) => setVenda({ ...venda, data: date })}
-                                    dateFormat="dd/MM/yyyy" // Formato da data
-                                />
-                                {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
-                                {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label for="fornecedor" class="form-label">Fornecedor</label>
-                                <Select formatOptionLabel={formatOptionLabelFornecedor} styles={customStyles} isSearchable={true} className={`${hasError("fornecedor") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={(option) => setVenda({ ...venda, clienteIdlId: option ? option.value : "" })} value={optionsFornecedor.find(option => option.value === venda.clienteId) || null} isClearable={true} filterOption={(option, inputValue) => {
-                                    const label = option.label;
-                                    const texto = [
-                                        label.nome,
-                                        label.razaoSocial,
-                                        label.cpf,
-                                        label.cnpj,
-                                    ].filter(Boolean).join(" ").toLowerCase();
-                                    return texto.includes(inputValue.toLowerCase());
-                                }}>
-                                </Select>
-                                {vazio.includes("clienteId") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o proprietário.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label for="automovel_fornecido" class="form-label">Automóvel Fornecido</label>
-                                <Select formatOptionLabel={formatOptionLabel} styles={customStyles} isSearchable={true} className={`${hasError("automovel_fornecido") && "is-invalid"}`} id="automovel_fornecido" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} value={optionsAutomovel.find(option => option.value === venda.automovelId) || null} isClearable={true}
-                                    filterOption={(option, inputValue) => {
-                                        const label = option.label;
-                                        const texto = [
-                                            label.marca,
-                                            label.modelo,
-                                            label.renavam,
-                                        ].filter(Boolean).join(" ").toLowerCase();
-                                        return texto.includes(inputValue.toLowerCase());
-                                    }}>
-                                </Select>
-                                {vazio.includes("automovel_fornecido") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel fornecido.</div>}
+                    <div className="card mb-4 form-card">
+                        <div className="card-header d-flex align-items-center">
+                            <FaFileSignature className="me-2" /> {/* Ícone para a seção */}
+                            Detalhes da Venda
+                        </div>
+                        <div className="card-body">
+                            <div className="row g-3">
+                                <div className="col-md-4">
+                                    <label for="valor" class="form-label">Valor</label>
+                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={(e) => setVenda({ ...venda, valor: e.target.value })} value={venda.valor} />
+                                    {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
+                                    {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label for="forma_pagamento" class="form-label">Forma de Pagamento</label>
+                                    <Select className={`${hasError("forma_pagamento") && "is-invalid"}`} id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === venda.forma_pagamento)} onChange={(option) => setVenda({ ...venda, forma_pagamento: option.value })} options={optionsFormaPagamento} isClearable={true}
+                                        styles={getCustomStyles("forma_pagamento")}>
+                                    </Select>
+                                    {vazio.includes("forma_pagamento") && <div id="formapagamentohelp" class="form-text text-danger ms-1">Informe a forma de pagamento.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label for="comissao" class="form-label">Comissão</label>
+                                    <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" onChange={handleInputChangeVenda} value={venda?.comissao} />
+                                    {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
+                                    {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label for="data" class="form-label">Data</label><br />
+                                    <DatePicker
+                                        calendarClassName="custom-datepicker-container"
+                                        className={`form-control ${hasError("data") && "is-invalid"}`}
+                                        type="text"
+                                        aria-describedby="dataHelp"
+                                        id="data"
+                                        name="data"
+                                        selected={venda.data}
+                                        onChange={(date) => setVenda({ ...venda, data: date })}
+                                        dateFormat="dd/MM/yyyy" // Formato da data
+                                    />
+                                    {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
+                                    {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label for="fornecedor" class="form-label">Fornecedor</label>
+                                    <Select formatOptionLabel={formatOptionLabelFornecedor} styles={getCustomStyles("clienteId")}
+                                        // onChange={(option) => handleSelectChange(option, 'clienteId')}
+                                        isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="clienteId" name="clienteId" placeholder="Selecione o fornecedor" options={optionsFornecedor} value={optionsFornecedor.find(option => option.value === venda.clienteId) || null} isClearable={true} filterOption={(option, inputValue) => {
+                                            const label = option.label;
+                                            const texto = [
+                                                label.nome,
+                                                label.razaoSocial,
+                                                label.cpf,
+                                                label.cnpj,
+                                            ].filter(Boolean).join(" ").toLowerCase();
+                                            return texto.includes(inputValue.toLowerCase());
+                                        }}>
+                                    </Select>
+                                    {vazio.includes("clienteId") && <div className="form-text text-danger ms-1">Informe o comprador.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label for="automovel_fornecido" class="form-label">Automóvel Fornecido</label>
+                                    <Select formatOptionLabel={formatOptionLabel} styles={getCustomStyles("automovelId")} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovelId" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} value={optionsAutomovel.find(option => option.value === venda.automovelId) || null} isClearable={true}
+                                        // onChange={(option) => handleSelectChange(option, 'automovelId')}
+                                        filterOption={(option, inputValue) => {
+                                            const label = option.label;
+                                            const texto = [
+                                                label.marca,
+                                                label.modelo,
+                                                label.renavam,
+                                            ].filter(Boolean).join(" ").toLowerCase();
+                                            return texto.includes(inputValue.toLowerCase());
+                                        }}>
+                                    </Select>
+                                    {vazio.includes("automovelId") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel fornecido.</div>}
+                                </div>
                             </div>
                         </div>
-                    </fieldset>
+                    </div>
 
-                    {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end">
                         <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
                             {isSubmitting ? (

@@ -12,7 +12,7 @@ function ModalVenda({ show, onHide, venda, automovelId }) {
 
 
     const handleRedirect = (path, state) => {
-        localStorage.sessionStorage("NegocioAtual", JSON.stringify(venda));
+        sessionStorage.setItem("NegocioAtual", JSON.stringify(venda));
         onHide(); // Fecha o modal
         navigate(path, { state });
     };

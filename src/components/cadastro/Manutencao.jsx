@@ -8,7 +8,7 @@ import AutomovelDataService from "../../services/automovelDataService";
 import ModeloDataService from "../../services/modeloDataService";
 import MarcaDataService from "../../services/marcaDataService";
 import ManutencaoDataService from "../../services/manutencaoDataService";
-import { FaCar, FaRegIdCard, FaCalendarAlt, FaTag } from "react-icons/fa";
+import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 
 
 
@@ -100,39 +100,57 @@ const Manutencao = () => {
         let tipoErros = [];
 
         // Vazio
+        if (!manutencao.valor) vazioErros.push("valor");
+        if (!manutencao.data_envio) vazioErros.push("data_envio");
+        if (!manutencao.automovelId) vazioErros.push("automovelId");
 
         // Tamanho
 
         // Tipo
+        if (manutencao.data_envio && manutencao.data_envio > new Date()) tipoErros.push("data_envio");
+
+        // Crie uma data para o momento atual
+        const hoje = new Date();
+
+        // Zere as horas, minutos, segundos e milissegundos
+        // Isso garante que estamos comparando apenas a data (o início do dia)
+        hoje.setHours(0, 0, 0, 0);
+
+        if (manutencao.previsao_retorno && manutencao.previsao_retorno < hoje) tipoErros.push("previsao_retorno");
+        if (manutencao.valor && (isNaN(manutencao.valor) || manutencao.valor <= 0)) tipoErros.push("valor");
 
         return { vazioErros, tamanhoErros, tipoErros };
     };
 
-    const customStyles = {
+    const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
             padding: 15,
             fontSize: '1rem',
-            fontWeight: state.isSelected ? 'bold' : 'normal',
+            fontWeight: 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
             color: 'black',
-            whiteSpace: 'pre-wrap', // quebra linhas se necessário
+            whiteSpace: 'pre-wrap',
         }),
         control: (provided) => ({
             ...provided,
-            // minHeight: '45px',
             fontSize: '1rem',
+            // Adiciona a borda vermelha se o campo tiver erro
+            borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
+            '&:hover': {
+                borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
+            }
         }),
         singleValue: (provided) => ({
             ...provided,
-            fontWeight: 'bold',
+            fontWeight: 'normal',
             color: '#333',
         }),
         menu: (provided) => ({
             ...provided,
-            zIndex: 9999, // garante que fique acima de outros elementos
+            zIndex: 9999,
         }),
-    };
+    });
 
     // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
@@ -185,6 +203,14 @@ const Manutencao = () => {
     const buscarAutomovel = async (e) => {
 
         e.preventDefault();
+        setErro(false);
+        setMensagemErro('');
+
+        if (!renavam || renavam.trim() === "") {
+            setErro(true);
+            setMensagemErro("Informe o renavam para buscar.");
+            return; // Interrompe a execução da função aqui
+        }
 
         try {
 
@@ -293,7 +319,7 @@ const Manutencao = () => {
             <div className="container">
 
                 {/* Cabeçalho da Página */}
-                <div className="mb-4">
+                <div className="mb-4 mt-3">
                     <h1 className="fw-bold">Registro de Manutenções</h1>
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova manutenção.</p>
                 </div>
@@ -312,16 +338,15 @@ const Manutencao = () => {
                     </div>
                 )}
 
-                <form className={`mb-5 ${sucesso ? "d-none" : ""}`}>
+                <form className={`mb-4 col-md-6 ${sucesso ? "d-none" : ""}`}>
                     <legend className="h5 fw-bold mb-3 border-bottom pb-2">Busca pelo Automóvel</legend>
-                    <div className="row g-3">
-                        <div className="col-md-4">
+                    <div className="row">
+                        <div className="col-md-8">
                             <label for="valor" class="form-label">Renavam</label>
-                            <input type="text" className={`form-control ${hasError("renavam") && "is-invalid"}`} id="renavam" name="renavam" aria-describedby="renavamHelp" onChange={handleInputChangeRenavam} />
-                            {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o renavam.</div>}
-                            {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Renavam inválido.</div>}
+                            <input type="text" className={`form-control`} id="renavam" name="renavam" aria-describedby="renavamHelp" onChange={handleInputChangeRenavam} />
+
                         </div>
-                        <div className="col-md-3 d-flex align-items-center mt-5">
+                        <div className="col-md-4 d-flex align-items-end">
                             <button
                                 type="button"
                                 className="btn btn-primary"
@@ -330,9 +355,8 @@ const Manutencao = () => {
                                 Buscar
                             </button>
                         </div>
-                        <div className="col-md-3"></div>
                         {erro && (
-                            <div className="d-flex align-items-center col-md-3" role="alert">
+                            <div className="d-flex align-items-center col-md-6 mt-1 mb-0" role="alert">
                                 <i className="bi text-danger bi-exclamation-triangle-fill me-2"></i>
                                 <div class="form-text text-danger">{mensagemErro}</div>
                             </div>
@@ -343,78 +367,83 @@ const Manutencao = () => {
                 {/* Formulário com Seções */}
                 <form onSubmit={saveManutencao} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
-                    {/* Seção 4: Troca */}
-                    <fieldset className="mb-5">
-                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Detalhes da Manutenção</legend>
-                        <div className="row g-3">
-                            <div className="col-md-4">
-                                <label for="valor" class="form-label">Valor</label>
-                                <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeManutencao} />
-                                {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
-                                {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
-                            </div>
+                    <div className="card mb-4 form-card">
+                        <div className="card-header d-flex align-items-center">
+                            <FaFileSignature className="me-2" /> {/* Ícone para a seção */}
+                            Detalhes da Manutenção
+                        </div>
+                        <div className="card-body">
+                            <div className="row g-3">
+                                <div className="col-md-4">
+                                    <label for="valor" class="form-label">Valor</label>
+                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeManutencao} />
+                                    {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
+                                    {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
+                                </div>
 
-                            <div className="col-md-4">
-                                <label for="data" class="form-label">Data Envio</label><br />
+                                <div className="col-md-4">
+                                    <label for="data" class="form-label">Data Envio</label><br />
 
-                                <DatePicker
-
-                                    className={`form-control ${hasError("data") && "is-invalid"}`}
-                                    calendarClassName="custom-datepicker-container"
-                                    type="text"
-                                    aria-describedby="dataHelp"
-                                    id="data"
-                                    name="data_envio"
-                                    selected={manutencao.data_envio}
-                                    onChange={(date) => setManutencao({ ...manutencao, data_envio: date })}
-                                    dateFormat="dd/MM/yyyy" // Formato da data
-                                />
-
-                                {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
-                                {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label for="data" class="form-label">Previsão de Retorno</label><br />
-                                <div className="w-100">
                                     <DatePicker
-                                        style={{ width: "100%;" }}
-                                        className={`form-control ${hasError("data") && "is-invalid"}`}
+
+                                        className={`form-control ${hasError("data_envio") && "is-invalid"}`}
                                         calendarClassName="custom-datepicker-container"
                                         type="text"
                                         aria-describedby="dataHelp"
                                         id="data"
-                                        name="previsao_retorno"
-                                        selected={manutencao.previsao_retorno}
-                                        onChange={(date) => setManutencao({ ...manutencao, previsao_retorno: date })}
+                                        name="data_envio"
+                                        selected={manutencao.data_envio}
+                                        onChange={(date) => setManutencao({ ...manutencao, data_envio: date })}
                                         dateFormat="dd/MM/yyyy" // Formato da data
                                     />
-                                </div>
-                                {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
-                                {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label for="automovel" class="form-label">Automóvel</label>
-                                <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovel") && "is-invalid"}`} id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setManutencao({ ...manutencao, automovelId: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === manutencao.automovelId) || null} isClearable={true} styles={customStyles}
-                                    filterOption={(option, inputValue) => {
-                                        const label = option.label;
-                                        const texto = [
-                                            label.marca,
-                                            label.modelo,
-                                            label.renavam,
-                                        ].filter(Boolean).join(" ").toLowerCase();
-                                        return texto.includes(inputValue.toLowerCase());
-                                    }}>
-                                </Select>
-                                {vazio.includes("automovel") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel.</div>}
-                            </div>
-                            <div className="col-md-8">
-                                <label for="descricao" class="form-label">Descrição</label>
-                                <textarea type="text" value={manutencao.descricao} placeholder="Detalhes do serviço, peças trocadas, etc." rows="3" className={`form-control ${hasError("descricao") && "is-invalid"}`} id="descricao" name="descricao" aria-describedby="descricaoHelp" onChange={handleInputChangeManutencao} />
 
-                                {tipo.includes("descricao") && <div id="descricaohelp" class="form-text text-danger ms-1">Descrição inválida.</div>}
+                                    {vazio.includes("data_envio") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
+                                    {tipo.includes("data_envio") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label for="data" class="form-label">Previsão de Retorno</label><br />
+                                    <div className="w-100">
+                                        <DatePicker
+                                            style={{ width: "100%;" }}
+                                            className={`form-control ${hasError("previsao_retorno") && "is-invalid"}`}
+                                            calendarClassName="custom-datepicker-container"
+                                            type="text"
+                                            aria-describedby="dataHelp"
+                                            id="data"
+                                            name="previsao_retorno"
+                                            selected={manutencao.previsao_retorno}
+                                            onChange={(date) => setManutencao({ ...manutencao, previsao_retorno: date })}
+                                            dateFormat="dd/MM/yyyy" // Formato da data
+                                        />
+                                    </div>
+                                    {vazio.includes("previsao_retorno") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a previsão de retorno.</div>}
+                                    {tipo.includes("previsao_retorno") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label for="automovel" class="form-label">Automóvel</label>
+                                    <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovel") && "is-invalid"}`} id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setManutencao({ ...manutencao, automovelId: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === manutencao.automovelId) || null} isClearable={true}
+                                        styles={getCustomStyles("automovelId")}
+                                        filterOption={(option, inputValue) => {
+                                            const label = option.label;
+                                            const texto = [
+                                                label.marca,
+                                                label.modelo,
+                                                label.renavam,
+                                            ].filter(Boolean).join(" ").toLowerCase();
+                                            return texto.includes(inputValue.toLowerCase());
+                                        }}>
+                                    </Select>
+                                    {vazio.includes("automovelId") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel.</div>}
+                                </div>
+                                <div className="col-md-8">
+                                    <label for="descricao" class="form-label">Descrição</label>
+                                    <textarea type="text" value={manutencao.descricao} placeholder="Detalhes do serviço, peças trocadas, etc." className={`form-control ${hasError("descricao") && "is-invalid"}`} id="descricao" name="descricao" aria-describedby="descricaoHelp" onChange={handleInputChangeManutencao} />
+
+                                    {tipo.includes("descricao") && <div id="descricaohelp" class="form-text text-danger ms-1">Descrição inválida.</div>}
+                                </div>
                             </div>
                         </div>
-                    </fieldset>
+                    </div>
 
                     {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end">
@@ -425,7 +454,7 @@ const Manutencao = () => {
                                     Salvando..
                                 </>
                             ) : (
-                                "Registrar Manutenção"
+                                "Salvar"
                             )}
                         </button>
                     </div>

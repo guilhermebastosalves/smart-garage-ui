@@ -714,7 +714,7 @@ const Cliente = () => {
                                     <label for="cpf" class="form-label">CPF</label>
                                     <input type="text" className={`form-control ${hasError("cpf") && "is-invalid"}`} id="cpf" name="cpf" aria-describedby="cpfeHelp" value={fisica.cpf} onChange={handleInputChangeFisica} />
                                     {vazio.includes("cpf") && <div className="invalid-feedback">Informe o CPF.</div>}
-                                    {tamanho.includes("cpf") && <div className="invalid-feedback">CPF inválidO (deve ter 11 caracteres numéricos).</div>}
+                                    {tamanho.includes("cpf") && <div className="invalid-feedback">CPF inválido (deve ter 11 caracteres numéricos).</div>}
                                 </div>
 
                                 <div class="col-md-4 ">

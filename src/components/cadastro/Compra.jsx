@@ -12,6 +12,7 @@ import MarcaDataService from "../../services/marcaDataService";
 import CompraDataService from "../../services/compraDataService";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
+import { FaCar, FaFileSignature } from "react-icons/fa";
 
 
 const Compra = () => {
@@ -136,15 +137,7 @@ const Compra = () => {
         setAutomovel({ ...automovel, [name]: value });
     };
 
-    // const handleInputChangeModelo = event => {
-    //     const { name, value } = event.target;
-    //     setModelo({ ...modelo, [name]: value });
-    // };
 
-    // const handleInputChangeMarca = event => {
-    //     const { name, value } = event.target;
-    //     setMarca({ ...marca, [name]: value });
-    // };
 
     const handleSelectChange = (selectedOption, fieldName) => {
         setAutomovel(prev => ({ ...prev, [fieldName]: selectedOption ? selectedOption.value : '' }));
@@ -258,7 +251,7 @@ const Compra = () => {
         let tipoErros = [];
 
         // Vazio
-        if (!compra.valor) vazioErros.push("valor");
+        if (!compra.valor) vazioErros.push("valorCompra");
         if (!compra.data) vazioErros.push("data");
         if (!compra.clienteId) vazioErros.push("clienteId");
 
@@ -279,43 +272,48 @@ const Compra = () => {
         if (automovel.placa && automovel.placa.length !== 7) tamanhoErros.push("placa");
 
         // Tipo
-        if (compra.valor && isNaN(compra.valor)) tipoErros.push("valor");
+        if (compra.valor && (isNaN(compra.valor) || compra.valor <= 0)) tipoErros.push("valorCompra");
         if (compra.data && compra.data > new Date()) tipoErros.push("data");
 
         if (automovel.ano_fabricacao && isNaN(automovel.ano_fabricacao)) tipoErros.push("ano_fabricacao");
         if (automovel.ano_modelo && isNaN(automovel.ano_modelo)) tipoErros.push("ano_modelo");
-        if (automovel.valor && isNaN(automovel.valor)) tipoErros.push("valor");
+        if (automovel.valor && (isNaN(automovel.valor) || automovel.valor <= 0)) tipoErros.push("valor");
         if (automovel.km && isNaN(automovel.km)) tipoErros.push("km");
+        if (automovel.cor && (!isNaN(automovel.cor))) tipoErros.push("cor");
 
 
         return { vazioErros, tamanhoErros, tipoErros };
     };
 
-    const customStyles = {
+    const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
             padding: 15,
             fontSize: '1rem',
-            fontWeight: state.isSelected ? 'bold' : 'normal',
+            fontWeight: 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
             color: 'black',
-            whiteSpace: 'pre-wrap', // quebra linhas se necessário
+            whiteSpace: 'pre-wrap',
         }),
         control: (provided) => ({
             ...provided,
-            // minHeight: '45px',
             fontSize: '1rem',
+            // Adiciona a borda vermelha se o campo tiver erro
+            borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
+            '&:hover': {
+                borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
+            }
         }),
         singleValue: (provided) => ({
             ...provided,
-            fontWeight: 'bold',
+            fontWeight: 'normal',
             color: '#333',
         }),
         menu: (provided) => ({
             ...provided,
-            zIndex: 9999, // garante que fique acima de outros elementos
+            zIndex: 9999,
         }),
-    };
+    });
 
     useEffect(() => {
         if (erro) {
@@ -363,32 +361,6 @@ const Compra = () => {
                 throw new Error(verificacao.data.mensagemErro);
             }
 
-            // --- ETAPA 2: Criação da Marca ---
-            // var dataMarca = {
-            //     nome: marca.marca
-            // }
-
-            // const marcaResp = await MarcaDataService.create(dataMarca)
-            //     .catch(e => {
-            //         console.error("Erro ao criar marca:", e);
-            //     });
-
-            // setMarca(marcaResp.data);
-            // const marcaId = marcaResp.data.id;
-            // if (!marcaId) throw new Error("Falha ao obter ID da marca.");
-
-            // // --- ETAPA 3: Criação do Modelo ---
-            // var dataModelo = {
-            //     nome: modelo.modelo,
-            //     marcaId: marcaResp?.data.id
-            // }
-
-            // const modeloResp = await ModeloDataService.create(dataModelo)
-            //     .catch(e => {
-            //         console.error("Erro ao criar marca:", e);
-            //     });
-
-            // setModelo(modeloResp.data);
 
             // --- ETAPA 4: Criação do Automóvel ---
             const formData = new FormData();
@@ -503,196 +475,180 @@ const Compra = () => {
                 {/* Formulário com Seções */}
                 <form onSubmit={saveCompra} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
-                    {/* Seção 1: Informações Principais */}
 
-                    <fieldset className="mb-5">
-                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações Principais</legend>
-                        <div className="row g-3">
-                            <div className="col-md-4">
-                                <label htmlFor="marca" className="form-label">Marca</label>
-                                {/* <input type="text" className={`form-control ${hasError("marca") && "is-invalid"}`} id="marca" name="marca" onChange={handleInputChangeMarca} /> */}
-                                <Select
-                                    placeholder="Selecione uma marca..."
-                                    options={marcasOptions}
-                                    value={marcasOptions.find(option => option.value === automovel.marcaId) || null}
-                                    onChange={(option) => handleSelectChange(option, 'marcaId')}
-                                    isClearable isSearchable
-                                />
-                                {vazio.includes("marca") && <div className="invalid-feedback">Informe a marca.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label htmlFor="modelo" className="form-label">Modelo</label>
-                                {/* <input type="text" className={`form-control ${hasError("modelo") && "is-invalid"}`} id="modelo" name="modelo" onChange={handleInputChangeModelo} /> */}
-                                <Select
-                                    placeholder="Selecione um modelo..."
-                                    options={modelosOptions}
-                                    value={modelosOptions.find(option => option.value === automovel.modeloId) || null}
-                                    onChange={(option) => handleSelectChange(option, 'modeloId')}
-                                    isDisabled={!automovel.marcaId} // Desabilita se nenhuma marca for selecionada
-                                    isLoading={isModelosLoading}   // Mostra um spinner enquanto carrega
-                                    isClearable isSearchable
-                                />
-                                {vazio.includes("modelo") && <div className="invalid-feedback">Informe o modelo.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label htmlFor="cor" className="form-label">Cor</label>
-                                <input type="text" className={`form-control ${hasError("cor") && "is-invalid"}`} id="cor" name="cor" onChange={handleInputChangeAutomovel} />
-                                {vazio.includes("cor") && <div className="invalid-feedback">Informe a cor.</div>}
-                            </div>
-                            <div className="col-md-3">
-                                <label htmlFor="anofabricacao" className="form-label">Ano Fabricação</label>
-                                <input type="text" className={`form-control ${hasError("ano_fabricacao") && "is-invalid"}`} id="anofabricacao" name="ano_fabricacao" onChange={handleInputChangeAutomovel} />
-                                {vazio.includes("ano_fabricacao") && <div className="invalid-feedback">Informe o ano.</div>}
-                                {tipo.includes("ano_fabricacao") && <div className="invalid-feedback">Ano inválido.</div>}
-                            </div>
-                            <div className="col-md-3">
-                                <label htmlFor="anomodelo" className="form-label">Ano Modelo</label>
-                                <input type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} />
-                                {vazio.includes("ano_modelo") && <div className="invalid-feedback">Informe o ano.</div>}
-                                {tipo.includes("ano_modelo") && <div className="invalid-feedback">Ano inválido.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label htmlFor="foto" className="form-label">Foto do Veículo</label>
-                                <input
-                                    type="file"
-                                    className="form-control"
-                                    id="foto"
-                                    name="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                        const file = e.target.files[0];
-                                        if (file) {
-                                            setAutomovel({ ...automovel, file });
-                                            // ou só file.name, dependendo do backend
-                                        }
-                                    }}
-                                />
+                    <div className="form-card card mb-4">
+                        <div className="card-header d-flex align-items-center">
+                            <FaCar className="me-2" /> {/* Ícone para a seção */}
+                            Informações Principais do Veículo
+                        </div>
+                        <div className="card-body">
+                            <div className="row g-3">
+                                <div className="col-md-4">
+                                    <label htmlFor="marca" className="form-label">Marca</label>
+                                    {/* <input type="text" className={`form-control ${hasError("marca") && "is-invalid"}`} id="marca" name="marca" onChange={handleInputChangeMarca} /> */}
+                                    <Select
+                                        placeholder="Selecione uma marca..."
+                                        options={marcasOptions}
+                                        value={marcasOptions.find(option => option.value === automovel.marcaId) || null}
+                                        onChange={(option) => handleSelectChange(option, 'marcaId')}
+                                        isClearable isSearchable
+                                        styles={getCustomStyles("marca")}
+                                    />
+                                    {vazio.includes("marca") && <div className="form-text text-danger ms-1">Informe a marca.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label htmlFor="modelo" className="form-label">Modelo</label>
+                                    {/* <input type="text" className={`form-control ${hasError("modelo") && "is-invalid"}`} id="modelo" name="modelo" onChange={handleInputChangeModelo} /> */}
+                                    <Select
+                                        placeholder="Selecione um modelo..."
+                                        options={modelosOptions}
+                                        value={modelosOptions.find(option => option.value === automovel.modeloId) || null}
+                                        onChange={(option) => handleSelectChange(option, 'modeloId')}
+                                        isDisabled={!automovel.marcaId} // Desabilita se nenhuma marca for selecionada
+                                        isLoading={isModelosLoading}   // Mostra um spinner enquanto carrega
+                                        isClearable isSearchable
+                                        styles={getCustomStyles("modelo")}
+                                    />
+                                    {vazio.includes("modelo") && <div className="form-text text-danger ms-1">Informe o modelo.</div>}
+
+                                </div>
+                                <div className="col-md-4">
+                                    <label htmlFor="cor" className="form-label">Cor</label>
+                                    <input type="text" className={`form-control ${hasError("cor") && "is-invalid"}`} id="cor" name="cor" onChange={handleInputChangeAutomovel} />
+                                    {vazio.includes("cor") && <div className="invalid-feedback ms-1">Informe a cor.</div>}
+                                    {tipo.includes("cor") && <div className="invalid-feedback ms-1">Cor inválida.</div>}
+                                </div>
+                                <div className="col-md-2">
+                                    <label htmlFor="anofabricacao" className="form-label">Ano Fabricação</label>
+                                    <input type="text" className={`form-control ${hasError("ano_fabricacao") && "is-invalid"}`} id="anofabricacao" name="ano_fabricacao" onChange={handleInputChangeAutomovel} />
+                                    {vazio.includes("ano_fabricacao") && <div className="invalid-feedback ms-1">Informe o ano de fabricação.</div>}
+                                    {tipo.includes("ano_fabricacao") && <div className="invalid-feedback ms-1">Ano de fabricação inválido.</div>}
+                                </div>
+                                <div className="col-md-2">
+                                    <label htmlFor="anomodelo" className="form-label">Ano Modelo</label>
+                                    <input type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} />
+                                    {vazio.includes("ano_modelo") && <div className="invalid-feedback ms-1">Informe o ano modelo.</div>}
+                                    {tipo.includes("ano_modelo") && <div className="invalid-feedback ms-1">Ano modelo inválido.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label htmlFor="placa" className="form-label">Placa</label>
+                                    <input type="text" className={`form-control ${hasError("placa") && "is-invalid"}`} id="placa" name="placa" onChange={handleInputChangeAutomovel} />
+                                    {vazio.includes("placa") && <div className="invalid-feedback ms-1">Informe a placa.</div>}
+                                    {tamanho.includes("placa") && <div className="invalid-feedback ms-1">Placa inválida (deve ter 7 caracteres).</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label htmlFor="renavam" className="form-label">Renavam</label>
+                                    <input type="text" className={`form-control ${hasError("renavam") && "is-invalid"}`} id="renavam" name="renavam" onChange={handleInputChangeAutomovel} />
+                                    {vazio.includes("renavam") && <div className="invalid-feedback ms-1">Informe o Renavam.</div>}
+                                    {tamanho.includes("renavam") && <div className="invalid-feedback ms-1">Renavam inválido (deve ter 11 dígitos numéricos).</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label htmlFor="km" className="form-label">Quilometragem</label>
+                                    <input type="text" className={`form-control ${hasError("km") && "is-invalid"}`} id="km" name="km" onChange={handleInputChangeAutomovel} />
+                                    {vazio.includes("km") && <div className="invalid-feedback ms-1">Informe a quilometragem.</div>}
+                                    {tipo.includes("km") && <div className="invalid-feedback ms-1">Quilometragem inválida.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label htmlFor="combustivel" className="form-label">Combustível</label>
+                                    <select className={`form-select ${hasError("combustivel") && "is-invalid"}`} id="combustivel" name="combustivel" onChange={handleInputChangeAutomovel}>
+                                        <option value="">Selecione...</option>
+                                        <option value="Diesel">Diesel</option>
+                                        <option value="Etanol">Etanol</option>
+                                        <option value="Flex">Flex</option>
+                                        <option value="Gasolina">Gasolina</option>
+                                    </select>
+                                    {vazio.includes("combustivel") && <div className="invalid-feedback ms-1">Informe o combustível.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label htmlFor="origem" className="form-label">Origem do Veículo</label>
+                                    <select className={`form-select ${hasError("origem") && "is-invalid"}`} id="origem" name="origem" value={automovel.origem} onChange={handleInputChangeAutomovel}>
+                                        <option value="">Selecione...</option>
+                                        <option value="Compra">Compra</option>
+                                        <option value="Consignacao">Consignação</option>
+                                        <option value="Troca">Troca</option>
+                                    </select>
+                                    {vazio.includes("origem") && <div className="invalid-feedback ms-1">Informe a origem.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label htmlFor="valor" className="form-label">Valor (R$)</label>
+                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} />
+                                    {vazio.includes("valor") && <div className="invalid-feedback ms-1">Informe o valor de venda.</div>}
+                                    {tipo.includes("valor") && <div className="invalid-feedback ms-1">Valor de venda inválido.</div>}
+                                </div>
+                                <div className="col-md-8">
+                                    <label htmlFor="foto" className="form-label">Foto do Veículo</label>
+                                    <input
+                                        type="file"
+                                        className="form-control"
+                                        id="foto"
+                                        name="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (file) {
+                                                setAutomovel({ ...automovel, file });
+                                                // ou só file.name, dependendo do backend
+                                            }
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </fieldset>
+                    </div>
 
+                    <div className="card mb-4 form-card">
+                        <div className="card-header d-flex align-items-center">
+                            <FaFileSignature className="me-2" /> {/* Ícone para a seção */}
+                            Detalhes da Compra
+                        </div>
+                        <div className="card-body">
+                            <div className="row g-3">
+                                <div class="col-md-4">
+                                    <label for="valor" class="form-label">Valor da Compra (R$)</label>
+                                    <input type="text" className={`form-control ${hasError("valorCompra") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeCompra} />
+                                    {vazio.includes("valorCompra") && <div className="invalid-feedback ms-1">Informe o valor da compra.</div>
+                                    }
+                                    {tipo.includes("valorCompra") && <div className="invalid-feedback ms-1">Valor de compra inválido.</div>
+                                    }
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="data" class="form-label">Data</label><br />
+                                    <DatePicker
+                                        calendarClassName="custom-datepicker-container"
+                                        className={`form-control date-picker ${hasError("data") && "is-invalid"}`}
+                                        type="text"
+                                        aria-describedby="dataHelp"
+                                        id="data"
+                                        name="data"
+                                        selected={compra.data}
+                                        onChange={(date) => setCompra({ ...compra, data: date })}
+                                        // onChange={handleInputChangeCompra}
+                                        dateFormat="dd/MM/yyyy" // Formato da data
+                                    />
+                                    {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
+                                    {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
 
-                    {/* Seção 2: Documentação e Valores */}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="fornecedor" className="form-label">Fornecedor</label>
+                                    <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === compra.clienteId) || null} isClearable={true} styles={getCustomStyles("clienteId")}
+                                        filterOption={(option, inputValue) => {
+                                            const label = option.label;
+                                            const texto = [
+                                                label.nome,
+                                                label.razaoSocial,
+                                                label.cpf,
+                                                label.cnpj
+                                            ].filter(Boolean).join(" ").toLowerCase();
+                                            return texto.includes(inputValue.toLowerCase());
+                                        }}>
+                                    </Select>
+                                    {vazio.includes("clienteId") && <div className="form-text text-danger ms-1">Informe a comprador.</div>}
 
-
-                    <fieldset className="mb-5">
-                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Documentação e Valores</legend>
-                        <div className="row g-3">
-                            <div className="col-md-4">
-                                <label htmlFor="placa" className="form-label">Placa</label>
-                                <input type="text" className={`form-control ${hasError("placa") && "is-invalid"}`} id="placa" name="placa" onChange={handleInputChangeAutomovel} />
-                                {vazio.includes("placa") && <div className="invalid-feedback">Informe a placa.</div>}
-                                {tamanho.includes("placa") && <div className="invalid-feedback">Placa inválida (deve ter 7 caracteres).</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label htmlFor="renavam" className="form-label">Renavam</label>
-                                <input type="text" className={`form-control ${hasError("renavam") && "is-invalid"}`} id="renavam" name="renavam" onChange={handleInputChangeAutomovel} />
-                                {vazio.includes("renavam") && <div className="invalid-feedback">Informe o Renavam.</div>}
-                                {tamanho.includes("renavam") && <div className="invalid-feedback">Renavam inválido (deve ter 11 dígitos numéricos).</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label htmlFor="valor" className="form-label">Valor (R$)</label>
-                                <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} />
-                                {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
-                                {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
+                                </div>
                             </div>
                         </div>
-                    </fieldset>
-
-
-                    {/* Seção 3: Detalhes Adicionais */}
-
-                    <fieldset className="mb-5">
-                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Detalhes Adicionais</legend>
-                        <div className="row g-3">
-                            <div className="col-md-4">
-                                <label htmlFor="km" className="form-label">Quilometragem</label>
-                                <input type="text" className={`form-control ${hasError("km") && "is-invalid"}`} id="km" name="km" onChange={handleInputChangeAutomovel} />
-                                {vazio.includes("km") && <div className="invalid-feedback">Informe a quilometragem.</div>}
-                                {tipo.includes("km") && <div className="invalid-feedback">Valor inválido.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label htmlFor="combustivel" className="form-label">Combustível</label>
-                                <select className={`form-select ${hasError("combustivel") && "is-invalid"}`} id="combustivel" name="combustivel" onChange={handleInputChangeAutomovel}>
-                                    <option value="">Selecione...</option>
-                                    <option value="Diesel">Diesel</option>
-                                    <option value="Etanol">Etanol</option>
-                                    <option value="Flex">Flex</option>
-                                    <option value="Gasolina">Gasolina</option>
-                                </select>
-                                {vazio.includes("combustivel") && <div className="invalid-feedback">Informe o combustível.</div>}
-                            </div>
-                            <div className="col-md-4">
-                                <label htmlFor="origem" className="form-label">Origem do Veículo</label>
-                                <select className={`form-select ${hasError("origem") && "is-invalid"}`} id="origem" name="origem" value={automovel.origem} onChange={handleInputChangeAutomovel}>
-                                    <option value="">Selecione...</option>
-                                    <option value="Compra">Compra</option>
-                                    <option value="Consignacao">Consignação</option>
-                                    <option value="Troca">Troca</option>
-                                </select>
-                                {vazio.includes("origem") && <div className="invalid-feedback">Informe a origem.</div>}
-                            </div>
-                        </div>
-                    </fieldset>
-
-                    {/* Seção 4: Compra */}
-                    <fieldset className="mb-5">
-                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações da Compra</legend>
-                        <div className="row g-3">
-                            <div class="col-md-4">
-                                <label for="valor" class="form-label">Valor da Compra (R$)</label>
-                                <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeCompra} />
-                                {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>
-                                }
-                                {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>
-                                }
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="fornecedor" className="form-label">Fornecedor</label>
-                                <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === compra.clienteId) || null} isClearable={true} styles={customStyles}
-                                    filterOption={(option, inputValue) => {
-                                        const label = option.label;
-                                        const texto = [
-                                            label.nome,
-                                            label.razaoSocial,
-                                            label.cpf,
-                                            label.cnpj
-                                        ].filter(Boolean).join(" ").toLowerCase();
-                                        return texto.includes(inputValue.toLowerCase());
-                                    }}>
-                                </Select>
-                                {
-                                    vazio.includes("clienteId") &&
-                                    <div className="invalid-feedback">Informe o proprietário.</div>
-                                }
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="data" class="form-label">Data</label><br />
-                                <DatePicker
-                                    calendarClassName="custom-datepicker-container"
-                                    className={`form-control date-picker ${hasError("data") && "is-invalid"}`}
-                                    type="text"
-                                    aria-describedby="dataHelp"
-                                    id="data"
-                                    name="data"
-                                    selected={compra.data}
-                                    onChange={(date) => setCompra({ ...compra, data: date })}
-                                    // onChange={handleInputChangeCompra}
-                                    dateFormat="dd/MM/yyyy" // Formato da data
-                                />
-                                {
-                                    vazio.includes("data") &&
-                                    <div className="invalid-feedback">Informe a data.</div>
-                                }
-                                {
-                                    tipo.includes("data") &&
-                                    <div className="invalid-feedback">Data inválida.</div>
-                                }
-                            </div>
-                        </div>
-                    </fieldset>
+                    </div>
 
                     {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end">
@@ -703,7 +659,7 @@ const Compra = () => {
                                     Salvando..
                                 </>
                             ) : (
-                                "Cadastrar Automóvel"
+                                "Salvar"
                             )}
                         </button>
                     </div>

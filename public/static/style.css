@@ -46,6 +46,10 @@ body {
     background-color: rgb(172, 192, 221) !important;
 }
 
+/* .color-form-pers {
+    background-color: rgba(133, 184, 203, 0.00001) !important;
+} */
+
 .date-picker {
     width: 300px;
 }
@@ -148,4 +152,37 @@ body {
     /* Ex: 40px. Ajuste conforme necessário. */
     width: auto;
     /* A largura se ajustará automaticamente. */
+}
+
+
+.form-card {
+    /* Sombra suave para dar profundidade e "elevar" o card */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
+    /* Borda sutil para definir o contorno */
+    border: 1px solid #e9ecef;
+
+    /* Fundo ligeiramente diferente do body para reforçar a separação */
+    background-color: rgba(133, 184, 203, 0) !important;
+
+    /* Transição suave para efeitos de hover */
+    transition: all 0.2s ease-in-out;
+}
+
+
+/* .form-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-3px);
+} */
+
+.form-card .card-header {
+    background-color: rgba(133, 184, 203, 0) !important;
+    /* Um cinza muito claro para o cabeçalho */
+    /* border-bottom: 1px solid #e9ecef; */
+    border-bottom: none;
+    /* Linha que separa o cabeçalho do corpo */
+    font-weight: 600;
+    /* Deixa a fonte um pouco mais forte */
+    padding: 1rem 1.25rem;
+    /* Espaçamento padrão do Bootstrap */
 }
