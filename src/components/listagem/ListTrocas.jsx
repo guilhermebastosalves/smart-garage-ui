@@ -140,7 +140,7 @@ const Trocas = () => {
             <Header />
             <div className="container">
 
-                <div className="d-flex justify-content-between align-items-center mb-4">
+                <div className="d-flex justify-content-between align-items-center mb-4 mt-3">
                     <div>
                         <h1 className="mb-0">Trocas</h1>
                         <p className="text-muted">Listagem e gerenciamento de trocas.</p>

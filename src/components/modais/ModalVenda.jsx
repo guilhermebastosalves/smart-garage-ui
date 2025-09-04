@@ -1,4 +1,5 @@
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, InputGroup, Alert } from 'react-bootstrap';
+import { FaSearch, FaUserPlus, FaExclamationTriangle, FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import FisicaDataService from '../../services/fisicaDataService';
@@ -100,43 +101,68 @@ function ModalVenda({ show, onHide, venda, automovelId }) {
     return (
         <Modal show={show} onHide={onHide} backdrop="static" keyboard={false}>
             <Modal.Header closeButton>
-                <Modal.Title>Registro de Venda</Modal.Title>
+                <Modal.Title className="d-flex align-items-center">
+                    <FaUserPlus className="me-2" />
+                    Registro de Venda
+                </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form className={cadastro ? "d-none" : ""} onSubmit={handleSubmit}>
-                    <Form.Group>
-                        <Form.Label htmlFor="cpfCnpj">Informe o CPF ou CNPJ do proprietário.</Form.Label>
-                        <Form.Control
-                            id="cpfCnpj"
-                            type="text"
-                            value={identificacao} // Controla o valor do input
-                            onChange={(e) => setId(e.target.value)}
+                <div className={cadastro ? "d-none" : ""}>
+                    <p className="text-muted mb-3">
+                        Para começar, informe o CPF ou CNPJ do comprador do veículo.
+                    </p>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group>
+                            {/* MELHORIA: Input com ícone para clareza */}
+                            <InputGroup>
+                                <InputGroup.Text>
+                                    <FaSearch />
+                                </InputGroup.Text>
+                                <Form.Control
+                                    id="cpfCnpj"
+                                    type="text"
+                                    value={identificacao}
+                                    onChange={(e) => setId(e.target.value)}
+                                    placeholder="Digite o CPF ou CNPJ..."
+                                    autoFocus
+                                />
+                            </InputGroup>
+                        </Form.Group>
 
-                            autoFocus // Foca no campo ao abrir o modal
-                        />
-                    </Form.Group>
-                    {/* O botão dentro de um form com type="submit" aciona o onSubmit do form */}
-                    <Button variant="primary" type="submit" className="mt-3">
-                        Buscar
-                    </Button>
-                    <Button variant="outline-dark" type="submit" className="mt-3" onClick={() => handleRedirect('/cliente', { automovelId: automovelId })}>
-                        O cliente não possui cadastro
-                    </Button>
-                </Form>
-                {
-                    cadastro &&
+                        <div className="d-grid gap-2 mt-4">
+                            <Button variant="primary" type="submit" size="md">
+                                Buscar Cliente
+                            </Button>
+                            <Button variant="link" onClick={() => handleRedirect('/cliente')} className="text-secondary">
+                                Não sei o documento, cadastrar novo
+                            </Button>
+                        </div>
+                    </Form>
+                </div>
+
+                {cadastro && (
                     <>
-                        <p>Proprietário não encontrado. Verifique o CPF/CNPJ ou cadastre um novo cliente.</p>
-                        <Button variant='primary' onClick={() => { setCadastro(false) }}>Tentar novamente</Button>
-                        <Button variant='outline-secondary' onClick={() => handleRedirect('/cliente', { automovelId: automovelId })}>Cadastrar proprietário</Button>
+                        <Alert variant="warning" className="d-flex align-items-center">
+                            <FaExclamationTriangle className="me-3" size="2em" />
+                            <div>
+                                <Alert.Heading style={{ fontSize: "large" }}>Cliente não encontrado!</Alert.Heading>
+                                Verifique o documento informado ou cadastre um novo cliente no sistema.
+                            </div>
+                        </Alert>
+
+                        <div className="d-flex justify-content-center gap-3 mt-4">
+                            <Button variant="outline-secondary" onClick={() => setCadastro(false)}>
+                                <FaArrowLeft className="me-2" />
+                                Tentar Novamente
+                            </Button>
+                            <Button variant="primary" onClick={() => handleRedirect('/cliente')}>
+                                <FaUserPlus className="me-2" />
+                                Cadastrar Comprador
+                            </Button>
+                        </div>
                     </>
-                }
+                )}
             </Modal.Body>
-            <Modal.Footer className="g-0">
-                <Button variant="dark" onClick={onHide}>
-                    Voltar
-                </Button>
-            </Modal.Footer>
         </Modal>
     );
 }

@@ -133,7 +133,7 @@ const Gastos = () => {
         <>
             <Header />
             <div className="container">
-                <div className="d-flex justify-content-between align-items-center mb-4">
+                <div className="d-flex justify-content-between align-items-center mb-4 mt-3">
                     <div>
                         <h1 className="mb-0">Gastos</h1>
                         <p className="text-muted">Listagem e gerenciamento de gastos.</p>

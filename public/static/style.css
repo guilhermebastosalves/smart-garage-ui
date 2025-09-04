@@ -186,3 +186,49 @@ body {
     padding: 1rem 1.25rem;
     /* Espaçamento padrão do Bootstrap */
 }
+
+
+/* Adicione isso ao seu arquivo CSS global */
+
+.login-page-wrapper {
+    /* Fundo com gradiente suave */
+    /* background: linear-gradient(-45deg, #0d6efd, #0dcaf0, #6f42c1); */
+    /* background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite; */
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Animação para o gradiente se mover suavemente */
+/* @keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    } */
+/* } */
+
+/* Animação para o card de login surgir */
+.login-card-animated {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
