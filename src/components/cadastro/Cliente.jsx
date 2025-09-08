@@ -791,6 +791,9 @@ const Cliente = () => {
 
                         {/* Botão de Submissão */}
                         <div className="d-flex justify-content-end pb-3">
+                            <button type="button" className="btn btn-secondary d-flex align-items-center btn-lg me-2" onClick={() => navigate(-1)}>
+                                Voltar
+                            </button>
                             <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
                                 {isSubmitting ? (
                                     <>
@@ -798,7 +801,7 @@ const Cliente = () => {
                                         Salvando..
                                     </>
                                 ) : (
-                                    "Cadastrar Automóvel"
+                                    "Salvar"
                                 )}
                             </button>
                         </div>
@@ -921,15 +924,21 @@ const Cliente = () => {
                         </fieldset>
 
                         {/* Botão de Submissão */}
-                        <div className="d-flex justify-content-end pb-3">
-                            <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
+                        <div className="d-flex justify-content-end pb-3 ">
+                            <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
+                                Voltar
+                            </button>
+                            <button type="submit" className="btn btn-primary btn-lg px-4" disabled={isSubmitting}>
                                 {isSubmitting ? (
                                     <>
                                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                         Salvando..
                                     </>
                                 ) : (
-                                    "Cadastrar Automóvel"
+                                    <>
+                                        {/* <i className="bi bi-save me-2"></i> */}
+                                        Salvar
+                                    </>
                                 )}
                             </button>
                         </div>

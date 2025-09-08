@@ -42,7 +42,7 @@ const Header = () => {
                                     </li>
                                     <li>
                                         <Link to="/listagem/trocas" className={`nav-link  ${location.pathname === '/listagem/trocas' ? 'active' : 'link-body-emphasis'}`} ><svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#table"></use></svg>
-                                            Trocas
+                                            <i class="bi bi-arrow-repeat me-2"></i>Trocas
                                         </Link>
                                     </li>
                                     {user.role === "gerente" && (
