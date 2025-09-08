@@ -124,8 +124,6 @@ const DetalhesCompra = () => {
     const cidadeInfo = cidade?.find(c => c.id === enderecoInfo?.cidadeId)
     const estadoInfo = estado?.find(e => e.id === cidadeInfo?.estadoId)
 
-
-
     return (
         <>
             <Header />
@@ -156,8 +154,9 @@ const DetalhesCompra = () => {
                                 <p className="mb-2"><strong>ID da Compra:</strong> {detalhes.id}</p>
                                 <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
                                 <p className="mb-2"><strong>Data:</strong> {new Date(detalhes.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
-                                <p className="mb-2"><strong>Valor de Diferença:</strong> <span className="text fw-bold fs-6">{(formatter.format(detalhes.valor) > 0) ? formatter.format(detalhes.valor) : "N/A"}</span></p>
-                                <p className="mb-2"><strong>Forma de Pagamento:</strong> <span className="text fw-bold fs-6">{detalhes.forma_pagamento ? detalhes.forma_pagamento : "N/A"}</span></p>
+                                <p className="mb-2"><strong>Valor de Diferença:</strong> <span className="text fw-bold fs-6">{((detalhes.valor) >= 0) ? formatter.format(detalhes.valor) : (formatter.format(detalhes.valor) + " (Valor cedido)")}</span></p>
+                                {((detalhes.valor) > 0) &&
+                                    <p className="mb-2"><strong>Forma de Pagamento:</strong> <span className="text fw-bold fs-6">{detalhes.forma_pagamento ? detalhes.forma_pagamento : "N/A"}</span></p>}
                                 <p className="mb-2"><strong>Comissão:</strong> <span className="text fw-bold fs-6">{formatter.format(detalhes.comissao)}</span></p>
                                 <p className="mb-0">
                                 </p>
@@ -180,7 +179,7 @@ const DetalhesCompra = () => {
                                         <>
                                             {/* Buscamos marca e modelo direto do objeto, pois não temos o include aqui */}
                                             <p className="mb-2"><strong>Marca:</strong> {automovelFornecido.marca?.nome || 'N/A'}</p>
-                                            <p className="mb-2"><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</p>
+                                            <p className="mb-2"><strong>Modelo:</strong> {automovelFornecido?.modelo?.nome || 'N/A'}</p>
                                             <p className="mb-2"><strong>Ano/Modelo:</strong> {`${automovelFornecido.ano_fabricacao || 'N/A'}/${automovelFornecido.ano_modelo || 'N/A'}`}</p>
                                             <p className="mb-2"><strong>Placa:</strong> {automovelFornecido.placa || 'N/A'}</p>
                                             <p className="mb-2"><strong>Cor:</strong> {automovelFornecido?.cor || 'N/A'}</p>
@@ -205,7 +204,7 @@ const DetalhesCompra = () => {
                             </div>
                             <div className="card-body">
                                 <p className="mb-2"><strong>Marca:</strong> {automovel?.marca?.nome || 'N/A'}</p>
-                                <p className="mb-2"><strong>Modelo:</strong> {automovelFornecido?.modelo?.nome || 'N/A'}</p>
+                                <p className="mb-2"><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</p>
                                 <p className="mb-2"><strong>Ano/Modelo:</strong> {`${automovel?.ano_fabricacao || 'N/A'}/${automovel?.ano_modelo || 'N/A'}`}</p>
                                 <p className="mb-2"><strong>Placa:</strong> {automovel?.placa || 'N/A'}</p>
                                 <p className="mb-2"><strong>Cor:</strong> {automovel?.cor || 'N/A'}</p>

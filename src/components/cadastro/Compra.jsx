@@ -280,6 +280,8 @@ const Compra = () => {
         if (automovel.valor && (isNaN(automovel.valor) || automovel.valor <= 0)) tipoErros.push("valor");
         if (automovel.km && isNaN(automovel.km)) tipoErros.push("km");
         if (automovel.cor && (!isNaN(automovel.cor))) tipoErros.push("cor");
+        if (automovel.ano_fabricacao > automovel.ano_modelo) tipoErros.push("ano_modelo_fabricacao");
+
 
 
         return { vazioErros, tamanhoErros, tipoErros };
@@ -405,7 +407,7 @@ const Compra = () => {
 
             // --- SUCESSO! ---
             setSucesso(true);
-            setMensagemSucesso("Operação de consignação realizada com sucesso!");
+            setMensagemSucesso("Operação de compra realizada com sucesso!");
 
             sessionStorage.removeItem("NegocioAtual");
 
@@ -520,9 +522,10 @@ const Compra = () => {
                                 </div>
                                 <div className="col-md-2">
                                     <label htmlFor="anofabricacao" className="form-label">Ano Fabricação</label>
-                                    <input type="text" className={`form-control ${hasError("ano_fabricacao") && "is-invalid"}`} id="anofabricacao" name="ano_fabricacao" onChange={handleInputChangeAutomovel} />
+                                    <input type="text" className={`form-control ${hasError("ano_fabricacao") && "is-invalid"} ${hasError("ano_modelo_fabricacao") && "is-invalid"}`} id="anofabricacao" name="ano_fabricacao" onChange={handleInputChangeAutomovel} />
                                     {vazio.includes("ano_fabricacao") && <div className="invalid-feedback ms-1">Informe o ano de fabricação.</div>}
                                     {tipo.includes("ano_fabricacao") && <div className="invalid-feedback ms-1">Ano de fabricação inválido.</div>}
+                                    {tipo.includes("ano_modelo_fabricacao") && <div className="invalid-feedback ms-1">Ano de fabricação posterior a ano modelo.</div>}
                                 </div>
                                 <div className="col-md-2">
                                     <label htmlFor="anomodelo" className="form-label">Ano Modelo</label>

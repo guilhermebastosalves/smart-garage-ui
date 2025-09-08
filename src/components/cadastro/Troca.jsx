@@ -188,17 +188,17 @@ const Troca = () => {
 
             // Atualiza o estado da 'troca' de forma segura, sem apagar os outros campos
 
-            if (diferenca >= 0) {
-                setTroca(prevTroca => ({
-                    ...prevTroca,
-                    valor: diferenca.toString() // Converte para string para o input
-                }));
-            } else {
-                setTroca(prevTroca => ({
-                    ...prevTroca,
-                    valor: "" // Define como string vazia
-                }));
-            }
+            // if (diferenca >= 0) {
+            setTroca(prevTroca => ({
+                ...prevTroca,
+                valor: diferenca.toString() // Converte para string para o input
+            }));
+            // } else {
+            // setTroca(prevTroca => ({
+            //     ...prevTroca,
+            //     valor: "" // Define como string vazia
+            // }));
+            // }
 
 
         } else {

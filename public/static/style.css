@@ -232,3 +232,16 @@ body {
         transform: translateY(0);
     }
 }
+
+/* .chart-container-bar {
+    max-width: 800px;
+    margin: auto;
+    position: relative;
+} */
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    max-width: 700px;
+    margin: auto;
+}
