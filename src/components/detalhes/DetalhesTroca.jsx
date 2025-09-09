@@ -154,6 +154,7 @@ const DetalhesCompra = () => {
                                 <p className="mb-2"><strong>ID da Compra:</strong> {detalhes.id}</p>
                                 <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
                                 <p className="mb-2"><strong>Data:</strong> {new Date(detalhes.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
+                                <p className="mb-2"><strong>Valor de Aquisicão:</strong> <span className="text fw-bold fs-6">{detalhes.valor_aquisicao ? formatter.format(detalhes.valor_aquisicao) : "N/A "}</span></p>
                                 <p className="mb-2"><strong>Valor de Diferença:</strong> <span className="text fw-bold fs-6">{((detalhes.valor) >= 0) ? formatter.format(detalhes.valor) : (formatter.format(detalhes.valor) + " (Valor cedido)")}</span></p>
                                 {((detalhes.valor) > 0) &&
                                     <p className="mb-2"><strong>Forma de Pagamento:</strong> <span className="text fw-bold fs-6">{detalhes.forma_pagamento ? detalhes.forma_pagamento : "N/A"}</span></p>}

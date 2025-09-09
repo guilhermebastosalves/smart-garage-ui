@@ -119,7 +119,8 @@ const Troca = () => {
         automovelId: "",
         clienteId: "",
         funcionarioId: user?.id,
-        automovel_fornecido: ""
+        automovel_fornecido: "",
+        valor_aquisicao: ""
     };
 
     const [troca, setTroca] = useState(initialTrocaState);
@@ -135,15 +136,15 @@ const Troca = () => {
         // Só atualiza se o usuário não digitou manualmente
         // if (!troca.comissao) {
         let comissao = "";
-        if (automovel?.valor !== "") {
-            comissao = automovel?.valor < 50000 ? 300 : automovel?.valor >= 100000 ? 700 : 500;
+        if (troca?.valor_aquisicao !== "") {
+            comissao = troca?.valor_aquisicao < 50000 ? 300 : troca?.valor_aquisicao >= 100000 ? 700 : 500;
         }
         setTroca(prev => ({
             ...prev,
             comissao: comissao
         }));
         // }
-    }, [automovel?.valor]);
+    }, [troca?.valor_aquisicao]);
 
     const handleInputChangeTroca = event => {
         const { name, value } = event.target;
@@ -167,7 +168,7 @@ const Troca = () => {
     useEffect(() => {
         // 1. Pega e converte o valor do NOVO automóvel (que está sendo cadastrado)
         // Usamos parseFloat para garantir que é um número. Se for inválido, será NaN.
-        const valorCarroNovo = parseFloat(automovel.valor);
+        const valorCarroNovo = parseFloat(troca.valor_aquisicao);
 
         // 2. Encontra as informações do automóvel FORNECIDO na lista já carregada
         // Isto evita uma chamada desnecessária à API.
@@ -209,7 +210,7 @@ const Troca = () => {
             }));
         }
         // 4. O efeito roda sempre que um dos valores de origem mudar
-    }, [automovel.valor, troca.automovel_fornecido, automovelOpt]);
+    }, [troca.valor_aquisicao, troca.automovel_fornecido, automovelOpt]);
 
     const [loading, setLoading] = useState(true);
 
@@ -267,6 +268,7 @@ const Troca = () => {
         if (!troca.clienteId) vazioErros.push("clienteId");
         if (!troca.comissao) vazioErros.push("comissao");
         if (!troca.automovel_fornecido) vazioErros.push("automovel_fornecido");
+        if (!troca.valor_aquisicao) vazioErros.push("valor_aquisicao");
 
         if (!automovel.valor) vazioErros.push("valor");
         if (!automovel.ano_fabricacao) vazioErros.push("ano_fabricacao");
@@ -288,6 +290,7 @@ const Troca = () => {
         // Tipo
         // if (troca.valor && isNaN(troca.valor)) tipoErros.push("valor_diferenca");
         if (troca.comissao && isNaN(troca.comissao)) tipoErros.push("comissao");
+        if (troca.valor_aquisicao && (isNaN(troca.valor_aquisicao) || troca.valor_aquisicao <= 0)) tipoErros.push("valor_aquisicao");
         if (troca.data && troca.data > new Date()) tipoErros.push("data");
 
         if (automovel.ano_fabricacao && isNaN(automovel.ano_fabricacao)) tipoErros.push("ano_fabricacao");
@@ -543,6 +546,7 @@ const Troca = () => {
             trocaData.append("automovelId", automovelResp?.data.id);
             trocaData.append("automovel_fornecido", troca.automovel_fornecido);
             trocaData.append("funcionarioId", troca.funcionarioId);
+            trocaData.append("valor_aquisicao", troca.valor_aquisicao);
 
             const trocaResp = await TrocaDataService.create(trocaData)
                 .catch(e => {
@@ -791,6 +795,12 @@ const Troca = () => {
                                         }}>
                                     </Select>
                                     {vazio.includes("automovel_fornecido") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel fornecido.</div>}
+                                </div>
+                                <div className="col-md-4">
+                                    <label for="valor_aquisicao" class="form-label">Valor Aquisição (R$)</label>
+                                    <input type="text" className={`form-control ${hasError("valor_aquisicao") && "is-invalid"}`} id="valor_aquisicao" name="valor_aquisicao" aria-describedby="valorHelp" onChange={handleInputChangeTroca} />
+                                    {vazio.includes("valor_aquisicao") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor de aquisição.</div>}
+                                    {tipo.includes("valor_aquisicao") && <div id="valorHelp" class="form-text text-danger ms-1">Valor aquisição inválido.</div>}
                                 </div>
                                 <div className="col-md-4">
                                     <label for="valor" class="form-label">Valor Diferença (R$)</label>

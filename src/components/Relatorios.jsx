@@ -211,7 +211,7 @@ const Relatorios = () => {
                                     <td>{formatDate(item.data)}</td>
                                     <td>{item.cliente?.nome || 'N/A'}</td>
                                     <td>{item.automovel?.placa || 'N/A'}</td>
-                                    <td>{formatCurrency(item.valor)}</td>
+                                    <td className='text-end'>{formatCurrency(item.valor)}</td>
                                     <td>{item.forma_pagamento}</td>
                                 </tr>
                             ))}
@@ -235,7 +235,7 @@ const Relatorios = () => {
                                     <td>{formatDate(item.data)}</td>
                                     <td>{item.descricao}</td>
                                     <td>{item.automovel?.placa || 'Gasto Geral'}</td>
-                                    <td>{formatCurrency(item.valor)}</td>
+                                    <td className='text-end'>{formatCurrency(item.valor)}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -267,7 +267,7 @@ const Relatorios = () => {
                                         <td>{item.cliente?.nome || 'N/A'}</td>
                                         <td>{item.automovel?.placa || 'N/A'}</td>
                                         <td>{automovelFornecidoInfo?.placa || 'N/A'}</td>
-                                        <td>{formatCurrency(item.valor)}</td>
+                                        <td className='text-end'>{formatCurrency(item.valor)}</td>
                                         <td>{item.forma_pagamento || '-'}</td>
                                     </tr>
                                 )
@@ -293,7 +293,7 @@ const Relatorios = () => {
                                     <td>{formatDate(item.data_inicio)}</td>
                                     <td>{item.cliente?.nome || 'N/A'}</td>
                                     <td>{item.automovel?.placa || 'N/A'}</td>
-                                    <td>{formatCurrency(item.valor)}</td>
+                                    <td className='text-end'>{formatCurrency(item.valor)}</td>
                                     <td>{item.ativo === true ? "Ativa" : "Inativa"}</td>
                                 </tr>
                             ))}
@@ -318,7 +318,7 @@ const Relatorios = () => {
                                     <td>{formatDate(item.data_envio)}</td>
                                     <td>{item.descricao}</td>
                                     <td>{item.automovel?.placa || 'N/A'}</td>
-                                    <td>{formatCurrency(item.valor)}</td>
+                                    <td className='text-end'>{formatCurrency(item.valor)}</td>
                                     <td>{item.ativo === true ? "Ativa" : "Inativa"}</td>
                                 </tr>
                             ))}
@@ -342,7 +342,7 @@ const Relatorios = () => {
                                     <td>{formatDate(item.data)}</td>
                                     <td>{item.cliente?.nome || 'N/A'}</td>
                                     <td>{item.automovel?.placa || 'N/A'}</td>
-                                    <td>{formatCurrency(item.valor)}</td>
+                                    <td className='text-end'>{formatCurrency(item.valor)}</td>
                                 </tr>
                             ))}
                         </tbody>

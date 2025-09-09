@@ -33,7 +33,7 @@ const EditarTroca = () => {
 
     const [formData, setFormData] = useState({
         // Campos do Automóvel
-        valor: "", data: "", forma_pagamento: "", comissao: "",
+        valor: "", data: "", forma_pagamento: "", comissao: "", valor_aquisicao: "",
 
 
         // IDs das associações
@@ -157,6 +157,7 @@ const EditarTroca = () => {
         // Vazio
         if (!formData.data) vazioErros.push("data");
         // if (!formData.valor) vazioErros.push("valor");
+        if (!formData.valor_aquisicao) vazioErros.push("valor_aquisicao");
         if (!formData.clienteId) vazioErros.push("clienteId");
         if (!formData.automovelId) vazioErros.push("automovelId");
         if (!formData.automovel_fornecido) vazioErros.push("automovel_fornecido");
@@ -165,6 +166,8 @@ const EditarTroca = () => {
         // Tipo
         if (formData.valor && isNaN(formData.valor)) tipoErros.push("valor");
         if (formData.valor && formData.valor < 0) tipoErros.push("valor");
+        if (formData.valor_aquisicao && isNaN(formData.valor_aquisicao)) tipoErros.push("valor_aquisicao");
+        if (formData.valor_aquisicao && formData.valor_aquisicao <= 0) tipoErros.push("valor_aquisicao");
         if (formData.data && formData.data > new Date()) tipoErros.push("data");
 
         return { vazioErros, tamanhoErros, tipoErros };
@@ -341,6 +344,7 @@ const EditarTroca = () => {
             trocaData.append("clienteId", formData.clienteId);
             trocaData.append("automovelId", formData.automovelId);
             trocaData.append("automovel_fornecido", formData.automovel_fornecido);
+            trocaData.append("valor_aquisicao", formData.valor_aquisicao);
 
             await TrocaDataService.update(id, trocaData);
 
@@ -429,6 +433,12 @@ const EditarTroca = () => {
                         </div>
                         <div className="card-body">
                             <div className="row g-3">
+                                <div className="col-md-4">
+                                    <label for="valor" class="form-label">Valor Aquisicão (R$)</label>
+                                    <input type="text" className={`form-control ${hasError("valor_aquisicao") && "is-invalid"}`} id="valora_aquisicao" name="valor_aquisicao" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor_aquisicao ?? ""} />
+                                    {vazio.includes("valor_aquisicao") && <div className="invalid-feedback">Informe o valor de aquisição.</div>}
+                                    {tipo.includes("valor_aquisicao") && <div className="invalid-feedback">Valor aquisição inválido.</div>}
+                                </div>
                                 <div className="col-md-4">
                                     <label for="valor" class="form-label">Valor Diferença (R$)</label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor ?? ""} />
