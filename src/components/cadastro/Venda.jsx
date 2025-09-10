@@ -529,15 +529,18 @@ const Venda = () => {
                         </div>
                     </div>
 
-                    <div className="d-flex justify-content-end">
-                        <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
+                    <div className="d-flex justify-content-end pb-3">
+                        <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
+                            Voltar
+                        </button>
+                        <button type="submit" className="btn btn-primary btn-lg px-4" disabled={isSubmitting}>
                             {isSubmitting ? (
                                 <>
                                     <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                     Salvando..
                                 </>
                             ) : (
-                                "Cadastrar Automóvel"
+                                "Salvar"
                             )}
                         </button>
                     </div>

@@ -139,7 +139,7 @@ const DetalhesConsignacao = () => {
                                 <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
                                 <p className="mb-2"><strong>Data de Início:</strong> {new Date(detalhes.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
                                 <p className="mb-2"><strong>Data de Término:</strong> {detalhes.data_termino ? new Date(detalhes.data_termino).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'Não Finalizada'}</p>
-                                <p className="mb-2"><strong>Valor Acordado:</strong> <span className="text fw-bold fs-6">{formatter.format(detalhes.valor)}</span></p>
+                                <p className="mb-2"><strong>Valor Acordado:</strong> <span className="text fs-6">{formatter.format(detalhes.valor)}</span></p>
                                 <p className="mb-0">
                                     <strong>Status:</strong>
                                     {detalhes.ativo ? (

@@ -808,20 +808,20 @@ const Troca = () => {
                                     {/* {vazio.includes("valor_diferenca") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor diferença.</div>}
                                     {tipo.includes("valor_diferenca") && <div id="valorHelp" class="form-text text-danger ms-1">Valor diferença inválido.</div>} */}
                                 </div>
-                                <div className="col-md-4">
+                                <div className="col-md-3">
                                     <label for="forma_pagamento" class="form-label">Forma de Pagamento</label>
                                     <Select className={`${hasError("forma_pagamento") && "is-invalid"}`} id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === troca.forma_pagamento)} onChange={(option) => setTroca({ ...troca, forma_pagamento: option ? option.value : null })} options={optionsFormaPagamento} isClearable={true}
                                         isDisabled={!troca.valor || troca.valor === 0 || troca.valor === "0" || troca.valor < 0}>
                                     </Select>
                                     {vazio.includes("forma_pagamento") && <div id="formapagamentohelp" class="form-text text-danger ms-1">Informe a forma de pagamento.</div>}
                                 </div>
-                                <div className="col-md-4">
+                                <div className="col-md-3">
                                     <label for="comissao" class="form-label">Comissão</label>
                                     <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={troca.comissao} />
                                     {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
                                     {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
                                 </div>
-                                <div className="col-md-4">
+                                <div className="col-md-2">
                                     <label for="data" class="form-label">Data</label><br />
                                     <DatePicker
                                         calendarClassName="custom-datepicker-container"
@@ -844,15 +844,18 @@ const Troca = () => {
                     </div>
 
                     {/* Botão de Submissão */}
-                    <div className="d-flex justify-content-end">
-                        <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
+                    <div className="d-flex justify-content-end pb-3">
+                        <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
+                            Voltar
+                        </button>
+                        <button type="submit" className="btn btn-primary btn-lg px-4" disabled={isSubmitting}>
                             {isSubmitting ? (
                                 <>
                                     <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                     Salvando..
                                 </>
                             ) : (
-                                "Cadastrar Automóvel"
+                                "Salvar"
                             )}
                         </button>
                     </div>

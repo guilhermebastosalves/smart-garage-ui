@@ -69,71 +69,43 @@ const Consignacoes = () => {
         }
     };
 
-    const [consignacaoAtivo, setConsignacaoAtivo] = useState([]);
-    const [consignacaoInativo, setConsignacaoInativo] = useState([]);
-    const [consignacaoDataInicio, setConsignacaoDataInicio] = useState([]);
+    const [todasConsignacoes, setTodasConsignacoes] = useState([]);
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
     const [marca, setMarca] = useState([]);
 
-    const [opcao, setOpcao] = useState('ativos');
+    const [opcao, setOpcao] = useState('ativas');
+    const [periodo, setPeriodo] = useState('todos');
 
     const handleInputChangeOpcao = event => {
         const { value } = event.target;
         setOpcao(value);
     }
 
+    const handleInputChangePeriodo = event => {
+        const { value } = event.target;
+        setPeriodo(value);
+    }
+
     const [loading, setLoading] = useState(true);
-
-    // useEffect(() => {
-    //     setLoading(true);
-    //     const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-    //     // Use Promise.all para esperar todas as chamadas essenciais terminarem
-    //     Promise.all([
-    //         ConsignacaoDataService.getByAtivo(),
-    //         ConsignacaoDataService.getByInativo(),
-    //         AutomovelDataService.getAll(),
-    //         ModeloDataService.getAll(),
-    //         MarcaDataService.getAll(),
-    //         ConsignacaoDataService.getAllByDataInicio()
-    //     ]).then(([ativos, inativos, automoveis, modelos, marcas, datainicio]) => {
-    //         setConsignacaoAtivo(ativos.data);
-    //         setConsignacaoInativo(inativos.data)
-    //         setAutomovel(automoveis.data);
-    //         setModelo(modelos.data);
-    //         setMarca(marcas.data);
-    //         setConsignacaoDataInicio(datainicio.data)
-    //     }).catch((err) => {
-    //         console.error("Erro ao carregar dados:", err);
-    //         setLoading(false); // Garante que o loading não fica travado
-    //     }).finally(() => {
-    //         setLoading(false); // Esconde o loading quando tudo terminar
-    //         clearTimeout(timeout);
-    //     });
-    // }, []);
-
 
     // 1. EXTRAIA A LÓGICA DE BUSCA PARA UMA FUNÇÃO REUTILIZÁVEL
     // Usamos useCallback para evitar que a função seja recriada a cada renderização
     const fetchData = useCallback(() => {
         setLoading(true);
         Promise.all([
-            ConsignacaoDataService.getByAtivo(),
-            ConsignacaoDataService.getByInativo(),
-            ConsignacaoDataService.getAllByDataInicio(),
+            ConsignacaoDataService.getAll(),
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll(),
-        ]).then(([ativos, inativos, recentes, automoveis, modelos, marcas]) => {
-            setConsignacaoAtivo(ativos.data);
-            setConsignacaoInativo(inativos.data);
-            setConsignacaoDataInicio(recentes.data);
+        ]).then(([consignacoes, automoveis, modelos, marcas]) => {
+            setTodasConsignacoes(consignacoes.data)
             setAutomovel(automoveis.data);
             setModelo(modelos.data);
             setMarca(marcas.data);
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            tLoading(false); // Garante que o loading não fica travado
+            setLoading(false); // Garante que o loading não fica travado
         }).finally(() => {
             setLoading(false);
         });
@@ -147,22 +119,59 @@ const Consignacoes = () => {
 
 
     // 2. UNIFICAÇÃO DA FONTE DE DADOS
+    // const listaAtual = useMemo(() => {
+    //     switch (opcao) {
+    //         case 'inativos':
+    //             return consignacaoInativo;
+    //         case 'data_inicio':
+    //             return consignacaoDataInicio;
+    //         case 'ativos':
+    //         default:
+    //             return consignacaoAtivo;
+    //     }
+    // }, [opcao, consignacaoAtivo, consignacaoInativo, consignacaoDataInicio]);
+
     const listaAtual = useMemo(() => {
-        switch (opcao) {
-            case 'inativos':
-                return consignacaoInativo;
-            case 'data_inicio':
-                return consignacaoDataInicio;
-            case 'ativos':
-            default:
-                return consignacaoAtivo;
+        // 1. Define a data de início do filtro de período
+        let dataInicioFiltro = null;
+
+        if (periodo !== 'todos') {
+            const hoje = new Date();
+            const dataAlvo = new Date();
+
+            if (periodo === 'ultimo_mes') dataAlvo.setMonth(hoje.getMonth() - 1);
+            if (periodo === 'ultimos_3_meses') dataAlvo.setMonth(hoje.getMonth() - 3);
+            if (periodo === 'ultimo_semestre') dataAlvo.setMonth(hoje.getMonth() - 6);
+
+            dataInicioFiltro = new Date(Date.UTC(
+                dataAlvo.getFullYear(),
+                dataAlvo.getMonth(),
+                dataAlvo.getDate()
+            ));
+
         }
-    }, [opcao, consignacaoAtivo, consignacaoInativo, consignacaoDataInicio]);
+
+        // 2. Aplica os filtros em sequência
+        return todasConsignacoes
+            .filter(item => {
+                // Primeiro, filtra por período (se não for "todos")
+                if (!dataInicioFiltro) return true; // Se for "todos", passa todos
+                return new Date(item.data_inicio) >= dataInicioFiltro;
+            })
+            .filter(item => {
+                // Depois, filtra por status (opção)
+                if (opcao === 'ativas') return item.ativo === true;
+                if (opcao === 'inativas') return item.ativo === false;
+                return true; // Para "Mais Recentes", não filtra por status
+            })
+            .sort((a, b) => new Date(b.data_inicio) - new Date(a.data_inicio));
+
+    }, [opcao, periodo, todasConsignacoes]);
 
     // 3. RESETA A PÁGINA QUANDO O FILTRO MUDA
     useEffect(() => {
         setCurrentPage(1);
-    }, [opcao]);
+    }, [opcao, periodo]);
 
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -209,11 +218,21 @@ const Consignacoes = () => {
                     <div className="card-header bg-light d-flex justify-content-between align-items-center">
                         <h5 className="mb-0">Consignações Ativas</h5>
                         {/* Filtro/Dropdown vai aqui */}
-                        <select name="opcao" id="opcao" className="form-select w-auto" onChange={handleInputChangeOpcao}>
-                            <option value="ativos">Ativas</option>
-                            <option value="inativos">Finalizadas</option>
-                            <option value="data_inicio">Mais Recentes</option>
-                        </select>
+
+                        <div className="d-flex align-items-center gap-2">
+                            <select name="opcao" id="opcao" className="form-select w-auto" onChange={handleInputChangeOpcao}>
+                                <option value="ativas">Ativas</option>
+                                <option value="inativas">Finalizadas</option>
+                                {/* <option value="data_inicio">Mais Recentes</option> */}
+                            </select>
+
+                            <select name="periodo" id="periodo" className="form-select w-auto" onChange={handleInputChangePeriodo} value={periodo}>
+                                <option value="todos">Todo o Período</option>
+                                <option value="ultimo_mes">Último Mês</option>
+                                <option value="ultimos_3_meses">Últimos 3 Meses</option>
+                                <option value="ultimo_semestre">Último Semestre</option>
+                            </select>
+                        </div>
 
                     </div>
 

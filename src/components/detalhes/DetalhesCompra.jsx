@@ -104,9 +104,9 @@ const DetalhesCompra = () => {
                                 <h5 className="mb-0 fw-bold">Detalhes da Operação</h5>
                             </div>
                             <div className="card-body">
-                                <p className="mb-2"><strong>ID da Troca:</strong> {detalhes.id}</p>
+                                <p className="mb-2"><strong>ID da Compra:</strong> {detalhes.id}</p>
                                 <p className="mb-2"><strong>Data:</strong> {new Date(detalhes.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
-                                <p className="mb-2"><strong>Valor:</strong> <span className="text fw-bold fs-6">{formatter.format(detalhes.valor)}</span></p>
+                                <p className="mb-2"><strong>Valor:</strong> <span className="text fs-6">{formatter.format(detalhes.valor)}</span></p>
                                 <p className="mb-0">
                                 </p>
                             </div>

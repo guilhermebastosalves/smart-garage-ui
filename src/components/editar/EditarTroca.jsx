@@ -433,19 +433,19 @@ const EditarTroca = () => {
                         </div>
                         <div className="card-body">
                             <div className="row g-3">
-                                <div className="col-md-4">
+                                <div className="col-md-3">
                                     <label for="valor" class="form-label">Valor Aquisicão (R$)</label>
                                     <input type="text" className={`form-control ${hasError("valor_aquisicao") && "is-invalid"}`} id="valora_aquisicao" name="valor_aquisicao" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor_aquisicao ?? ""} />
                                     {vazio.includes("valor_aquisicao") && <div className="invalid-feedback">Informe o valor de aquisição.</div>}
                                     {tipo.includes("valor_aquisicao") && <div className="invalid-feedback">Valor aquisição inválido.</div>}
                                 </div>
-                                <div className="col-md-4">
+                                <div className="col-md-3">
                                     <label for="valor" class="form-label">Valor Diferença (R$)</label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor ?? ""} />
                                     {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
                                 </div>
-                                <div className="col-md-4">
+                                <div className="col-md-3">
                                     <label for="forma_pagamento" class="form-label">Forma de Pagamento</label>
                                     <Select className={`${hasError("forma_pagamento") && "is-invalid"}`} id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === formData.forma_pagamento) || null} onChange={(option) => setFormData(prevFormData => ({ ...prevFormData, forma_pagamento: option ? option.value : null }))} options={optionsFormaPagamento} isClearable={true}
                                         isDisabled={!formData.valor || formData.valor === 0 || formData.valor === "0" || formData.valor < 0}>
@@ -453,7 +453,7 @@ const EditarTroca = () => {
                                     {vazio.includes("forma_pagamento") && <div id="formapagamentohelp" class="form-text text-danger ms-1">Informe a forma de pagamento.</div>}
                                 </div>
 
-                                <div className="col-md-4">
+                                <div className="col-md-3">
                                     <label for="data" class="form-label">Data</label><br />
                                     <DatePicker
                                         calendarClassName="custom-datepicker-container"
@@ -533,14 +533,17 @@ const EditarTroca = () => {
 
                     {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end">
-                        <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
+                        <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
+                            Voltar
+                        </button>
+                        <button type="submit" className="btn btn-primary btn-lg px-4" disabled={isSubmitting}>
                             {isSubmitting ? (
                                 <>
                                     <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                     Salvando..
                                 </>
                             ) : (
-                                "Cadastrar Automóvel"
+                                "Salvar"
                             )}
                         </button>
                     </div>

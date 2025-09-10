@@ -150,9 +150,9 @@ const DetalhesVenda = () => {
                                 <p className="mb-2"><strong>ID da Venda:</strong> {detalhes.id}</p>
                                 <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
                                 <p className="mb-2"><strong>Data:</strong> {new Date(detalhes.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
-                                <p className="mb-2"><strong>Valor:</strong> <span className="text fw-bold fs-6">{formatter.format(detalhes.valor)}</span></p>
-                                <p className="mb-2"><strong>Forma de Pagamento:</strong> <span className="text fw-bold fs-6">{detalhes.forma_pagamento}</span></p>
-                                <p className="mb-2"><strong>Comissão:</strong> <span className="text fw-bold fs-6">{formatter.format(detalhes.comissao)}</span></p>
+                                <p className="mb-2"><strong>Valor:</strong> <span className="text fs-6">{formatter.format(detalhes.valor)}</span></p>
+                                <p className="mb-2"><strong>Forma de Pagamento:</strong> <span className="text fs-6">{detalhes.forma_pagamento}</span></p>
+                                <p className="mb-2"><strong>Comissão:</strong> <span className="text fs-6">{formatter.format(detalhes.comissao)}</span></p>
                                 <p className="mb-0">
                                 </p>
                             </div>

@@ -13,12 +13,10 @@ const Manutencao = () => {
 
     const navigate = useNavigate();
 
-    const [manutencaoAtiva, setManutencaoAtiva] = useState([]);
-    const [manutencaoInativa, setManutencaoInativa] = useState([]);
-    const [manutencaoRecente, setManutencaoRecente] = useState([]);
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
     const [marca, setMarca] = useState([]);
+    const [todasManutencoes, setTodasManutencoes] = useState([]);
 
     // 2. Adicione os states para controlar o modal de exclusão
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -77,58 +75,30 @@ const Manutencao = () => {
 
 
     const [opcao, setOpcao] = useState('ativas');
+    const [periodo, setPeriodo] = useState('todos');
 
     const handleInputChangeOpcao = event => {
         const { value } = event.target;
         setOpcao(value);
     }
 
+    const handleInputChangePeriodo = event => {
+        const { value } = event.target;
+        setPeriodo(value);
+    }
+
     const [loading, setLoading] = useState(true);
-
-    // useEffect(() => {
-    //     setLoading(true);
-    //     const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-    //     // Use Promise.all para esperar todas as chamadas essenciais terminarem
-    //     Promise.all([
-    //         ManutencaoDataService.getByAtivo(),
-    //         ManutencaoDataService.getByInativo(),
-    //         ManutencaoDataService.getAllByDataEnvio(),
-    //         AutomovelDataService.getAll(),
-    //         ModeloDataService.getAll(),
-    //         MarcaDataService.getAll(),
-    //         // VendaDataServive.getByData()
-    //     ]).then(([ativas, inativas, recentes, automoveis, modelos, marcas]) => {
-    //         setManutencaoAtiva(ativas.data);
-    //         setManutencaoInativa(inativas.data);
-    //         setManutencaoRecente(recentes.data);
-    //         setAutomovel(automoveis.data);
-    //         setModelo(modelos.data);
-    //         setMarca(marcas.data);
-    //         // setVendaRecente(vendasRecentes.data)
-    //     }).catch((err) => {
-    //         console.error("Erro ao carregar dados:", err);
-    //         setLoading(false); // Garante que o loading não fica travado
-    //     }).finally(() => {
-    //         setLoading(false); // Esconde o loading quando tudo terminar
-    //         clearTimeout(timeout);
-    //     });
-    // }, []);
-
 
     const fetchData = useCallback(() => {
         setLoading(true);
         Promise.all([
-            ManutencaoDataService.getByAtivo(),
-            ManutencaoDataService.getByInativo(),
-            ManutencaoDataService.getAllByDataEnvio(),
+            ManutencaoDataService.getAll(),
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll(),
             // VendaDataServive.getByData()
-        ]).then(([ativas, inativas, recentes, automoveis, modelos, marcas]) => {
-            setManutencaoAtiva(ativas.data);
-            setManutencaoInativa(inativas.data);
-            setManutencaoRecente(recentes.data);
+        ]).then(([manutencoes, automoveis, modelos, marcas]) => {
+            setTodasManutencoes(manutencoes.data);
             setAutomovel(automoveis.data);
             setModelo(modelos.data);
             setMarca(marcas.data);
@@ -149,22 +119,59 @@ const Manutencao = () => {
 
 
     // 2. UNIFICAÇÃO DA FONTE DE DADOS
+    // const listaAtual = useMemo(() => {
+    //     switch (opcao) {
+    //         case 'inativas':
+    //             return manutencaoInativa;
+    //         case 'data_envio':
+    //             return manutencaoRecente;
+    //         case 'ativas':
+    //         default:
+    //             return manutencaoAtiva;
+    //     }
+    // }, [opcao, manutencaoAtiva, manutencaoInativa, manutencaoRecente]);
+
     const listaAtual = useMemo(() => {
-        switch (opcao) {
-            case 'inativas':
-                return manutencaoInativa;
-            case 'data_envio':
-                return manutencaoRecente;
-            case 'ativas':
-            default:
-                return manutencaoAtiva;
+        // 1. Define a data de início do filtro de período
+        let dataInicioFiltro = null;
+
+        if (periodo !== 'todos') {
+            const hoje = new Date();
+            const dataAlvo = new Date();
+
+            if (periodo === 'ultimo_mes') dataAlvo.setMonth(hoje.getMonth() - 1);
+            if (periodo === 'ultimos_3_meses') dataAlvo.setMonth(hoje.getMonth() - 3);
+            if (periodo === 'ultimo_semestre') dataAlvo.setMonth(hoje.getMonth() - 6);
+
+            dataInicioFiltro = new Date(Date.UTC(
+                dataAlvo.getFullYear(),
+                dataAlvo.getMonth(),
+                dataAlvo.getDate()
+            ));
+
         }
-    }, [opcao, manutencaoAtiva, manutencaoInativa, manutencaoRecente]);
+
+        // 2. Aplica os filtros em sequência
+        return todasManutencoes
+            .filter(item => {
+                // Primeiro, filtra por período (se não for "todos")
+                if (!dataInicioFiltro) return true; // Se for "todos", passa todos
+                return new Date(item.data_envio) >= dataInicioFiltro;
+            })
+            .filter(item => {
+                // Depois, filtra por status (opção)
+                if (opcao === 'ativas') return item.ativo === true;
+                if (opcao === 'inativas') return item.ativo === false;
+                return true; // Para "Mais Recentes", não filtra por status
+            })
+            .sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
+
+    }, [opcao, periodo, todasManutencoes]); // Roda sempre que um filtro ou os dados mudam
 
     // 3. RESETA A PÁGINA QUANDO O FILTRO MUDA
     useEffect(() => {
         setCurrentPage(1);
-    }, [opcao]);
+    }, [opcao, periodo]);
 
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -208,12 +215,22 @@ const Manutencao = () => {
                 <div className="card shadow-sm">
                     <div className="card-header bg-light d-flex justify-content-between align-items-center">
                         <h5 className="mb-0">Manutenções</h5>
-                        {/* Filtro/Dropdown vai aqui */}
-                        <select name="opcao" id="opcao" className="form-select w-auto" onChange={handleInputChangeOpcao}>
-                            <option value="ativas">Ativas</option>
-                            <option value="inativas">Finalizadas</option>
-                            <option value="data_envio">Mais Recentes</option>
-                        </select>
+
+
+                        <div className="d-flex align-items-center gap-2">
+                            <select name="opcao" id="opcao" className="form-select w-auto" onChange={handleInputChangeOpcao}>
+                                <option value="ativas">Ativas</option>
+                                <option value="inativas">Finalizadas</option>
+                                {/* <option value="data_envio">Mais Recentes</option> */}
+                            </select>
+
+                            <select name="periodo" id="periodo" className="form-select w-auto" onChange={handleInputChangePeriodo} value={periodo}>
+                                <option value="todos">Todo o Período</option>
+                                <option value="ultimo_mes">Último Mês</option>
+                                <option value="ultimos_3_meses">Últimos 3 Meses</option>
+                                <option value="ultimo_semestre">Último Semestre</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div className="card-body">
@@ -253,7 +270,7 @@ const Manutencao = () => {
                                                 <td>
                                                     {d.ativo ?
                                                         // Se estiver ativa, mostra a previsão
-                                                        (d.previsao_retorno ? new Date(d.previsao_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A')
+                                                        (d.previsao_retorno ? new Date(d.previsao_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '')
                                                         :
                                                         // Se estiver finalizada, mostra a data de retorno real
                                                         (d.data_retorno ? new Date(d.data_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A')

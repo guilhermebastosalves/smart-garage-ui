@@ -17,11 +17,10 @@ const Trocas = () => {
     const trocaLocalStorage = { negocio: "Troca" };
     const [showModal, setShowModal] = useState(false);
 
-    const [troca, setTroca] = useState([]);
-    const [trocaRecente, setTrocaRecente] = useState([]);
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
     const [marca, setMarca] = useState([]);
+    const [todasTrocas, setTodasTrocas] = useState([]);
 
 
     // 2. Adicione os states para controlar o modal de exclusão
@@ -59,12 +58,13 @@ const Trocas = () => {
         }
     };
 
-    const [opcao, setOpcao] = useState('');
     const navigate = useNavigate();
 
-    const handleInputChangeOpcao = event => {
+    const [periodo, setPeriodo] = useState('todos');
+
+    const handleInputChangePeriodo = event => {
         const { value } = event.target;
-        setOpcao(value);
+        setPeriodo(value);
     }
 
     const [loading, setLoading] = useState(true);
@@ -76,16 +76,14 @@ const Trocas = () => {
         // Use Promise.all para esperar todas as chamadas essenciais terminarem
         Promise.all([
             TrocaDataService.getAll(),
-            TrocaDataService.getByData(),
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll(),
             ClienteDataService.getAll(),
             FisicaDataService.getAll(),
             JuridicaDataService.getAll()
-        ]).then(([trocas, recentes, automoveis, modelos, marcas, clientes, fisica, juridica]) => {
-            setTroca(trocas.data);
-            setTrocaRecente(recentes.data);
+        ]).then(([trocas, automoveis, modelos, marcas]) => {
+            setTodasTrocas(trocas.data);
             setAutomovel(automoveis.data);
             setModelo(modelos.data);
             setMarca(marcas.data);
@@ -99,18 +97,39 @@ const Trocas = () => {
     }, []);
 
     const listaAtual = useMemo(() => {
-        switch (opcao) {
-            case 'data':
-                return trocaRecente;
-            case '':
-            default:
-                return troca;
+        // 1. Define a data de início do filtro de período
+        let dataFiltro = null;
+
+        if (periodo !== 'todos') {
+            const hoje = new Date();
+            const dataAlvo = new Date();
+
+            if (periodo === 'ultimo_mes') dataAlvo.setMonth(hoje.getMonth() - 1);
+            if (periodo === 'ultimos_3_meses') dataAlvo.setMonth(hoje.getMonth() - 3);
+            if (periodo === 'ultimo_semestre') dataAlvo.setMonth(hoje.getMonth() - 6);
+
+            dataFiltro = new Date(Date.UTC(
+                dataAlvo.getFullYear(),
+                dataAlvo.getMonth(),
+                dataAlvo.getDate()
+            ));
+
         }
-    }, [opcao, troca, trocaRecente]);
+
+        // 2. Aplica os filtros em sequência
+        return todasTrocas
+            .filter(item => {
+                // Primeiro, filtra por período (se não for "todos")
+                if (!dataFiltro) return true; // Se for "todos", passa todos
+                return new Date(item.data) >= dataFiltro;
+            })
+            .sort((a, b) => new Date(b.data) - new Date(a.data));
+
+    }, [periodo, todasTrocas]);
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [opcao]);
+    }, [periodo]);
 
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -155,9 +174,16 @@ const Trocas = () => {
                     <div className="card-header bg-light d-flex justify-content-between align-items-center">
                         <h5 className="mb-0">Trocas</h5>
                         {/* Filtro/Dropdown vai aqui */}
-                        <select name="opcao" id="opcao" className="form-select w-auto" onChange={handleInputChangeOpcao}>
+                        {/* <select name="opcao" id="opcao" className="form-select w-auto" onChange={handleInputChangeOpcao}>
                             <option value="">Padrão</option>
                             <option value="data">Mais Recentes</option>
+                        </select> */}
+
+                        <select name="periodo" id="periodo" className="form-select w-auto" onChange={handleInputChangePeriodo} value={periodo}>
+                            <option value="todos">Todo o Período</option>
+                            <option value="ultimo_mes">Último Mês</option>
+                            <option value="ultimos_3_meses">Últimos 3 Meses</option>
+                            <option value="ultimo_semestre">Último Semestre</option>
                         </select>
                     </div>
 

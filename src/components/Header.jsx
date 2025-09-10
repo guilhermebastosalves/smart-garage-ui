@@ -64,6 +64,14 @@ const Header = () => {
                                             </Link>
                                         </li>
                                     )}
+                                    {user.role === 'gerente' && (
+                                        <li>
+                                            <Link to="/listagem/vendedores" className={`nav-link ${location.pathname.includes('/vendedores') ? 'active' : 'link-body-emphasis'}`}>
+                                                <i className="bi bi-people-fill me-2"></i>
+                                                Vendedores
+                                            </Link>
+                                        </li>
+                                    )}
                                 </ul>
                                 <hr></hr>
 

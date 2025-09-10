@@ -1,5 +1,6 @@
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
+import { format } from 'date-fns';
 
 // Registra todos os elementos que vamos usar
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
@@ -7,22 +8,78 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tool
 // --- Funções de Processamento de Dados ---
 
 // Processador para Vendas e Consignações (o que já tínhamos)
-const processarDadosPorDia = (dados, tipo) => {
-    let dateKey = tipo === 'Consignacao' ? 'data_inicio' : 'data';
+// const processarDadosPorDia = (dados, tipo) => {
+//     let dateKey = tipo === 'Consignacao' ? 'data_inicio' : 'data';
+//     const dadosAgrupados = dados.reduce((acc, item) => {
+//         const dataDoItem = item[dateKey];
+//         if (!dataDoItem) return acc;
+//         const dataFormatada = new Date(dataDoItem).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+//         if (!acc[dataFormatada]) acc[dataFormatada] = 0;
+//         acc[dataFormatada] += parseFloat(item.valor || 0);
+//         return acc;
+//     }, {});
+//     const labelsOrdenados = Object.keys(dadosAgrupados).sort((a, b) => new Date(a.split('/').reverse().join('-')) - new Date(b.split('/').reverse().join('-')));
+//     return {
+//         labels: labelsOrdenados,
+//         datasets: [{
+//             label: `Valor de ${tipo} por Dia`,
+//             data: labelsOrdenados.map(data => dadosAgrupados[data]),
+//             backgroundColor: 'rgba(13, 110, 253, 0.6)',
+//         }]
+//     };
+// };
+
+
+// Esta nova função substitui a antiga 'processarDadosPorDia'
+const processarDadosTemporais = (dados, tipo, periodo) => {
+    const dateKey = tipo === 'Consignacao' ? 'data_inicio' : 'data';
+
+    // 1. Define o formato da data para agrupar e para exibir, baseado no período
+    let formatKey, formatLabel;
+    switch (periodo) {
+        case 'ultimos_3_meses':
+            formatKey = 'yyyy-ww'; // Agrupa por Ano-Semana (ex: 2025-37)
+            formatLabel = (date) => `Semana ${format(date, 'ww')}`; // Exibe "Semana 37"
+            break;
+        case 'ultimo_semestre':
+            formatKey = 'yyyy-MM'; // Agrupa por Ano-Mês (ex: 2025-09)
+            formatLabel = (date) => format(date, 'MMM/yy'); // Exibe "Set/25"
+            break;
+        case 'ultimo_mes':
+        default:
+            formatKey = 'yyyy-MM-dd'; // Agrupa por Ano-Mês-Dia
+            formatLabel = (date) => format(date, 'dd/MM'); // Exibe "09/09"
+            break;
+    }
+
+    // Agrupa os dados usando a chave de formato dinâmico
     const dadosAgrupados = dados.reduce((acc, item) => {
         const dataDoItem = item[dateKey];
         if (!dataDoItem) return acc;
-        const dataFormatada = new Date(dataDoItem).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
-        if (!acc[dataFormatada]) acc[dataFormatada] = 0;
-        acc[dataFormatada] += parseFloat(item.valor || 0);
+
+        const chave = format(new Date(dataDoItem), formatKey);
+        if (!acc[chave]) acc[chave] = 0;
+        acc[chave] += parseFloat(item.valor || 0);
         return acc;
     }, {});
-    const labelsOrdenados = Object.keys(dadosAgrupados).sort((a, b) => new Date(a.split('/').reverse().join('-')) - new Date(b.split('/').reverse().join('-')));
+
+    // Ordena as chaves (seja dia, semana ou mês) cronologicamente
+    const labelsOrdenados = Object.keys(dadosAgrupados).sort();
+
     return {
-        labels: labelsOrdenados,
+        labels: labelsOrdenados.map(chave => {
+            // Para semanas, precisamos reconstruir a data para obter o rótulo correto
+            if (periodo === 'ultimos_3_meses') {
+                const [ano, semana] = chave.split('-');
+                // Isso cria uma data aproximada para a semana, apenas para o rótulo
+                const dataDaSemana = new Date(ano, 0, 1 + (semana - 1) * 7);
+                return formatLabel(dataDaSemana);
+            }
+            return formatLabel(new Date(chave));
+        }),
         datasets: [{
-            label: `Valor de ${tipo} por Dia`,
-            data: labelsOrdenados.map(data => dadosAgrupados[data]),
+            label: `Valor de ${tipo} por ${periodo === 'ultimo_mes' ? 'Dia' : periodo === 'ultimos_3_meses' ? 'Semana' : 'Mês'}`,
+            data: labelsOrdenados.map(chave => dadosAgrupados[chave]),
             backgroundColor: 'rgba(13, 110, 253, 0.6)',
         }]
     };
@@ -84,7 +141,7 @@ const getCategoriaFromDescricao = (descricao) => {
     if (desc.includes('bateria') || desc.includes('elétrica')) return 'Parte Elétrica';
     if (desc.includes('freio') || desc.includes('pastilha')) return 'Sistema de Freios';
     if (desc.includes('marketing') || desc.includes('anúncio') || desc.includes('plataforma')) return 'Marketing e Vendas';
-    if (desc.includes('salário') || desc.includes('comissão')) return 'Recursos Humanos';
+    // if (desc.includes('salário') || desc.includes('comissão')) return 'Recursos Humanos';
 
     // Se nenhuma palavra-chave for encontrada, retorna uma categoria padrão
     return 'Outros';
@@ -118,7 +175,7 @@ const processarComprasPorMarca = (dados, todasAsMarcas) => {
 
 // --- Componente Principal do Gráfico ---
 
-const GraficoRelatorio = ({ dados, tipo, marcas }) => {
+const GraficoRelatorio = ({ dados, tipo, marcas, periodo }) => {
     if (!dados || dados.length === 0) {
         return <p className="text-center text-muted">Não há dados suficientes para gerar um gráfico.</p>;
     }
@@ -147,7 +204,7 @@ const GraficoRelatorio = ({ dados, tipo, marcas }) => {
     switch (tipo) {
         case 'Venda':
         case 'Consignacao':
-            const dadosGraficoBarra = processarDadosPorDia(dados, tipo);
+            const dadosGraficoBarra = processarDadosTemporais(dados, tipo, periodo);
             const barOptions = {
                 ...commonOptions, // Usa as opções comuns
                 plugins: {

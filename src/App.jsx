@@ -35,6 +35,8 @@ import ListGastos from "./components/listagem/ListGastos";
 import ListManutencoes from "./components/listagem/ListManutencoes";
 import ProtectedRoute from './components/RotaProtegida'; // Importe a rota protegida
 import AcessoNegado from './components/AcessoNegado';
+import ListVendedores from './components/listagem/ListVendedores';
+import RegistroVendedor from './components/cadastro/Vendedor'
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Importe o CSS
@@ -102,6 +104,8 @@ function App() {
             <Route path='/editar-manutencao/:id' element={<EditarManutencao />}></Route>
             <Route path='/listagem/gastos' element={<ListGastos />}></Route>
             <Route path='/listagem/manutencoes' element={<ListManutencoes />}></Route>
+            <Route path='/listagem/vendedores' element={<ListVendedores />}></Route>
+            <Route path='/vendedor' element={<RegistroVendedor />}></Route>
           </Route>
 
         </Routes>

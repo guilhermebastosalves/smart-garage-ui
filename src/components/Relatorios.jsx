@@ -609,7 +609,7 @@ const Relatorios = () => {
                                     <Card.Header>Desempenho no Período</Card.Header>
                                     <Card.Body>
                                         <div className="chart-container">
-                                            <GraficoRelatorio marcas={marcas} dados={dados} tipo={tipoRelatorioGerado} />
+                                            <GraficoRelatorio periodo={periodo} marcas={marcas} dados={dados} tipo={tipoRelatorioGerado} />
                                         </div>
                                     </Card.Body>
                                 </Card>
