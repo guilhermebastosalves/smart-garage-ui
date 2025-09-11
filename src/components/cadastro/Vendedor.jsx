@@ -6,7 +6,7 @@ import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 
 const RegistroVendedor = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({ nome: '', usuario: '', senha: '' });
+    const [formData, setFormData] = useState({ nome: '', usuario: '', email: '', senha: '', telefone: '' });
     const [loading, setLoading] = useState(false);
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
@@ -48,15 +48,23 @@ const RegistroVendedor = () => {
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
                                 <Form.Label htmlFor="nome">Nome Completo</Form.Label>
-                                <Form.Control id="nome" name="nome" type="text" onChange={handleInputChange} required />
+                                <Form.Control id="nome" name="nome" type="text" onChange={handleInputChange} />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label htmlFor="email">E-mail</Form.Label>
+                                <Form.Control id="email" name="email" type="email" placeholder="exemplo@email.com" onChange={handleInputChange} />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label htmlFor="telefone">Telefone</Form.Label>
+                                <Form.Control id="telefone" name="telefone" onChange={handleInputChange} />
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label htmlFor="usuario">Nome de Usuário (para login)</Form.Label>
-                                <Form.Control id="usuario" name="usuario" type="text" onChange={handleInputChange} required />
+                                <Form.Control id="usuario" name="usuario" type="text" onChange={handleInputChange} />
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label htmlFor="senha">Senha</Form.Label>
-                                <Form.Control id="senha" name="senha" type="password" onChange={handleInputChange} required />
+                                <Form.Control id="senha" name="senha" type="password" onChange={handleInputChange} />
                             </Form.Group>
                             <div className="d-grid">
                                 <Button variant="primary" type="submit" disabled={loading}>

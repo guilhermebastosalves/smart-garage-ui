@@ -62,7 +62,7 @@ const ListVendedores = () => {
                         <h1 className="fw-bold">Gerenciar Vendedores</h1>
                         <p className="text-muted">Cadastre, visualize e gerencie os acessos dos vendedores.</p>
                     </div>
-                    <Button variant="primary" size="lg" onClick={() => navigate('/vendedor/novo')}>
+                    <Button variant="primary" size="lg" onClick={() => navigate('/vendedor')}>
                         <i className="bi bi-plus-circle-fill me-2"></i>
                         Novo Vendedor
                     </Button>

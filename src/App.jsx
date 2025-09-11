@@ -37,6 +37,7 @@ import ProtectedRoute from './components/RotaProtegida'; // Importe a rota prote
 import AcessoNegado from './components/AcessoNegado';
 import ListVendedores from './components/listagem/ListVendedores';
 import RegistroVendedor from './components/cadastro/Vendedor'
+import ResetarSenha from './components/ResetarSenha';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Importe o CSS
@@ -65,6 +66,7 @@ function App() {
       <div className='App'>
         <Routes>
           <Route path="/" element={<Login />}></Route>
+          <Route path="/resetar-senha/:token" element={<ResetarSenha />} />
 
           {/* Rotas Protegidas */}
           <Route element={<ProtectedRoute />}>

@@ -1,4 +1,5 @@
 import axios from "axios";
+import AuthService from "./services/authDataService";
 
 const apiClient = axios.create({
     // Inserir o endereço do servidor onde a API está hospedada
@@ -12,8 +13,11 @@ const apiClient = axios.create({
 // Adicionamos um interceptor que roda ANTES de cada requisição ser enviada
 apiClient.interceptors.request.use(
     (config) => {
+
+        const token = AuthService.getCurrentUserToken();
+
         // Pega o token do localStorage
-        const token = localStorage.getItem("user_token");
+        // const token = localStorage.getItem("user_token");
 
         // Se o token existir, adiciona ao cabeçalho 'Authorization'
         if (token) {

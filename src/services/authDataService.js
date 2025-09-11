@@ -12,10 +12,20 @@ const getCurrentUserToken = () => {
     return localStorage.getItem("user_token");
 };
 
+const solicitarResetSenha = (data) => {
+    return http.post("/api/login/esqueci-senha", data);
+};
+
+const resetarSenha = (token, data) => {
+    return http.post(`/api/login/resetar-senha/${token}`, data);
+};
+
 const authService = {
     login,
     logout,
     getCurrentUserToken,
+    solicitarResetSenha,
+    resetarSenha,
 };
 
 export default authService;
