@@ -143,103 +143,168 @@ const DetalhesTroca = () => {
                 </div>
 
                 <div className="row g-4">
-                    {/* Card de Informações da Troca */}
-                    <div className="col-lg-6 col-md-12">
-                        <div className="card shadow-sm h-100 border-start border-secondary border-4">
-                            <div className="card-header bg-light d-flex align-items-center">
-                                <i className="bi bi-info-circle-fill text-primary me-2"></i>
-                                <h5 className="mb-0 fw-bold">Detalhes da Operação</h5>
-                            </div>
-                            <div className="card-body">
-                                <p className="mb-2"><strong>ID da Troca:</strong> {detalhes.id}</p>
-                                <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
-                                <p className="mb-2"><strong>Data:</strong> {new Date(detalhes.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
-                                <p className="mb-2"><strong>Valor de Aquisicão:</strong> <span className="text fs-6">{detalhes.valor_aquisicao ? formatter.format(detalhes.valor_aquisicao) : "N/A "}</span></p>
-                                <p className="mb-2"><strong>Valor de Diferença:</strong> <span className="text fs-6">{((detalhes.valor) >= 0) ? formatter.format(detalhes.valor) : (formatter.format(detalhes.valor) + " (Valor cedido)")}</span></p>
-                                {((detalhes.valor) > 0) &&
-                                    <p className="mb-2"><strong>Forma de Pagamento:</strong> <span className="text  fs-6">{detalhes.forma_pagamento ? detalhes.forma_pagamento : "N/A"}</span></p>}
-                                <p className="mb-2"><strong>Comissão:</strong> <span className="text fs-6">{formatter.format(detalhes.comissao)}</span></p>
-                                <p className="mb-0">
-                                </p>
+
+                    <div className="accordion" id="accordionDetalhesTroca">
+                        <div className="accordion-item">
+                            <h2 className="accordion-header">
+                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#trocaInfo">
+                                    <i className="bi bi-info-circle-fill text-primary me-2"></i>
+                                    Informações da Troca
+                                </button>
+                            </h2>
+                            <div id="trocaInfo" className="accordion-collapse collapse" data-bs-parent="#accordionDetalhesTroca">
+                                <div className="accordion-body">
+                                    <ul className="list-group list-group-flush">
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Data:</strong> {new Date(detalhes.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Valor de Aquisicão:</strong> <span className="text fs-6">{detalhes.valor_aquisicao ? formatter.format(detalhes.valor_aquisicao) : "N/A "}</span></p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Valor de Diferença:</strong> <span className="text fs-6">{((detalhes.valor) >= 0) ? formatter.format(detalhes.valor) : (formatter.format(detalhes.valor) + " (Valor cedido)")}</span></p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            {((detalhes.valor) > 0) &&
+                                                <p className="mb-2"><strong>Forma de Pagamento:</strong> <span className="text  fs-6">{detalhes.forma_pagamento ? detalhes.forma_pagamento : "N/A"}</span></p>}
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Comissão:</strong> <span className="text fs-6">{formatter.format(detalhes.comissao)}</span></p>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Card de Detalhes do Automóvel Fornecido*/}
-                    <div className="col-lg-6 col-md-12">
-                        <div className="card shadow-sm h-100 border-start border-secondary border-4">
-                            <div className="card-header bg-light d-flex align-items-center">
-                                <i className="bi bi-arrow-up-circle-fill text-primary me-2"></i>
-                                <h5 className="mb-0 fw-bold">Detalhes do Automóvel Fornecido</h5>
-                            </div>
-                            <div className="card-body">
-                                {automovelFornecido ? (
-                                    automovelFornecido.error ? (
-                                        <div className="alert alert-danger p-2">{automovelFornecido.error}</div>
+                    <div className="accordion" id="accordionDetalhesAutoFor">
+                        <div className="accordion-item">
+                            <h2 className="accordion-header">
+                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#AutoForInfo">
+                                    <i className="bi bi-car-front-fill text-primary me-2"></i>
+                                    Detalhes do Automóvel Fornecido
+                                </button>
+                            </h2>
+                            <div id="AutoForInfo" className="accordion-collapse collapse" data-bs-parent="#accordionDetalhesAutoFor">
+                                <div className="accordion-body">
+                                    {automovelFornecido ? (
+                                        automovelFornecido.error ? (
+                                            <div className="alert alert-danger p-2">{automovelFornecido.error}</div>
+                                        ) : (
+                                            <ul className="list-group list-group-flush">
+                                                <li className="list-group-item d-flex justify-content-between">
+                                                    <p className="mb-2"><strong>Marca:</strong> {automovelFornecido.marca?.nome || 'N/A'}</p>
+                                                </li>
+                                                <li className="list-group-item d-flex justify-content-between">
+                                                    <p className="mb-2"><strong>Modelo:</strong> {automovelFornecido?.modelo?.nome || 'N/A'}</p>
+                                                </li>
+                                                <li className="list-group-item d-flex justify-content-between">
+                                                    <p className="mb-2"><strong>Ano/Modelo:</strong> {`${automovelFornecido.ano_fabricacao || 'N/A'}/${automovelFornecido.ano_modelo || 'N/A'}`}</p>
+                                                </li>
+                                                <li className="list-group-item d-flex justify-content-between">
+                                                    <p className="mb-2"><strong>Placa:</strong> {automovelFornecido.placa || 'N/A'}</p>
+                                                </li>
+                                                <li className="list-group-item d-flex justify-content-between">
+                                                    <p className="mb-2"><strong>Cor:</strong> {automovelFornecido?.cor || 'N/A'}</p>
+                                                </li>
+                                                <li className="list-group-item d-flex justify-content-between">
+                                                    <p className="mb-0"><strong>Renavam:</strong> {automovelFornecido.renavam || 'N/A'}</p>
+                                                </li>
+                                            </ul>
+                                        )
                                     ) : (
-                                        <>
-                                            {/* Buscamos marca e modelo direto do objeto, pois não temos o include aqui */}
-                                            <p className="mb-2"><strong>Marca:</strong> {automovelFornecido.marca?.nome || 'N/A'}</p>
-                                            <p className="mb-2"><strong>Modelo:</strong> {automovelFornecido?.modelo?.nome || 'N/A'}</p>
-                                            <p className="mb-2"><strong>Ano/Modelo:</strong> {`${automovelFornecido.ano_fabricacao || 'N/A'}/${automovelFornecido.ano_modelo || 'N/A'}`}</p>
-                                            <p className="mb-2"><strong>Placa:</strong> {automovelFornecido.placa || 'N/A'}</p>
-                                            <p className="mb-2"><strong>Cor:</strong> {automovelFornecido?.cor || 'N/A'}</p>
-                                            <p className="mb-0"><strong>Renavam:</strong> {automovelFornecido.renavam || 'N/A'}</p>
-                                        </>
-                                    )
-                                ) : (
-                                    <p className="text-muted">Nenhum automóvel foi fornecido nesta troca.</p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-
-
-                    {/* Card de Detalhes do Automóvel Recebido*/}
-                    <div className="col-lg-6 col-md-12">
-                        <div className="card shadow-sm h-100 border-start border-secondary border-4">
-                            <div className="card-header bg-light d-flex align-items-center">
-                                <i className="bi bi-car-front-fill text-primary me-2"></i>
-                                <h5 className="mb-0 fw-bold">Detalhes do Automóvel Recebido</h5>
-                            </div>
-                            <div className="card-body">
-                                <p className="mb-2"><strong>Marca:</strong> {automovel?.marca?.nome || 'N/A'}</p>
-                                <p className="mb-2"><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</p>
-                                <p className="mb-2"><strong>Ano/Modelo:</strong> {`${automovel?.ano_fabricacao || 'N/A'}/${automovel?.ano_modelo || 'N/A'}`}</p>
-                                <p className="mb-2"><strong>Placa:</strong> {automovel?.placa || 'N/A'}</p>
-                                <p className="mb-2"><strong>Cor:</strong> {automovel?.cor || 'N/A'}</p>
-                                <p className="mb-0"><strong>Renavam:</strong> {automovel?.renavam || 'N/A'}</p>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    {/* Card de Informações do Fornecedor */}
-                    {cliente && (
-                        <div className="col-lg-6 col-md-12">
-                            <div className="card shadow-sm h-100 border-start border-secondary border-4">
-                                <div className="card-header bg-light d-flex align-items-center">
-                                    <i className="bi bi-person-fill text-primary me-2"></i>
-                                    <h5 className="mb-0 fw-bold">Informações do Fornecedor (Cliente)</h5>
-                                </div>
-                                <div className="card-body">
-                                    <p className="mb-2"><strong>Nome Completo:</strong> {cliente.nome || 'N/A'}</p>
-                                    {cliente?.fisica?.cpf && <p className="mb-2"><strong>CPF:</strong> {cliente?.fisica?.cpf}</p>}
-                                    {cliente?.juridica?.cnpj && <p className="mb-2"><strong>CNPJ:</strong> {cliente?.juridica.cnpj}</p>}
-                                    {cliente?.juridica?.razao_social && <p className="mb-2"><strong>Razão Social:</strong> {cliente?.juridica.razao_social}</p>}
-                                    <p className="mb-2"><strong>Telefone:</strong> {cliente.telefone || 'N/A'}</p>
-                                    <p className="mb-2"><strong>Email:</strong> {cliente.email || 'N/A'}</p>
-                                    <p className="mb-0"><strong>Endereço:</strong> {
-                                        enderecoInfo
-                                            ? `${enderecoInfo.logradouro}, ${enderecoInfo.bairro}, ${enderecoInfo.numero} - ${cidadeInfo?.nome || ''} (${estadoInfo?.uf || ''})`
-                                            : 'N/A'
-                                    }</p>
+                                        <p className="text-muted">Nenhum automóvel foi fornecido nesta troca.</p>
+                                    )}
 
                                 </div>
                             </div>
                         </div>
-                    )}
+                    </div>
+
+                    <div className="accordion" id="accordionDetalhesAutoRec">
+                        <div className="accordion-item">
+                            <h2 className="accordion-header">
+                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#AutoRecInfo">
+                                    <i className="bi bi-car-front-fill text-primary me-2"></i>
+                                    Detalhes do Automóvel Recebido
+                                </button>
+                            </h2>
+                            <div id="AutoRecInfo" className="accordion-collapse collapse" data-bs-parent="#accordionDetalhesAutoRec">
+                                <div className="accordion-body">
+                                    <ul className="list-group list-group-flush">
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Marca:</strong> {automovel?.marca?.nome || 'N/A'}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Ano/Modelo:</strong> {`${automovel?.ano_fabricacao || 'N/A'}/${automovel?.ano_modelo || 'N/A'}`}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Placa:</strong> {automovel?.placa || 'N/A'}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Cor:</strong> {automovel?.cor || 'N/A'}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-0"><strong>Renavam:</strong> {automovel?.renavam || 'N/A'}</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="accordion" id="accordionDetalhes">
+                        <div className="accordion-item">
+                            <h2 className="accordion-header">
+                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#clienteInfo">
+                                    <i className="bi bi-person-fill me-2 text-primary"></i>
+                                    Informações do Fornecedor
+                                </button>
+                            </h2>
+                            <div id="clienteInfo" className="accordion-collapse collapse" data-bs-parent="#accordionDetalhes">
+                                <div className="accordion-body">
+                                    {cliente && (
+                                        <div className="col-12">
+                                            <ul className="list-group list-group-flush">
+                                                <li className="list-group-item d-flex justify-content-between"><p className="mb-2"><strong>Nome Completo:</strong> {cliente.nome || 'N/A'}</p></li>
+                                                {cliente?.fisica?.cpf &&
+                                                    <li className="list-group-item d-flex justify-content-between">
+                                                        {cliente?.fisica?.cpf && <p className="mb-2"><strong>CPF:</strong> {cliente?.fisica?.cpf}</p>}
+                                                    </li>}
+                                                {cliente?.juridica?.cnpj &&
+                                                    < li className="list-group-item d-flex justify-content-between">
+                                                        {cliente?.juridica?.cnpj && <p className="mb-2"><strong>CNPJ:</strong> {cliente?.juridica.cnpj}</p>}
+                                                    </li>}
+                                                {cliente?.juridica?.razao_social &&
+                                                    <li className="list-group-item d-flex justify-content-between">
+                                                        {cliente?.juridica?.razao_social && <p className="mb-2"><strong>Razão Social:</strong> {cliente?.juridica.razao_social}</p>}
+                                                    </li>}
+                                                <li className="list-group-item d-flex justify-content-between">
+                                                    <p className="mb-2"><strong>Telefone:</strong> {cliente.telefone || 'N/A'}</p>
+                                                </li>
+                                                <li className="list-group-item d-flex justify-content-between">
+                                                    <p className="mb-2"><strong>Email:</strong> {cliente.email || 'N/A'}</p>
+                                                </li>
+                                                <li className="list-group-item d-flex justify-content-between">
+                                                    <p className="mb-0"><strong>Endereço:</strong> {
+                                                        enderecoInfo
+                                                            ? `${enderecoInfo.logradouro}, ${enderecoInfo.bairro}, ${enderecoInfo.numero} - ${cidadeInfo?.nome || ''} (${estadoInfo?.uf || ''})`
+                                                            : 'N/A'
+                                                    }</p>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

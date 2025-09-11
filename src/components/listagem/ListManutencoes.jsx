@@ -42,9 +42,10 @@ const Manutencao = () => {
             await ManutencaoDataService.remove(itemParaDeletar.id);
 
             // Atualiza a UI removendo o item da lista para feedback instantâneo
-            setManutencaoAtiva(prev => prev.filter(t => t.id !== itemParaDeletar.id));
-            setManutencaoInativa(prev => prev.filter(t => t.id !== itemParaDeletar.id));
-            setManutencaoRecente(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+            // setManutencaoAtiva(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+            // setManutencaoInativa(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+            // setManutencaoRecente(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+            setTodasManutencoes(prev => prev.filter(t => t.id !== itemParaDeletar.id));
 
             handleFecharModalConfirmacao();
         } catch (error) {

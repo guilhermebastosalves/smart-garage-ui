@@ -66,7 +66,7 @@ const Header = () => {
                                     )}
                                     {user.role === 'gerente' && (
                                         <li>
-                                            <Link to="/listagem/vendedores" className={`nav-link ${location.pathname.includes('/vendedores') ? 'active' : 'link-body-emphasis'}`}>
+                                            <Link to="/listagem/vendedores" className={`nav-link ${location.pathname === ('/listagem/vendedores') ? 'active' : 'link-body-emphasis'}`}><svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#people-circle"></use></svg>
                                                 <i className="bi bi-people-fill me-2"></i>
                                                 Vendedores
                                             </Link>

@@ -39,7 +39,7 @@ const Vendas = () => {
             await VendaDataService.remove(itemParaDeletar.id);
 
             // Atualiza a UI removendo o item da lista para feedback instantâneo
-            setVenda(prev => prev.filter(v => v.id !== itemParaDeletar.id));
+            setTodasVendas(prev => prev.filter(v => v.id !== itemParaDeletar.id));
 
             handleFecharModalConfirmacao();
         } catch (error) {

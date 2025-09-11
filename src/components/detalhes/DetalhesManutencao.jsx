@@ -95,43 +95,71 @@ const DetalhesManutencao = () => {
                 </div>
 
                 <div className="row g-4">
-                    {/* Card de Informações da Venda */}
-                    <div className="col-lg-6 col-md-12">
-                        <div className="card shadow-sm h-100 border-start border-secondary border-4">
-                            <div className="card-header bg-light d-flex align-items-center">
-                                <i className="bi bi-info-circle-fill text-primary me-2"></i>
-                                <h5 className="mb-0 fw-bold">Detalhes da Operação</h5>
-                            </div>
-                            <div className="card-body">
-                                <p className="mb-2"><strong>ID da Manutenção:</strong> {detalhes.id}</p>
-                                <p className="mb-2"><strong>Data de Envio:</strong> {detalhes?.data_envio ? new Date(detalhes?.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</p>
-                                <p className="mb-2"><strong>Data de Retorno:</strong> {detalhes?.data_retorno ? new Date(detalhes?.data_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</p>
-                                <p className="mb-2"><strong>Valor:</strong> <span className="text fs-6">{formatter.format(detalhes.valor)}</span></p>
-                                <p className="mb-2"><strong>Descrição:</strong> <span className="text fs-6">{detalhes.descricao}</span></p>
-                                <p className="mb-0">
-                                </p>
+
+
+                    <div className="accordion" id="accordionManu">
+                        <div className="accordion-item">
+                            <h2 className="accordion-header">
+                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#manuInfo">
+                                    <i className="bi bi-info-circle-fill text-primary me-2"></i>
+                                    Informações da Manutenção
+                                </button>
+                            </h2>
+                            <div id="manuInfo" className="accordion-collapse collapse" data-bs-parent="#accordionManu">
+                                <div className="accordion-body">
+                                    <ul className="list-group list-group-flush">
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Data de Envio:</strong> {detalhes?.data_envio ? new Date(detalhes?.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Data de Retorno:</strong> {detalhes?.data_retorno ? new Date(detalhes?.data_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Valor:</strong> <span className="text fs-6">{formatter.format(detalhes.valor)}</span></p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Descrição:</strong> <span className="text fs-6 descricao-gasto">{detalhes.descricao}</span></p>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Card de Detalhes do Automóvel */}
-                    <div className="col-lg-6 col-md-12">
-                        <div className="card shadow-sm h-100 border-start border-secondary border-4">
-                            <div className="card-header bg-light d-flex align-items-center">
-                                <i className="bi bi-car-front-fill text-primary me-2"></i>
-                                <h5 className="mb-0 fw-bold">Detalhes do Automóvel</h5>
-                            </div>
-                            <div className="card-body">
-                                <p className="mb-2"><strong>Marca:</strong> {automovel?.marca?.nome || 'N/A'}</p>
-                                <p className="mb-2"><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</p>
-                                <p className="mb-2"><strong>Ano/Modelo:</strong> {`${automovel?.ano_fabricacao || 'N/A'}/${automovel?.ano_modelo || 'N/A'}`}</p>
-                                <p className="mb-2"><strong>Placa:</strong> {automovel?.placa || 'N/A'}</p>
-                                <p className="mb-2"><strong>Cor:</strong> {automovel?.cor || 'N/A'}</p>
-                                <p className="mb-0"><strong>Renavam:</strong> {automovel?.renavam || 'N/A'}</p>
+                    <div className="accordion" id="accordionDetalhesAuto">
+                        <div className="accordion-item">
+                            <h2 className="accordion-header">
+                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#AutoInfo">
+                                    <i className="bi bi-car-front-fill text-primary me-2"></i>
+                                    Detalhes do Automóvel
+                                </button>
+                            </h2>
+                            <div id="AutoInfo" className="accordion-collapse collapse" data-bs-parent="#accordionDetalhesAuto">
+                                <div className="accordion-body">
+                                    <ul className="list-group list-group-flush">
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-1"><strong>Marca:</strong> {automovel?.marca?.nome || 'N/A'}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-1"><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-1"><strong>Ano/Modelo:</strong> {`${automovel?.ano_fabricacao || 'N/A'}/${automovel?.ano_modelo || 'N/A'}`}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-1"><strong>Placa:</strong> {automovel?.placa || 'N/A'}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-1"><strong>Cor:</strong> {automovel?.cor || 'N/A'}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-0"><strong>Renavam:</strong> {automovel?.renavam || 'N/A'}</p>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </>

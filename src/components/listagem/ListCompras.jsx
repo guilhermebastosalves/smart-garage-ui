@@ -46,7 +46,7 @@ const Compras = () => {
             await CompraDataService.remove(itemParaDeletar.id);
 
             // Atualiza a UI removendo o item da lista para feedback instantâneo
-            setCompra(prev => prev.filter(c => c.id !== itemParaDeletar.id));
+            setTodasCompras(prev => prev.filter(c => c.id !== itemParaDeletar.id));
 
             handleFecharModalConfirmacao();
         } catch (error) {

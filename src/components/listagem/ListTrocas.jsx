@@ -47,7 +47,7 @@ const Trocas = () => {
             await TrocaDataService.remove(itemParaDeletar.id);
 
             // Atualiza a UI removendo o item da lista para feedback instantâneo
-            setTroca(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+            setTodasTrocas(prev => prev.filter(t => t.id !== itemParaDeletar.id));
 
             handleFecharModalConfirmacao();
         } catch (error) {

@@ -129,8 +129,23 @@ const Relatorios = () => {
 
         const quantidadeRegistros = dadosRelatorio.length;
 
+        if (tipo === 'Venda') {
+            // A lógica de Venda agora foca em Lucro
+            const lucroTotal = dadosRelatorio.reduce((acc, item) => acc + parseFloat(item.lucro || 0), 0);
+            const valorTotalVendido = dadosRelatorio.reduce((acc, item) => acc + parseFloat(item.valor || 0), 0);
+            // Margem de Lucro Média (%)
+            const margemMedia = valorTotalVendido > 0 ? (lucroTotal / valorTotalVendido) * 100 : 0;
+
+            setSumario({
+                quantidadeRegistros,
+                valorTotal: valorTotalVendido,
+                lucroTotal,
+                margemMedia
+            });
+
+        }
         //  LÓGICA CONDICIONAL: Se for um relatório de Troca
-        if (tipo === 'Troca') {
+        else if (tipo === 'Troca') {
             const totalRecebido = dadosRelatorio
                 .filter(item => parseFloat(item.valor) > 0)
                 .reduce((acc, item) => acc + parseFloat(item.valor), 0);
@@ -201,8 +216,12 @@ const Relatorios = () => {
                                 <th>Data</th>
                                 <th>Cliente</th>
                                 <th>Automóvel</th>
+                                <th>Origem</th>
                                 <th>Valor</th>
                                 <th>Forma de Pagamento</th>
+                                <th>Valor Aquisição</th>
+                                <th>Comissão</th>
+                                <th>Lucro</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -211,8 +230,14 @@ const Relatorios = () => {
                                     <td>{formatDate(item.data)}</td>
                                     <td>{item.cliente?.nome || 'N/A'}</td>
                                     <td>{item.automovel?.placa || 'N/A'}</td>
+                                    <td>{item.origem || 'N/A'}</td>
                                     <td className='text-end'>{formatCurrency(item.valor)}</td>
                                     <td>{item.forma_pagamento}</td>
+                                    <td className='text-end'>{formatCurrency(item.custo)}</td>
+                                    <td className='text-end'>{formatCurrency(item.comissao)}</td>
+                                    <td className={`text-end  ${item.lucro > 0 ? 'text-success' : 'text-danger'}`}>
+                                        {formatCurrency(item.lucro)}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -542,39 +567,74 @@ const Relatorios = () => {
                                                 </Card>
                                             </Col>
                                         </>
-                                    ) : (
-                                        <>
-                                            {/* --- UI Padrão para Outros Relatórios --- */}
-                                            <Col md={4}>
-                                                <Card className="text-center h-100">
+                                    )
+
+                                        : tipoRelatorioGerado === 'Venda' ? (
+                                            <>
+                                                <Col md={3}><Card className="text-center h-100">
                                                     <Card.Body>
                                                         <Card.Title className="text-muted">Total de Registros</Card.Title>
                                                         <p className="fs-2 fw-bold">{sumario?.quantidadeRegistros}</p>
                                                     </Card.Body>
-                                                </Card>
-                                            </Col>
-                                            <Col md={4}>
-                                                <Card className="text-center h-100">
+                                                </Card></Col>
+                                                <Col md={3}><Card className="text-center h-100">
                                                     <Card.Body>
-                                                        <Card.Title className="text-muted">Valor Total Movimentado</Card.Title>
+                                                        <Card.Title className="text-muted">Faturamento Total</Card.Title>
                                                         <p className="fs-2 fw-bold">
                                                             {(sumario?.valorTotal ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                                         </p>
                                                     </Card.Body>
-                                                </Card>
-                                            </Col>
-                                            <Col md={4}>
-                                                <Card className="text-center h-100">
+                                                </Card></Col>
+                                                <Col md={3}><Card className="text-center h-100">
                                                     <Card.Body>
-                                                        <Card.Title className="text-muted">Ticket Médio</Card.Title>
-                                                        <p className="fs-2 fw-bold">
-                                                            {(sumario?.ticketmedio ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                        <Card.Title className="text-muted">Lucro Bruto Total</Card.Title>
+                                                        <p className="fs-2 fw-bold text-success">
+                                                            {(sumario?.lucroTotal ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                                         </p>
                                                     </Card.Body>
-                                                </Card>
-                                            </Col>
-                                        </>
-                                    )}
+                                                </Card></Col>
+                                                <Col md={3}><Card className="text-center h-100">
+                                                    <Card.Body>
+                                                        <Card.Title className="text-muted">Margem Média</Card.Title>
+                                                        <p className="fs-2 fw-bold">
+                                                            {`${(sumario?.margemMedia ?? 0).toFixed(2)}%`}
+                                                        </p>
+                                                    </Card.Body>
+                                                </Card></Col>
+                                            </>
+                                        ) : (
+                                            <>
+                                                {/* --- UI Padrão para Outros Relatórios --- */}
+                                                <Col md={4}>
+                                                    <Card className="text-center h-100">
+                                                        <Card.Body>
+                                                            <Card.Title className="text-muted">Total de Registros</Card.Title>
+                                                            <p className="fs-2 fw-bold">{sumario?.quantidadeRegistros}</p>
+                                                        </Card.Body>
+                                                    </Card>
+                                                </Col>
+                                                <Col md={4}>
+                                                    <Card className="text-center h-100">
+                                                        <Card.Body>
+                                                            <Card.Title className="text-muted">Valor Total Movimentado</Card.Title>
+                                                            <p className="fs-2 fw-bold">
+                                                                {(sumario?.valorTotal ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                            </p>
+                                                        </Card.Body>
+                                                    </Card>
+                                                </Col>
+                                                <Col md={4}>
+                                                    <Card className="text-center h-100">
+                                                        <Card.Body>
+                                                            <Card.Title className="text-muted">Ticket Médio</Card.Title>
+                                                            <p className="fs-2 fw-bold">
+                                                                {(sumario?.ticketmedio ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                            </p>
+                                                        </Card.Body>
+                                                    </Card>
+                                                </Col>
+                                            </>
+                                        )}
                                 </Row>
 
                                 {/* Seção da Tabela de Detalhes */}

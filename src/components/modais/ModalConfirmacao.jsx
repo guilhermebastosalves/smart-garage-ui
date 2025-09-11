@@ -1,6 +1,6 @@
 import { Modal, Button } from 'react-bootstrap';
 
-const ModalConfirmacao = ({ show, onHide, onConfirm, titulo, corpo, loading }) => {
+const ModalConfirmacao = ({ show, onHide, onConfirm, titulo, corpo, loading, botao, status }) => {
     return (
         <Modal show={show} onHide={onHide} centered>
             <Modal.Header closeButton>
@@ -13,8 +13,9 @@ const ModalConfirmacao = ({ show, onHide, onConfirm, titulo, corpo, loading }) =
                 <Button variant="secondary" onClick={onHide} disabled={loading}>
                     Cancelar
                 </Button>
-                <Button variant="outline-danger" onClick={onConfirm} disabled={loading}>
-                    {loading ? 'Excluindo...' : 'Confirmar Exclusão'}
+                <Button variant={`${status ? (status === true ? "outline-success" : "outline-danger") : "outline-danger"}`} onClick={onConfirm} disabled={loading}>
+                    {/* {loading ? 'Excluindo...' : 'Confirmar Exclusão'} */}
+                    {botao ? botao : 'Confirmar Exclusão'}
                 </Button>
             </Modal.Footer>
         </Modal>

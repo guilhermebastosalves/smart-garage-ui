@@ -42,8 +42,9 @@ const Gastos = () => {
             await GastoDataService.remove(itemParaDeletar.id);
 
             // Atualiza a UI removendo o item da lista para feedback instantâneo
-            setGasto(prev => prev.filter(t => t.id !== itemParaDeletar.id));
-            setGastoRecente(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+            // setGasto(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+            // setGastoRecente(prev => prev.filter(t => t.id !== itemParaDeletar.id));
+            setTodosGastos(prev => prev.filter(t => t.id !== itemParaDeletar.id));
 
             handleFecharModalConfirmacao();
         } catch (error) {

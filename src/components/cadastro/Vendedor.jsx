@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
-import VendedorDataService from '../services/vendedorDataService';
+import Header from '../Header';
+import VendedorDataService from '../../services/vendedorDataService';
 import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 
 const RegistroVendedor = () => {

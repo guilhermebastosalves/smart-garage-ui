@@ -43,54 +43,7 @@ const Login = () => {
     };
 
     return (
-        // <div className="container-fluid d-flex justify-content-center align-items-center vh-100 bg-light">
-        //     <div className="card shadow-lg" style={{ width: '100%', maxWidth: '400px' }}>
-        //         <div className="card-body p-5">
-        //             <h2 className="card-title text-center fw-bold mb-4">Smart Garage</h2>
 
-        //             {erro && (
-        //                 <div className="alert alert-danger">{erro}</div>
-        //             )}
-
-        //             <form onSubmit={handleLogin}>
-        //                 <div className="mb-3">
-        //                     <label htmlFor="usuario" className="form-label">Usuário</label>
-        //                     <input
-        //                         type="text"
-        //                         className="form-control"
-        //                         id="usuario"
-        //                         value={usuario}
-        //                         onChange={(e) => setUsuario(e.target.value)}
-        //                         required
-        //                     />
-        //                 </div>
-        //                 <div className="mb-4">
-        //                     <label htmlFor="senha" className="form-label">Senha</label>
-        //                     <input
-        //                         type="password"
-        //                         className="form-control"
-        //                         id="senha"
-        //                         value={senha}
-        //                         onChange={(e) => setSenha(e.target.value)}
-        //                         required
-        //                     />
-        //                 </div>
-        //                 <div className="d-grid">
-        //                     <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
-        //                         {loading ? (
-        //                             <>
-        //                                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        //                                 Entrando...
-        //                             </>
-        //                         ) : (
-        //                             'Entrar'
-        //                         )}
-        //                     </button>
-        //                 </div>
-        //             </form>
-        //         </div>
-        //     </div>
-        // </div>
 
         // MELHORIA: Wrapper com a classe do gradiente
         <div className="login-page-wrapper">

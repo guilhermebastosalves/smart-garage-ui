@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
-import VendedorDataService from '../services/vendedorDataService';
+import Header from '../Header';
+import VendedorDataService from '../../services/vendedorDataService';
 import { Table, Card, Button, Badge, Spinner, Alert } from 'react-bootstrap';
 import ModalConfirmacao from '../modais/ModalConfirmacao';
 
@@ -36,6 +36,7 @@ const ListVendedores = () => {
             novoStatus: novoStatus,
             titulo: novoStatus ? 'Confirmar Reativação' : 'Confirmar Inativação',
             corpo: `Você tem certeza que deseja ${novoStatus ? 'reativar' : 'inativar'} o vendedor "${vendedor.funcionario.nome}"?`,
+            botao: `Confirmar ${novoStatus ? "reativação" : "inativação"}`,
             onConfirm: () => performStatusChange(vendedor.id, novoStatus),
         });
         setShowModal(true);
@@ -95,9 +96,9 @@ const ListVendedores = () => {
                                                 </Badge>
                                             </td>
                                             <td className="text-center">
-                                                <Button variant="outline-secondary" size="sm" className="me-2" title="Editar">
+                                                {/* <Button variant="outline-secondary" size="sm" className="me-2" title="Editar">
                                                     <i className="bi bi-pencil-fill"></i>
-                                                </Button>
+                                                </Button> */}
                                                 <Button variant={v.funcionario.ativo ? 'outline-danger' : 'outline-success'} size="sm" onClick={() => handleStatusChange(v)} title={v.funcionario.ativo ? 'Inativar' : 'Reativar'}>
                                                     <i className={v.funcionario.ativo ? 'bi bi-lock-fill' : 'bi bi-unlock-fill'}></i>
                                                 </Button>
@@ -117,6 +118,8 @@ const ListVendedores = () => {
                 onConfirm={modalConfig.onConfirm}
                 titulo={modalConfig.titulo}
                 corpo={modalConfig.corpo}
+                botao={modalConfig.botao}
+                status={modalConfig.novoStatus}
             />
         </>
     );
