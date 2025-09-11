@@ -259,7 +259,8 @@ const Cliente = () => {
         if (cliente.telefone && (isNaN(cliente.telefone))) tamanhoErros.push("telefone");
 
         if (fisica.cpf && (fisica.cpf != '' && (fisica.cpf.length !== 11) || isNaN(fisica.cpf))) tamanhoErros.push("cpf");
-        if (fisica.rg && (fisica.rg != '' && (fisica.rg.length !== 9) || isNaN(fisica.rg))) tamanhoErros.push("rg");
+        // if (fisica.rg && (fisica.rg != '' && (fisica.rg.length !== 9) || isNaN(fisica.rg))) tamanhoErros.push("rg");
+        if (fisica.rg && (fisica.rg != '' && (fisica.rg.length < 9 || fisica.rg.length > 13) || isNaN(fisica.rg))) tamanhoErros.push("rg");
 
         if (endereco.cep && (endereco.cep != '' && (endereco.cep.length !== 8) || isNaN(endereco.cep))) tamanhoErros.push("cep");
 
