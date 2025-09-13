@@ -106,7 +106,7 @@ function ModalCompra({ show, onHide, compra }) {
             <Modal.Body>
                 <div className={cadastro ? "d-none" : ""}>
                     <p className="text-muted mb-3">
-                        Para começar, informe o CPF ou CNPJ do fornecedor do veículo.
+                        Para começar, informe o CPF ou CNPJ do fornecedor do automóvel.
                     </p>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group>

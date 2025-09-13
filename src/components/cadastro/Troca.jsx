@@ -640,7 +640,7 @@ const Troca = () => {
                     <div className="form-card card mb-4">
                         <div className="card-header d-flex align-items-center">
                             <FaCar className="me-2" /> {/* Ícone para a seção */}
-                            Informações Principais do Veículo
+                            Informações Principais do Automóvel
                         </div>
                         <div className="card-body">
                             <div className="row g-3">
@@ -721,7 +721,7 @@ const Troca = () => {
                                     {vazio.includes("combustivel") && <div className="invalid-feedback ms-1">Informe o combustível.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label htmlFor="origem" className="form-label">Origem do Veículo</label>
+                                    <label htmlFor="origem" className="form-label">Origem do Automóvel</label>
                                     <select className={`form-select ${hasError("origem") && "is-invalid"}`} id="origem" name="origem" value={automovel.origem} onChange={handleInputChangeAutomovel}>
                                         <option value="">Selecione...</option>
                                         <option value="Compra">Compra</option>
@@ -737,7 +737,7 @@ const Troca = () => {
                                     {tipo.includes("valor") && <div className="invalid-feedback ms-1">Valor inválido.</div>}
                                 </div>
                                 <div className="col-md-8">
-                                    <label htmlFor="foto" className="form-label">Foto do Veículo</label>
+                                    <label htmlFor="foto" className="form-label">Foto do Automóvel</label>
                                     <input
                                         type="file"
                                         className="form-control"

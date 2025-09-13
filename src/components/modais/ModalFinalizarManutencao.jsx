@@ -45,7 +45,7 @@ const ModalFinalizarManutencao = ({ show, onHide, manutencao, onSuccess }) => {
             <Modal.Body>
                 {error && <div className="alert alert-danger">{error}</div>}
 
-                <p>Selecione a data de retorno do veículo. Esta ação definirá a manutenção como <strong>finalizada</strong>.</p>
+                <p>Selecione a data de retorno do automóvel. Esta ação definirá a manutenção como <strong>finalizada</strong>.</p>
 
                 <Form.Group>
                     <Form.Label className="fw-bold">Data de Retorno</Form.Label>

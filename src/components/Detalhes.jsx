@@ -73,8 +73,8 @@ const Detalhes = () => {
             <>
                 <Header />
                 <div className="container py-5 text-center">
-                    <h2>Veículo não encontrado</h2>
-                    <p>O veículo que você está procurando não existe ou foi removido.</p>
+                    <h2>Automóvel não encontrado</h2>
+                    <p>O Automóvel que você está procurando não existe ou foi removido.</p>
                     <Link to="/estoque" className="btn btn-primary">Voltar ao Estoque</Link>
                 </div>
             </>
@@ -95,7 +95,7 @@ const Detalhes = () => {
                             automovel.imagem ? (
                                 <img
                                     src={automovel.imagem !== null ? `http://localhost:3000/${automovel.imagem}` : "/fotos/no-photos.png"}
-                                    alt="Imagem do Veículo"
+                                    alt="Imagem do Automóvel"
                                     className="img-fluid rounded shadow-lg w-100"
                                     style={{ objectFit: 'cover', maxHeight: '500px' }}
                                 />) : (
@@ -118,7 +118,7 @@ const Detalhes = () => {
                     <div className="col-lg-5">
                         <div className="p-3">
                             <h1 className="display-5 fw-bold">{`${marcaNome?.nome} ${modeloNome?.nome}`}</h1> {/* Exemplo, idealmente viria do DB */}
-                            <p className="lead text-muted">ID do Veículo: {automovel && automovel.id}</p>
+                            <p className="lead text-muted">ID do Automóvel: {automovel && automovel.id}</p>
 
                             <h2 className="text-primary my-4">{automovel && automovel.valor && `${parseFloat(automovel.valor).toLocaleString('pt-BR', {
                                 style: 'currency',

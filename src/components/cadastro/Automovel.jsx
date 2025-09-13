@@ -291,7 +291,7 @@ const Automovel = () => {
                 {/* Cabeçalho da Página */}
                 <div className="mb-4">
                     <h1 className="fw-bold">Cadastro de Automóvel</h1>
-                    <p className="text-muted">Preencha os dados abaixo para registrar um novo veículo no sistema.</p>
+                    <p className="text-muted">Preencha os dados abaixo para registrar um novo automóvel no sistema.</p>
                 </div>
 
                 {/* Alertas */}
@@ -344,7 +344,7 @@ const Automovel = () => {
                                 {tipo.includes("ano_modelo") && <div className="invalid-feedback">Ano inválido.</div>}
                             </div>
                             <div className="col-md-4">
-                                <label htmlFor="foto" className="form-label">Foto do Veículo</label>
+                                <label htmlFor="foto" className="form-label">Foto do Automóvel</label>
                                 <input
                                     type="file"
                                     className="form-control"
@@ -415,7 +415,7 @@ const Automovel = () => {
                                 {vazio.includes("combustivel") && <div className="invalid-feedback">Informe o combustível.</div>}
                             </div>
                             <div className="col-md-4">
-                                <label htmlFor="origem" className="form-label">Origem do Veículo</label>
+                                <label htmlFor="origem" className="form-label">Origem do Automóvel</label>
                                 <select className={`form-select ${hasError("origem") && "is-invalid"}`} id="origem" name="origem" value={automovel.origem} onChange={handleInputChangeAutomovel}>
                                     <option value="">Selecione...</option>
                                     <option value="Compra">Compra</option>
