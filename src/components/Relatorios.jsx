@@ -579,7 +579,7 @@ const Relatorios = () => {
                                                 </Card></Col>
                                                 <Col md={3}><Card className="text-center h-100">
                                                     <Card.Body>
-                                                        <Card.Title className="text-muted">Faturamento Total</Card.Title>
+                                                        <Card.Title className="text-muted">Valor Total Movimentado</Card.Title>
                                                         <p className="fs-2 fw-bold">
                                                             {(sumario?.valorTotal ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                                         </p>

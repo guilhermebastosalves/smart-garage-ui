@@ -8,11 +8,14 @@ import { useNavigate } from 'react-router-dom';
 import ModalConsignacao from '../modais/ModalConsignacao';
 import ModalEncerrarConsignacao from '../modais/ModalEncerrarConsignacao';
 import ModalConfirmacao from '../modais/ModalConfirmacao';
+import { useAuth } from '../../context/AuthContext';
 
 
 const Consignacoes = () => {
 
     const navigate = useNavigate();
+
+    const { user } = useAuth();
 
     const consignacaoLocalStorage = { negocio: "Consignacao" };
     const [showModal, setShowModal] = useState(false);
@@ -183,9 +186,6 @@ const Consignacoes = () => {
     const npage = Math.ceil(listaAtual.length / recordsPerPage);
     const numbers = [...Array(npage + 1).keys()].slice(1);
 
-    console.log(npage)
-    console.log(listaAtual.length)
-
     // Funções de controle da paginação (agora funcionam para qualquer lista)
     const changeCPage = (n) => setCurrentPage(n);
     const prePage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1); };
@@ -214,7 +214,7 @@ const Consignacoes = () => {
                     </button>
                 </div>
 
-                <div className="card shadow-sm">
+                <div className="card shadow-sm mb-4">
                     <div className="card-header bg-light d-flex justify-content-between align-items-center">
                         <h5 className="mb-0">Consignações Ativas</h5>
                         {/* Filtro/Dropdown vai aqui */}
@@ -278,7 +278,8 @@ const Consignacoes = () => {
                                                     {d.ativo && ( // Mostra o botão de encerrar apenas se estiver ativa
                                                         <button className='btn btn-outline-success btn-sm me-2' onClick={() => handleAbrirModalEncerramento(d)} title="Encerrar"><i className="bi bi-check-circle-fill"></i></button>
                                                     )}
-                                                    <button className='btn btn-outline-danger btn-sm' onClick={() => handleAbrirModalConfirmacao(d)} title="Excluir"><i className="bi bi-trash-fill"></i></button>
+                                                    {user.role === "gerente" &&
+                                                        <button className='btn btn-outline-danger btn-sm' onClick={() => handleAbrirModalConfirmacao(d)} title="Excluir"><i className="bi bi-trash-fill"></i></button>}
                                                 </td>
                                             </tr>
                                         );

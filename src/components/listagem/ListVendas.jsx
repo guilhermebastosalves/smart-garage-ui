@@ -6,9 +6,12 @@ import MarcaDataService from '../../services/marcaDataService';
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalConfirmacao from '../modais/ModalConfirmacao';
+import { useAuth } from '../../context/AuthContext';
 
 
 const Vendas = () => {
+
+    const { user } = useAuth();
 
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
@@ -224,13 +227,14 @@ const Vendas = () => {
                                                         <i className="bi bi-pencil-fill"></i>
                                                     </button>
 
-                                                    <button
-                                                        className='btn btn-outline-danger btn-sm'
-                                                        onClick={() => handleAbrirModalConfirmacao(d)}
-                                                        title="Cancelar Venda"
-                                                    >
-                                                        <i className="bi bi-trash-fill"></i>
-                                                    </button>
+                                                    {user.role === "gerente" &&
+                                                        <button
+                                                            className='btn btn-outline-danger btn-sm'
+                                                            onClick={() => handleAbrirModalConfirmacao(d)}
+                                                            title="Cancelar Venda"
+                                                        >
+                                                            <i className="bi bi-trash-fill"></i>
+                                                        </button>}
                                                 </td>
                                             </tr>
 

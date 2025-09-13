@@ -7,11 +7,14 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalConfirmacao from '../modais/ModalConfirmacao';
 import ModalFinalizarManutencao from '../modais/ModalFinalizarManutencao';
+import { useAuth } from '../../context/AuthContext';
 
 
 const Manutencao = () => {
 
     const navigate = useNavigate();
+
+    const { user } = useAuth();
 
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
@@ -314,13 +317,14 @@ const Manutencao = () => {
                                                     )}
 
 
-                                                    <button
-                                                        className='btn btn-outline-danger btn-sm'
-                                                        onClick={() => handleAbrirModalConfirmacao(d)}
-                                                        title="Excluir Manutenção"
-                                                    >
-                                                        <i className="bi bi-trash-fill"></i>
-                                                    </button>
+                                                    {user.role === "gerente" &&
+                                                        <button
+                                                            className='btn btn-outline-danger btn-sm'
+                                                            onClick={() => handleAbrirModalConfirmacao(d)}
+                                                            title="Excluir Manutenção"
+                                                        >
+                                                            <i className="bi bi-trash-fill"></i>
+                                                        </button>}
                                                 </td>
                                             </tr>
                                         );

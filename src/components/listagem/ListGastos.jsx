@@ -6,11 +6,14 @@ import MarcaDataService from '../../services/marcaDataService';
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalConfirmacao from '../modais/ModalConfirmacao';
+import { useAuth } from '../../context/AuthContext';
 
 
 const Gastos = () => {
 
     const navigate = useNavigate();
+
+    const { user } = useAuth();
 
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
@@ -234,13 +237,14 @@ const Gastos = () => {
                                                         <i className="bi bi-pencil-fill"></i>
                                                     </button>
 
-                                                    <button
-                                                        className='btn btn-outline-danger btn-sm'
-                                                        onClick={() => handleAbrirModalConfirmacao(d)}
-                                                        title="Excluir Gasto"
-                                                    >
-                                                        <i className="bi bi-trash-fill"></i>
-                                                    </button>
+                                                    {user.role === "gerente" &&
+                                                        <button
+                                                            className='btn btn-outline-danger btn-sm'
+                                                            onClick={() => handleAbrirModalConfirmacao(d)}
+                                                            title="Excluir Gasto"
+                                                        >
+                                                            <i className="bi bi-trash-fill"></i>
+                                                        </button>}
                                                 </td>
                                             </tr>
 

@@ -137,7 +137,7 @@ const Troca = () => {
         // if (!troca.comissao) {
         let comissao = "";
         if (troca?.valor_aquisicao !== "") {
-            comissao = troca?.valor_aquisicao < 50000 ? 300 : troca?.valor_aquisicao >= 100000 ? 700 : 500;
+            comissao = troca?.valor_aquisicao < 50000 ? 300 : troca?.valor_aquisicao > 100000 ? 1500 : 500;
         }
         setTroca(prev => ({
             ...prev,
@@ -616,8 +616,8 @@ const Troca = () => {
 
                 {/* Cabeçalho da Página */}
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Cadastro de Automóvel</h1>
-                    <p className="text-muted">Preencha os dados abaixo para registrar um novo veículo no sistema.</p>
+                    <h1 className="fw-bold">Registro de Troca</h1>
+                    <p className="text-muted">Preencha os dados abaixo para registrar uma nova troca no sistema.</p>
                 </div>
 
                 {/* Alertas */}

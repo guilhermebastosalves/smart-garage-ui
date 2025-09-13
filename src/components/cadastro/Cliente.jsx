@@ -243,7 +243,7 @@ const Cliente = () => {
         if (!cliente.telefone) vazioErros.push("telefone");
 
         if (!fisica.cpf) vazioErros.push("cpf");
-        if (!fisica.rg) vazioErros.push("rg");
+        if (!fisica.rg) vazioErros.push("rg"); // TIRAR
 
         if (!endereco.cep) vazioErros.push("cep");
         if (!endereco.logradouro) vazioErros.push("logradouro");
@@ -297,7 +297,7 @@ const Cliente = () => {
 
 
         // Tamanho
-        if (cliente.telefone && (cliente.telefone.length !== 11 || isNaN(cliente.telefone))) tamanhoErros.push("telefone");
+        if (cliente.telefone && (isNaN(cliente.telefone))) tamanhoErros.push("telefone");
 
         if (juridica.cnpj && (juridica.cnpj != '' && (juridica.cnpj.length !== 14) || isNaN(juridica.cnpj))) tamanhoErros.push("cnpj");
 
@@ -722,7 +722,7 @@ const Cliente = () => {
                                     <label for="rg" class="form-label">RG</label>
                                     <input type="text" className={`form-control ${hasError("rg") && "is-invalid"}`} id="rg" name="rg" aria-describedby="rgHelp" value={fisica.rg} onChange={handleInputChangeFisica} />
                                     {vazio.includes("rg") && <div className="invalid-feedback">Informe o RG.</div>}
-                                    {tamanho.includes("rg") && <div className="invalid-feedback">RG inválido (deve ter 9 caracteres numéricos).</div>}
+                                    {tamanho.includes("rg") && <div className="invalid-feedback">RG inválido (deve ter de 9 a 13 caracteres numéricos).</div>}
                                 </div>
                                 {/* <div class="col-md-4 ">
                                     <label for="data" class="form-label">Data cadastro</label><br />

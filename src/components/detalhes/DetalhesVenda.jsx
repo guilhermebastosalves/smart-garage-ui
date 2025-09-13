@@ -214,7 +214,7 @@ const DetalhesVenda = () => {
                             <h2 className="accordion-header">
                                 <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#clienteInfo">
                                     <i className="bi bi-person-fill me-2 text-primary"></i>
-                                    Informações do Fornecedor
+                                    Informações do Comprador
                                 </button>
                             </h2>
                             <div id="clienteInfo" className="accordion-collapse collapse" data-bs-parent="#accordionDetalhes">

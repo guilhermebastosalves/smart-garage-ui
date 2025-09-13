@@ -152,7 +152,7 @@ const Detalhes = () => {
                                 <button onClick={() => setShowModal(true)} className="btn btn-outline-secondary btn-lg px-4 me-md-2">
                                     <i className="bi bi-tag-fill me-2"></i>Vender
                                 </button>
-                                <button onClick={() => navigate(-1)} className="btn btn-outline-secondary btn-lg px-4">
+                                <button onClick={() => navigate('/estoque')} className="btn btn-outline-secondary btn-lg px-4">
                                     <i class="bi bi-arrow-return-left me-2"></i>Voltar
                                 </button>
                             </div>

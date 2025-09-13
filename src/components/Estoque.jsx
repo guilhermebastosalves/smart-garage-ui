@@ -114,8 +114,8 @@ const Estoque = () => {
                     <div className="col-md-4 mt-5"></div>
                     <div className="col-12 text-center p-5 mt-5">
                         <i className="bi bi-search" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
-                        <h4 className="mt-3">Nenhum veículo encontrado</h4>
-                        <p className="text-muted">Tente ajustar os termos da sua busca ou adicione um novo veículo ao estoque.</p>
+                        <h4 className="mt-3">Nenhum automóvel encontrado</h4>
+                        <p className="text-muted">Tente ajustar os termos da sua busca ou adicione um novo automóvel ao estoque.</p>
                     </div>
                 </>
             );
@@ -168,8 +168,8 @@ const Estoque = () => {
                 ) : (
                     <div className="col-12 text-center p-5">
                         <i className="bi bi-search" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
-                        <h4 className="mt-3">Nenhum veículo encontrado</h4>
-                        <p className="text-muted">Não há veículos que correspondam aos filtros selecionados.</p>
+                        <h4 className="mt-3">Nenhum automóvel encontrado</h4>
+                        <p className="text-muted">Não há automóveis que correspondam aos filtros selecionados.</p>
                     </div>
                 )}
 
@@ -184,8 +184,8 @@ const Estoque = () => {
                 {/* Cabeçalho da Página */}
                 <div className="d-flex justify-content-between align-items-center">
                     <div>
-                        <h1 className="fw-bold mb-0">Estoque de Veículos</h1>
-                        <p className="text-muted">Consulte e gerencie todos os veículos disponíveis.</p>
+                        <h1 className="fw-bold mb-0">Estoque de Automóveis</h1>
+                        <p className="text-muted">Consulte e gerencie todos os automóveis disponíveis.</p>
                     </div>
                     <div className="d-flex align-items-center col-md-4">
                         <div className="me-3 col-md-3">

@@ -428,9 +428,9 @@ const Venda = () => {
             <div className="container">
 
                 {/* Cabeçalho da Página */}
-                <div className="mb-4">
-                    <h1 className="fw-bold">Cadastro de Automóvel</h1>
-                    <p className="text-muted">Preencha os dados abaixo para registrar um novo veículo no sistema.</p>
+                <div className="mb-4 mt-3">
+                    <h1 className="fw-bold">Registro de Venda</h1>
+                    <p className="text-muted">Preencha os dados abaixo para registrar uma nova venda no sistema.</p>
                 </div>
 
                 {/* Alertas */}

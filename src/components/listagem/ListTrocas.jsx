@@ -10,9 +10,12 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalTroca from '../modais/ModalTroca';
 import ModalConfirmacao from '../modais/ModalConfirmacao';
+import { useAuth } from '../../context/AuthContext';
 
 
 const Trocas = () => {
+
+    const { user } = useAuth();
 
     const trocaLocalStorage = { negocio: "Troca" };
     const [showModal, setShowModal] = useState(false);
@@ -249,13 +252,14 @@ const Trocas = () => {
                                                     >
                                                         <i className="bi bi-pencil-fill"></i>
                                                     </button>
-                                                    <button
-                                                        className='btn btn-outline-danger btn-sm'
-                                                        onClick={() => handleAbrirModalConfirmacao(d)}
-                                                        title="Excluir Troca"
-                                                    >
-                                                        <i className="bi bi-trash-fill"></i>
-                                                    </button>
+                                                    {user.role === "gerente" &&
+                                                        <button
+                                                            className='btn btn-outline-danger btn-sm'
+                                                            onClick={() => handleAbrirModalConfirmacao(d)}
+                                                            title="Excluir Troca"
+                                                        >
+                                                            <i className="bi bi-trash-fill"></i>
+                                                        </button>}
                                                 </td>
                                             </tr>
 
