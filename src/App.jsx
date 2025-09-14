@@ -85,10 +85,6 @@ function App() {
             <Route path="/compra" element={<Compra />}></Route>
             <Route path='/consignacao' element={<Consignacao />}></Route>
             <Route path='/editar-automovel/:id' element={<EditarAutomovel />}></Route>
-            <Route path='/editar-consignacao/:id' element={<EditarConsignacao />}></Route>
-            <Route path='/editar-compra/:id' element={<EditarCompra />}></Route>
-            <Route path='/editar-troca/:id' element={<EditarTroca />}></Route>
-            <Route path='/editar-venda/:id' element={<EditarVenda />}></Route>
             <Route path='/historico' element={<Historico />}></Route>
             <Route path='/cliente' element={<Cliente />}></Route>
             <Route path='/listagem/compras' element={<ListCompras />}></Route>
@@ -106,6 +102,10 @@ function App() {
             <Route path="/gastos" element={<Gasto />}></Route>
             <Route path='/editar-gasto/:id' element={<EditarGasto />}></Route>
             <Route path='/editar-manutencao/:id' element={<EditarManutencao />}></Route>
+            <Route path='/editar-consignacao/:id' element={<EditarConsignacao />}></Route>
+            <Route path='/editar-compra/:id' element={<EditarCompra />}></Route>
+            <Route path='/editar-troca/:id' element={<EditarTroca />}></Route>
+            <Route path='/editar-venda/:id' element={<EditarVenda />}></Route>
             <Route path='/listagem/vendedores' element={<ListVendedores />}></Route>
             <Route path='/vendedor' element={<RegistroVendedor />}></Route>
           </Route>

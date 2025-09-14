@@ -144,6 +144,40 @@ const Consignacao = () => {
     };
 
     const [loading, setLoading] = useState(true);
+    const [fileError, setFileError] = useState('');
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+
+        // Limpa erros anteriores
+        setFileError('');
+
+        if (!file) {
+            setAutomovel({ ...automovel, file: null });
+            return;
+        }
+
+        // 1. Validação do Tipo/Extensão
+        const tiposPermitidos = ['image/jpeg', 'image/png'];
+        if (!tiposPermitidos.includes(file.type)) {
+            setFileError('Formato de arquivo inválido. Por favor, envie apenas imagens JPG ou PNG.');
+            e.target.value = null; // Limpa o input
+            setAutomovel({ ...automovel, file: null });
+            return;
+        }
+
+        // 2. Validação do Tamanho (5 MB)
+        const tamanhoMaximo = 5 * 1024 * 1024; // 5MB em bytes
+        if (file.size > tamanhoMaximo) {
+            setFileError('Arquivo muito grande. O tamanho máximo permitido é de 5 MB.');
+            e.target.value = null; // Limpa o input
+            setAutomovel({ ...automovel, file: null });
+            return;
+        }
+
+        // Se passou em todas as validações, armazena o arquivo
+        setAutomovel({ ...automovel, file });
+    };
 
     useEffect(() => {
         setLoading(true);
@@ -593,18 +627,13 @@ const Consignacao = () => {
                                     <label htmlFor="foto" className="form-label">Foto do Automóvel</label>
                                     <input
                                         type="file"
-                                        className="form-control"
+                                        className={`form-control ${fileError ? 'is-invalid' : ''}`}
                                         id="foto"
                                         name="file"
-                                        accept="image/*"
-                                        onChange={(e) => {
-                                            const file = e.target.files[0];
-                                            if (file) {
-                                                setAutomovel({ ...automovel, file });
-                                                // ou só file.name, dependendo do backend
-                                            }
-                                        }}
+                                        accept="image/png, image/jpeg" // Sugere os tipos corretos para o usuário
+                                        onChange={handleFileChange} // Usa a nova função de validação
                                     />
+                                    {fileError && <div className="invalid-feedback d-block">{fileError}</div>}
                                 </div>
                             </div>
                         </div>

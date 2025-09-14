@@ -274,7 +274,8 @@ const Consignacoes = () => {
                                                 })}`}</td>
                                                 <td className="text-center">
                                                     <button className='btn btn-outline-info btn-sm me-2' onClick={() => verDetalhes(d.id)} title="Ver Detalhes"><i className="bi bi-eye-fill"></i></button>
-                                                    <button className='btn btn-outline-warning btn-sm me-2' onClick={() => editarConsignacao(d.id)} title="Editar"><i className="bi bi-pencil-fill"></i></button>
+                                                    {user.role === "gerente" &&
+                                                        <button className='btn btn-outline-warning btn-sm me-2' onClick={() => editarConsignacao(d.id)} title="Editar"><i className="bi bi-pencil-fill"></i></button>}
                                                     {d.ativo && ( // Mostra o botão de encerrar apenas se estiver ativa
                                                         <button className='btn btn-outline-success btn-sm me-2' onClick={() => handleAbrirModalEncerramento(d)} title="Encerrar"><i className="bi bi-check-circle-fill"></i></button>
                                                     )}

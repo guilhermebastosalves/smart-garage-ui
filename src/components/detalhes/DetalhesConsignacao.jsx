@@ -140,6 +140,9 @@ const DetalhesConsignacao = () => {
                                 <div className="accordion-body">
                                     <ul className="list-group list-group-flush">
                                         <li className="list-group-item d-flex justify-content-between">
+                                            <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
+                                        </li>
+                                        <li className="list-group-item d-flex justify-content-between">
                                             <span className='me-1'><strong>Data de Início:</strong> {new Date(detalhes.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</span>
                                         </li>
                                         <li className="list-group-item d-flex justify-content-between">
@@ -161,9 +164,6 @@ const DetalhesConsignacao = () => {
                                                     </span>
                                                 )}
                                             </p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
                                         </li>
                                     </ul>
                                 </div>

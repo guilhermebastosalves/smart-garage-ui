@@ -26,7 +26,7 @@ const Cliente = () => {
     const automovelId = location.state?.automovelId;
 
     const initialClienteState = { nome: "", email: "", telefone: "" };
-    const initialFisicaState = { cpf: "", rg: "" };
+    const initialFisicaState = { cpf: "", rg: null };
     const initialJuridicaState = { cnpj: "", razao_social: "", nome_responsavel: "" };
     const initialEnderecoState = { cep: "", logradouro: "", bairro: "", numero: "" };
     const initialCidadeState = { nome: "" };
@@ -243,7 +243,7 @@ const Cliente = () => {
         if (!cliente.telefone) vazioErros.push("telefone");
 
         if (!fisica.cpf) vazioErros.push("cpf");
-        if (!fisica.rg) vazioErros.push("rg"); // TIRAR
+        // if (!fisica.rg) vazioErros.push("rg"); // TIRAR
 
         if (!endereco.cep) vazioErros.push("cep");
         if (!endereco.logradouro) vazioErros.push("logradouro");
@@ -721,7 +721,7 @@ const Cliente = () => {
                                 <div class="col-md-4 ">
                                     <label for="rg" class="form-label">RG</label>
                                     <input type="text" className={`form-control ${hasError("rg") && "is-invalid"}`} id="rg" name="rg" aria-describedby="rgHelp" value={fisica.rg} onChange={handleInputChangeFisica} />
-                                    {vazio.includes("rg") && <div className="invalid-feedback">Informe o RG.</div>}
+                                    {/* {vazio.includes("rg") && <div className="invalid-feedback">Informe o RG.</div>} */}
                                     {tamanho.includes("rg") && <div className="invalid-feedback">RG inválido (deve ter de 9 a 13 caracteres numéricos).</div>}
                                 </div>
                                 {/* <div class="col-md-4 ">

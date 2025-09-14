@@ -149,9 +149,11 @@ const Detalhes = () => {
                                 <button onClick={() => navigate(`/editar-automovel/${automovel.id}`)} className="btn btn-primary btn-lg px-4 me-md-2">
                                     <i className="bi bi-pencil-fill me-2"></i>Editar
                                 </button>
-                                <button onClick={() => setShowModal(true)} className="btn btn-outline-secondary btn-lg px-4 me-md-2">
-                                    <i className="bi bi-tag-fill me-2"></i>Vender
-                                </button>
+                                {automovel.ativo &&
+                                    <button onClick={() => setShowModal(true)} className="btn btn-outline-secondary btn-lg px-4 me-md-2">
+                                        <i className="bi bi-tag-fill me-2"></i>Vender
+                                    </button>
+                                }
                                 <button onClick={() => navigate('/estoque')} className="btn btn-outline-secondary btn-lg px-4">
                                     <i class="bi bi-arrow-return-left me-2"></i>Voltar
                                 </button>

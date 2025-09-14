@@ -245,13 +245,14 @@ const Trocas = () => {
                                                     >
                                                         <i className="bi bi-eye-fill"></i>
                                                     </button>
-                                                    <button
-                                                        className='btn btn-outline-warning btn-sm me-2'
-                                                        onClick={() => { editarTroca(d.id) }}
-                                                        title="Editar Troca" // Dica para o usuário
-                                                    >
-                                                        <i className="bi bi-pencil-fill"></i>
-                                                    </button>
+                                                    {user.role === "gerente" &&
+                                                        <button
+                                                            className='btn btn-outline-warning btn-sm me-2'
+                                                            onClick={() => { editarTroca(d.id) }}
+                                                            title="Editar Troca" // Dica para o usuário
+                                                        >
+                                                            <i className="bi bi-pencil-fill"></i>
+                                                        </button>}
                                                     {user.role === "gerente" &&
                                                         <button
                                                             className='btn btn-outline-danger btn-sm'

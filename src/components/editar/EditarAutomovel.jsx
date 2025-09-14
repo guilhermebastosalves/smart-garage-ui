@@ -80,12 +80,47 @@ const EditarAutomovel = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleFileChange = (event) => {
-        setFormData(prev => ({ ...prev, file: event.target.files[0] }));
-    };
+    // const handleFileChange = (event) => {
+    //     setFormData(prev => ({ ...prev, file: event.target.files[0] }));
+    // };
 
     const handleSelectChange = (selectedOption, fieldName) => {
         setFormData(prev => ({ ...prev, [fieldName]: selectedOption ? selectedOption.value : '' }));
+    };
+
+    const [fileError, setFileError] = useState('');
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+
+        // Limpa erros anteriores
+        setFileError('');
+
+        if (!file) {
+            setFormData({ ...formData, file: null });
+            return;
+        }
+
+        // 1. Validação do Tipo/Extensão
+        const tiposPermitidos = ['image/jpeg', 'image/png'];
+        if (!tiposPermitidos.includes(file.type)) {
+            setFileError('Formato de arquivo inválido. Por favor, envie apenas imagens JPG ou PNG.');
+            e.target.value = null; // Limpa o input
+            setFormData({ ...formData, file: null });
+            return;
+        }
+
+        // 2. Validação do Tamanho (5 MB)
+        const tamanhoMaximo = 5 * 1024 * 1024; // 5MB em bytes
+        if (file.size > tamanhoMaximo) {
+            setFileError('Arquivo muito grande. O tamanho máximo permitido é de 5 MB.');
+            e.target.value = null; // Limpa o input
+            setFormData({ ...formData, file: null });
+            return;
+        }
+
+        // Se passou em todas as validações, armazena o arquivo
+        setFormData({ ...formData, file });
     };
 
 
@@ -373,12 +408,13 @@ const EditarAutomovel = () => {
                                     <label htmlFor="foto" className="form-label">Foto do Automóvel</label>
                                     <input
                                         type="file"
-                                        className="form-control"
+                                        className={`form-control ${fileError ? 'is-invalid' : ''}`}
                                         id="foto"
                                         name="file"
-                                        accept="image/*"
-                                        onChange={handleFileChange}
+                                        accept="image/png, image/jpeg" // Sugere os tipos corretos para o usuário
+                                        onChange={handleFileChange} // Usa a nova função de validação
                                     />
+                                    {fileError && <div className="invalid-feedback d-block">{fileError}</div>}
                                 </div>
 
                             </div>
