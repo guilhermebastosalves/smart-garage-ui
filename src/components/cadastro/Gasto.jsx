@@ -351,7 +351,7 @@ const Gasto = () => {
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-4">
-                                    <label for="valor" class="form-label">Valor</label>
+                                    <label for="valor" class="form-label">Valor (R$)</label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeGasto} />
                                     {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}

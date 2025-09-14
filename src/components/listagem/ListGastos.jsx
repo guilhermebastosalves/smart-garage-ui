@@ -160,10 +160,11 @@ const Gastos = () => {
                         <h1 className="mb-0">Gastos</h1>
                         <p className="text-muted">Listagem e gerenciamento de gastos.</p>
                     </div>
-                    <button className='btn btn-primary btn-lg' onClick={() => { navigate('/gastos') }}>
-                        <i className="bi bi-plus-circle-fill me-2"></i> {/* Ícone opcional */}
-                        Novo Gasto
-                    </button>
+                    {user.role === "gerente" &&
+                        <button className='btn btn-primary btn-lg' onClick={() => { navigate('/gastos') }}>
+                            <i className="bi bi-plus-circle-fill me-2"></i> {/* Ícone opcional */}
+                            Novo Gasto
+                        </button>}
                 </div>
 
                 <div className="card shadow-sm">
@@ -229,13 +230,14 @@ const Gastos = () => {
                                                         <i className="bi bi-eye-fill"></i>
                                                     </button>
 
-                                                    <button
-                                                        className='btn btn-outline-warning btn-sm me-2'
-                                                        onClick={() => { editarGasto(d.id) }}
-                                                        title="Editar Gasto" // Dica para o usuário
-                                                    >
-                                                        <i className="bi bi-pencil-fill"></i>
-                                                    </button>
+                                                    {user.role === "gerente" &&
+                                                        <button
+                                                            className='btn btn-outline-warning btn-sm me-2'
+                                                            onClick={() => { editarGasto(d.id) }}
+                                                            title="Editar Gasto" // Dica para o usuário
+                                                        >
+                                                            <i className="bi bi-pencil-fill"></i>
+                                                        </button>}
 
                                                     {user.role === "gerente" &&
                                                         <button

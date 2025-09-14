@@ -165,7 +165,7 @@ const EditarTroca = () => {
 
         // Tipo
         if (formData.valor && isNaN(formData.valor)) tipoErros.push("valor");
-        if (formData.valor && formData.valor < 0) tipoErros.push("valor");
+        // if (formData.valor && formData.valor < 0) tipoErros.push("valor");
         if (formData.valor_aquisicao && isNaN(formData.valor_aquisicao)) tipoErros.push("valor_aquisicao");
         if (formData.valor_aquisicao && formData.valor_aquisicao <= 0) tipoErros.push("valor_aquisicao");
         if (formData.data && formData.data > new Date()) tipoErros.push("data");

@@ -67,7 +67,7 @@ const Home = () => {
                                         <img src="/static/img/troca.png" alt="Trocas" className="mx-auto mb-3" style={{ width: "64px" }} />
                                         <h3 className="card-title h4 mb-3">Trocas</h3>
                                         <p className="card-text text-muted mb-5">Registre uma troca, gerencie informações dos automóveis envolvidos e valores.</p>
-                                        <Link className="btn btn-primary mt-auto">Acessar</Link>
+                                        <Link to="/listagem/trocas" className="btn btn-primary mt-auto">Acessar</Link>
                                     </div>
                                 </div>
                             </div>

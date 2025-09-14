@@ -40,11 +40,20 @@ const Header = () => {
                                             <i className="bi bi-cash-coin me-2"></i>Vendas
                                         </Link>
                                     </li>
-                                    <li>
-                                        <Link to="/listagem/trocas" className={`nav-link  ${location.pathname === '/listagem/trocas' ? 'active' : 'link-body-emphasis'}`} ><svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#table"></use></svg>
-                                            <i class="bi bi-arrow-repeat me-2"></i>Trocas
-                                        </Link>
-                                    </li>
+                                    {user.role === "gerente" ? (
+                                        <li>
+                                            <Link to="/listagem/trocas" className={`nav-link  ${location.pathname === '/listagem/trocas' ? 'active' : 'link-body-emphasis'}`} ><svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#table"></use></svg>
+                                                <i class="bi bi-arrow-repeat me-2"></i>Trocas
+                                            </Link>
+                                        </li>)
+                                        : (
+                                            <li>
+                                                <Link to="/listagem/manutencoes" className={`nav-link  ${location.pathname === '/listagem/manutencoes' ? 'active' : 'link-body-emphasis'}`} ><svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#table"></use></svg>
+                                                    <i class="bi bi-wrench me-2"></i>Manutenções
+                                                </Link>
+                                            </li>
+                                        )
+                                    }
                                     {user.role === "gerente" && (
                                         <li>
                                             <Link to="/relatorios" className={`nav-link ${location.pathname === '/relatorios' ? 'active' : 'link-body-emphasis'}`}> <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#grid"></use></svg>

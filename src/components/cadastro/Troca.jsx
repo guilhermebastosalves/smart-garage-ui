@@ -269,6 +269,7 @@ const Troca = () => {
         if (!troca.comissao) vazioErros.push("comissao");
         if (!troca.automovel_fornecido) vazioErros.push("automovel_fornecido");
         if (!troca.valor_aquisicao) vazioErros.push("valor_aquisicao");
+        // if (!troca.forma_pagamento) vazioErros.push("forma_pagamento");
 
         if (!automovel.valor) vazioErros.push("valor");
         if (!automovel.ano_fabricacao) vazioErros.push("ano_fabricacao");

@@ -252,7 +252,7 @@ const EditarAutomovel = () => {
 
                 <div className="mb-4 mt-3">
                     <h1 className="fw-bold">Edição do Automóvel</h1>
-                    <p className="text-muted">Preencha os dados abaixo para editar o automóvel slecionado.</p>
+                    <p className="text-muted">Preencha os dados abaixo para editar o automóvel selecionado.</p>
                 </div>
 
                 {erro &&

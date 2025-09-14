@@ -80,6 +80,8 @@ function App() {
             <Route path="/detalhes-compra/:id" element={<DetalhesCompra />}></Route>
             <Route path="/detalhes-troca/:id" element={<DetalhesTroca />}></Route>
             <Route path="/detalhes-venda/:id" element={<DetalhesVenda />}></Route>
+            <Route path="/detalhes-gasto/:id" element={<DetalhesGasto />}></Route>
+            <Route path="/detalhes-manutencao/:id" element={<DetalhesManutencao />}></Route>
             <Route path="/compra" element={<Compra />}></Route>
             <Route path='/consignacao' element={<Consignacao />}></Route>
             <Route path='/editar-automovel/:id' element={<EditarAutomovel />}></Route>
@@ -93,6 +95,8 @@ function App() {
             <Route path='/listagem/consignacoes' element={<ListConsignacao />}></Route>
             <Route path='/listagem/trocas' element={<ListTrocas />}></Route>
             <Route path='/listagem/vendas' element={<ListVendas />}></Route>
+            <Route path='/listagem/gastos' element={<ListGastos />}></Route>
+            <Route path='/listagem/manutencoes' element={<ListManutencoes />}></Route>
             <Route path="/acesso-negado" element={<AcessoNegado />} />
           </Route>
 
@@ -100,12 +104,8 @@ function App() {
             <Route path="/relatorios" element={<Relatorios />}></Route>
             <Route path="/manutencao" element={<Manutencao />}></Route>
             <Route path="/gastos" element={<Gasto />}></Route>
-            <Route path="/detalhes-gasto/:id" element={<DetalhesGasto />}></Route>
-            <Route path="/detalhes-manutencao/:id" element={<DetalhesManutencao />}></Route>
             <Route path='/editar-gasto/:id' element={<EditarGasto />}></Route>
             <Route path='/editar-manutencao/:id' element={<EditarManutencao />}></Route>
-            <Route path='/listagem/gastos' element={<ListGastos />}></Route>
-            <Route path='/listagem/manutencoes' element={<ListManutencoes />}></Route>
             <Route path='/listagem/vendedores' element={<ListVendedores />}></Route>
             <Route path='/vendedor' element={<RegistroVendedor />}></Route>
           </Route>

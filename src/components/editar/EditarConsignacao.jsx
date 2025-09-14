@@ -381,7 +381,7 @@ const EditarConsignacao = () => {
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-2">
-                                    <label for="valor" class="form-label">Valor</label>
+                                    <label for="valor" class="form-label">Valor (R$)</label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor ?? ""} />
                                     {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
                                     {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor acordado.</div>}

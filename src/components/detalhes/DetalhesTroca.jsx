@@ -167,10 +167,11 @@ const DetalhesTroca = () => {
                                         <li className="list-group-item d-flex justify-content-between">
                                             <p className="mb-2"><strong>Valor de Diferença:</strong> <span className="text fs-6">{((detalhes.valor) >= 0) ? formatter.format(detalhes.valor) : (formatter.format(detalhes.valor) + " (Valor cedido)")}</span></p>
                                         </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            {((detalhes.valor) > 0) &&
-                                                <p className="mb-2"><strong>Forma de Pagamento:</strong> <span className="text  fs-6">{detalhes.forma_pagamento ? detalhes.forma_pagamento : "N/A"}</span></p>}
-                                        </li>
+                                        {((detalhes.valor) > 0) &&
+                                            <li className="list-group-item d-flex justify-content-between">
+                                                <p className="mb-2"><strong>Forma de Pagamento:</strong> <span className="text  fs-6">{detalhes.forma_pagamento ? detalhes.forma_pagamento : "N/A"}</span></p>
+                                            </li>
+                                        }
                                         <li className="list-group-item d-flex justify-content-between">
                                             <p className="mb-2"><strong>Comissão:</strong> <span className="text fs-6">{formatter.format(detalhes.comissao)}</span></p>
                                         </li>

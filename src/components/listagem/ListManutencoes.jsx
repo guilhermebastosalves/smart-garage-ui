@@ -210,10 +210,11 @@ const Manutencao = () => {
                         <h1 className="mb-0">Manutenções</h1>
                         <p className="text-muted">Listagem e gerenciamento de manutenções.</p>
                     </div>
-                    <button className='btn btn-primary btn-lg' onClick={() => { navigate('/manutencao') }}>
-                        <i className="bi bi-plus-circle-fill me-2"></i> {/* Ícone opcional */}
-                        Nova Manutenção
-                    </button>
+                    {user.role === "gerente" &&
+                        <button className='btn btn-primary btn-lg' onClick={() => { navigate('/manutencao') }}>
+                            <i className="bi bi-plus-circle-fill me-2"></i> {/* Ícone opcional */}
+                            Nova Manutenção
+                        </button>}
                 </div>
 
                 <div className="card shadow-sm">
@@ -298,15 +299,16 @@ const Manutencao = () => {
                                                         <i className="bi bi-eye-fill"></i>
                                                     </button>
 
-                                                    <button
-                                                        className='btn btn-outline-warning btn-sm me-2'
-                                                        onClick={() => { editarManutencao(d.id) }}
-                                                        title="Editar Manutenção" // Dica para o usuário
-                                                    >
-                                                        <i className="bi bi-pencil-fill"></i>
-                                                    </button>
+                                                    {user.role === "gerente" &&
+                                                        <button
+                                                            className='btn btn-outline-warning btn-sm me-2'
+                                                            onClick={() => { editarManutencao(d.id) }}
+                                                            title="Editar Manutenção" // Dica para o usuário
+                                                        >
+                                                            <i className="bi bi-pencil-fill"></i>
+                                                        </button>}
 
-                                                    {d.ativo && (
+                                                    {d.ativo && user.role === "gerente" && (
                                                         <button
                                                             className='btn btn-outline-success btn-sm me-2'
                                                             onClick={() => handleAbrirModalFinalizar(d)}

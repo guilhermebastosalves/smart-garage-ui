@@ -315,7 +315,7 @@ const Venda = () => {
         // if (!troca.comissao) {
         let comissao = "";
         if (venda?.valor !== "") {
-            comissao = venda?.valor < 50000 ? 300 : venda?.valor >= 100000 ? 700 : 500;
+            comissao = venda?.valor < 50000 ? 300 : venda?.valor > 100000 ? 1500 : 500;
         }
         setVenda(prev => ({
             ...prev,
@@ -458,7 +458,7 @@ const Venda = () => {
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-4">
-                                    <label for="valor" class="form-label">Valor</label>
+                                    <label for="valor" class="form-label">Valor (R$)</label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={(e) => setVenda({ ...venda, valor: e.target.value })} value={venda.valor} />
                                     {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
