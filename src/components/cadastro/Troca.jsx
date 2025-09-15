@@ -333,7 +333,7 @@ const Troca = () => {
         if (automovel.valor && (isNaN(automovel.valor) || automovel.valor <= 0)) tipoErros.push("valor");
         if (automovel.km && isNaN(automovel.km)) tipoErros.push("km");
         if (automovel.cor && (!isNaN(automovel.cor))) tipoErros.push("cor");
-        if (automovel.ano_fabricacao > automovel.ano_modelo) tipoErros.push("ano_modelo_fabricacao");
+        if (automovel.ano_fabricacao && automovel.ano_modelo && automovel.ano_fabricacao > automovel.ano_modelo) tipoErros.push("ano_modelo_fabricacao");
 
 
 

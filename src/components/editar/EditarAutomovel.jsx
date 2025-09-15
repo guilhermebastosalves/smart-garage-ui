@@ -170,6 +170,8 @@ const EditarAutomovel = () => {
         if (formData.valor && (isNaN(formData.valor) || formData.valor <= 0)) tipoErros.push("valor");
         if (formData.km && isNaN(formData.km)) tipoErros.push("km");
         if (formData.cor && (!isNaN(formData.cor))) tipoErros.push("cor");
+        if (formData.ano_fabricacao && formData.ano_modelo && formData.ano_fabricacao > formData.ano_modelo) tipoErros.push("ano_modelo_fabricacao");
+
 
         return { vazioErros, tamanhoErros, tipoErros };
     };
@@ -199,6 +201,19 @@ const EditarAutomovel = () => {
 
         try {
 
+            const verificacao = await AutomovelDataService.duplicidade({
+                placa: formData.placa,
+                renavam: formData.renavam,
+                idAutomovelAtual: id
+            });
+
+            if (verificacao.data.erro) {
+                setErro(verificacao.data.erro);
+                setMensagemErro(verificacao.data.mensagemErro);
+                throw new Error(verificacao.data.mensagemErro);
+
+            }
+
             // --- ETAPA 3: ATUALIZAR AUTOMÓVEL ---
             const automovelData = new FormData();
             automovelData.append("ano_fabricacao", formData.ano_fabricacao);
@@ -225,8 +240,9 @@ const EditarAutomovel = () => {
             setTimeout(() => navigate(`/detalhes/${id}`), 1500);
 
         } catch (error) {
-            console.error("Erro ao atualizar automovel:", error);
-            // Lógica para tratar erros...
+            setErro(true);
+            const mensagem = error.response?.data?.mensagemErro || error.message || "Erro ao atualizar automóvel.";
+            setMensagemErro(mensagem);
         } finally {
             setIsSubmitting(false);
         }
@@ -337,9 +353,10 @@ const EditarAutomovel = () => {
                                 </div>
                                 <div className="col-md-3">
                                     <label htmlFor="anofabricacao" className="form-label">Ano Fabricação</label>
-                                    <input value={formData.ano_fabricacao ?? ""} type="text" className={`form-control ${hasError("ano_fabricacao") && "is-invalid"}`} id="anofabricacao" name="ano_fabricacao" onChange={handleInputChange} />
+                                    <input value={formData.ano_fabricacao ?? ""} type="text" className={`form-control ${hasError("ano_fabricacao") && "is-invalid"} ${hasError("ano_modelo_fabricacao") && "is-invalid"}`} id="anofabricacao" name="ano_fabricacao" onChange={handleInputChange} />
                                     {vazio.includes("ano_fabricacao") && <div className="invalid-feedback">Informe o ano.</div>}
                                     {tipo.includes("ano_fabricacao") && <div className="invalid-feedback">Ano inválido.</div>}
+                                    {tipo.includes("ano_modelo_fabricacao") && <div className="invalid-feedback ms-1">Ano de fabricação posterior a ano modelo.</div>}
                                 </div>
                                 <div className="col-md-3">
                                     <label htmlFor="anomodelo" className="form-label">Ano Modelo</label>

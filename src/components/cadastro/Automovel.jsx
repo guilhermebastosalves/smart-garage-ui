@@ -177,7 +177,7 @@ const Automovel = () => {
             if (verificacao.data.erro) {
                 setErro(verificacao.data.erro); // erro vindo do back
                 setMensagemErro(verificacao.data.mensagemErro);
-                return; // não continua
+                return;
             }
 
         } catch (erro) {
