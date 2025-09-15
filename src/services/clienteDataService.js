@@ -10,6 +10,14 @@ class ClienteDataService {
         return http.get(`/api/cliente/${id}`);
     }
 
+    get(id) {
+        return http.get(`/api/cliente/detalhado/${id}`);
+    }
+
+    update(id, data) {
+        return http.put(`/api/cliente/${id}`, data);
+    }
+
     create(data) {
         return http.post('/api/cliente', data);
     }

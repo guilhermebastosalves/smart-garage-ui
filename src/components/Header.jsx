@@ -81,6 +81,10 @@ const Header = () => {
                                             </Link>
                                         </li>
                                     )}
+                                    <Link to="/listagem/clientes" className={`nav-link ${location.pathname.includes('/clientes') ? 'active' : 'link-body-emphasis'}`}><svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#people-circle"></use></svg>
+                                        <i className="bi bi-person-lines-fill me-2"></i>
+                                        Clientes
+                                    </Link>
                                 </ul>
                                 <hr></hr>
 

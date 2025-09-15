@@ -37,13 +37,25 @@ const RegistroVendedor = () => {
         <>
             <Header />
             <div className="container mt-4">
-                <Card className="form-card mx-auto" style={{ maxWidth: '600px' }}>
+                <Card className="form-card mx-auto mb-3" style={{ maxWidth: '600px' }}>
                     <Card.Header>
                         <h3 className="mb-0">Cadastrar Novo Vendedor</h3>
                     </Card.Header>
                     <Card.Body>
-                        {sucesso && <Alert variant="success">{sucesso}</Alert>}
-                        {erro && <Alert variant="danger">{erro}</Alert>}
+
+                        {sucesso &&
+                            <div className="alert alert-success d-flex align-items-center" role="alert">
+                                <i className="bi bi-check-circle-fill me-2"></i>
+                                <div>{sucesso}</div>
+                            </div>
+                        }
+
+                        {erro &&
+                            <div className="alert alert-danger d-flex align-items-center" role="alert">
+                                <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                                <div>{erro}</div>
+                            </div>
+                        }
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
@@ -52,7 +64,7 @@ const RegistroVendedor = () => {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label htmlFor="email">E-mail</Form.Label>
-                                <Form.Control id="email" name="email" type="email" placeholder="exemplo@email.com" onChange={handleInputChange} />
+                                <Form.Control id="email" name="email" type="email" onChange={handleInputChange} />
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label htmlFor="telefone">Telefone</Form.Label>

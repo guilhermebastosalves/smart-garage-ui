@@ -24,6 +24,7 @@ import EditarCompra from './components/editar/EditarCompra'
 import EditarTroca from './components/editar/EditarTroca'
 import EditarVenda from './components/editar/EditarVenda'
 import EditarGasto from './components/editar/EditarGasto'
+import EditarCliente from './components/editar/EditarCliente'
 import EditarManutencao from './components/editar/EditarManutencao'
 import Historico from './components/cadastro/Historico'
 import Cliente from './components/cadastro/Cliente'
@@ -33,6 +34,7 @@ import ListTrocas from './components/listagem/ListTrocas';
 import ListVendas from './components/listagem/ListVendas';
 import ListGastos from "./components/listagem/ListGastos";
 import ListManutencoes from "./components/listagem/ListManutencoes";
+import ListClientes from './components/listagem/ListClientes'
 import ProtectedRoute from './components/RotaProtegida'; // Importe a rota protegida
 import AcessoNegado from './components/AcessoNegado';
 import ListVendedores from './components/listagem/ListVendedores';
@@ -85,6 +87,7 @@ function App() {
             <Route path="/compra" element={<Compra />}></Route>
             <Route path='/consignacao' element={<Consignacao />}></Route>
             <Route path='/editar-automovel/:id' element={<EditarAutomovel />}></Route>
+            <Route path="/editar-cliente/:id" element={<EditarCliente />} />
             <Route path='/historico' element={<Historico />}></Route>
             <Route path='/cliente' element={<Cliente />}></Route>
             <Route path='/listagem/compras' element={<ListCompras />}></Route>
@@ -93,6 +96,7 @@ function App() {
             <Route path='/listagem/vendas' element={<ListVendas />}></Route>
             <Route path='/listagem/gastos' element={<ListGastos />}></Route>
             <Route path='/listagem/manutencoes' element={<ListManutencoes />}></Route>
+            <Route path="/listagem/clientes" element={<ListClientes />} />
             <Route path="/acesso-negado" element={<AcessoNegado />} />
           </Route>
 

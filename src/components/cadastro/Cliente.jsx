@@ -700,7 +700,7 @@ const Cliente = () => {
 
                                 <div class="col-md-4 ">
                                     <label for="valor" class="form-label">Email</label>
-                                    <input type="text" className={`form-control ${hasError("email") && "is-invalid"}`} id="email" name="email" aria-describedby="emailHelp" value={cliente.email} onChange={handleInputChangeCliente} />
+                                    <input type="email" className={`form-control ${hasError("email") && "is-invalid"}`} id="email" name="email" aria-describedby="emailHelp" value={cliente.email} onChange={handleInputChangeCliente} />
                                     {vazio.includes("email") && <div className="invalid-feedback">Informe o email.</div>}
                                 </div>
 
@@ -824,7 +824,7 @@ const Cliente = () => {
 
                                 <div class="col-md-4 ">
                                     <label for="valor" class="form-label">Email</label>
-                                    <input type="text" className={`form-control ${hasError("email") && "is-invalid"}`} id="email" name="email" aria-describedby="emailHelp" value={cliente.email} onChange={handleInputChangeCliente} />
+                                    <input type="email" className={`form-control ${hasError("email") && "is-invalid"}`} id="email" name="email" aria-describedby="emailHelp" value={cliente.email} onChange={handleInputChangeCliente} />
 
                                     {vazio.includes("email") && <div className="invalid-feedback">Informe o email.</div>}
                                 </div>

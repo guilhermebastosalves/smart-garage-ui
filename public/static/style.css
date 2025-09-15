@@ -253,10 +253,19 @@ body {
     overflow-y: auto;
 }
 
-/* .descricao-gasto {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-} */
+.chip-tipo {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25em 0.75em;
+    /* border-radius: 16px; */
+    font-size: 0.95em;
+    font-weight: 500;
+    /* background: #e3f2fd; */
+    color: #1976d2;
+    gap: 0.5em;
+    border: none;
+}
+
+.chip-tipo .bi {
+    font-size: 1em;
+}

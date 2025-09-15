@@ -199,18 +199,6 @@ const EditarAutomovel = () => {
 
         try {
 
-            // --- ETAPA 1: ATUALIZAR MARCA (se o nome mudou) ---
-            // Aqui você pode adicionar uma lógica para verificar se o nome da marca foi realmente alterado
-            // antes de fazer a chamada à API, para evitar chamadas desnecessárias.
-            // if (formData.marcaId) {
-            //     await MarcaDataService.update(formData.marcaId, { nome: formData.marcaNome });
-            // }
-
-            // --- ETAPA 2: ATUALIZAR MODELO (se o nome mudou) ---
-            // if (formData.modeloId) {
-            //     await ModeloDataService.update(formData.modeloId, { nome: formData.modeloNome });
-            // }
-
             // --- ETAPA 3: ATUALIZAR AUTOMÓVEL ---
             const automovelData = new FormData();
             automovelData.append("ano_fabricacao", formData.ano_fabricacao);
