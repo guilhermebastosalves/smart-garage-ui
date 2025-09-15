@@ -134,12 +134,9 @@ const EditarManutencao = () => {
         // Isso garante que estamos comparando apenas a data (o início do dia)
         hoje.setHours(0, 0, 0, 0);
 
-        // if (formData.previsao_retorno && formData.previsao_retorno < hoje) tipoErros.push("previsao_retorno");
+        if (formData.previsao_retorno && formData.previsao_retorno < hoje) tipoErros.push("previsao_retorno");
         if (formData.valor && (isNaN(formData.valor) || formData.valor <= 0)) tipoErros.push("valor");
 
-        console.log(vazioErros)
-        console.log(tamanhoErros)
-        console.log(tipoErros)
 
         return { vazioErros, tamanhoErros, tipoErros };
     };

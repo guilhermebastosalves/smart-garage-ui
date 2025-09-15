@@ -171,6 +171,8 @@ const EditarAutomovel = () => {
         if (formData.km && isNaN(formData.km)) tipoErros.push("km");
         if (formData.cor && (!isNaN(formData.cor))) tipoErros.push("cor");
         if (formData.ano_fabricacao && formData.ano_modelo && formData.ano_fabricacao > formData.ano_modelo) tipoErros.push("ano_modelo_fabricacao");
+        const anoAtual = new Date().getFullYear();
+        if (automovel.ano_modelo && (!/^\d{4}$/.test(automovel.ano_modelo) || Number(automovel.ano_modelo) > anoAtual + 1)) { tipoErros.push("ano_modelo_futuro"); }
 
 
         return { vazioErros, tamanhoErros, tipoErros };
@@ -360,9 +362,10 @@ const EditarAutomovel = () => {
                                 </div>
                                 <div className="col-md-3">
                                     <label htmlFor="anomodelo" className="form-label">Ano Modelo</label>
-                                    <input value={formData.ano_modelo ?? ""} type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChange} />
+                                    <input value={formData.ano_modelo ?? ""} type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"} ${hasError("ano_modelo_futuro") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChange} />
                                     {vazio.includes("ano_modelo") && <div className="invalid-feedback">Informe o ano.</div>}
                                     {tipo.includes("ano_modelo") && <div className="invalid-feedback">Ano inválido.</div>}
+                                    {tipo.includes("ano_modelo_futuro") && (<div className="invalid-feedback ms-1">Ano modelo inválido (não pode ser maior que {new Date().getFullYear() + 1}).</div>)}
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="placa" className="form-label">Placa</label>

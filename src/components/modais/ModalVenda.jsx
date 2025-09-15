@@ -133,7 +133,7 @@ function ModalVenda({ show, onHide, venda, automovelId }) {
                             <Button variant="primary" type="submit" size="md">
                                 Buscar Cliente
                             </Button>
-                            <Button variant="link" onClick={() => handleRedirect('/cliente')} className="text-secondary">
+                            <Button variant="link" onClick={() => handleRedirect('/cliente', { automovelId: automovelId })} className="text-secondary">
                                 Não sei o documento, cadastrar novo
                             </Button>
                         </div>
@@ -155,7 +155,7 @@ function ModalVenda({ show, onHide, venda, automovelId }) {
                                 <FaArrowLeft className="me-2" />
                                 Tentar Novamente
                             </Button>
-                            <Button variant="primary" onClick={() => handleRedirect('/cliente')}>
+                            <Button variant="primary" onClick={() => handleRedirect('/cliente', { automovelId: automovelId })}>
                                 <FaUserPlus className="me-2" />
                                 Cadastrar Comprador
                             </Button>

@@ -438,11 +438,6 @@ const Cliente = () => {
             setSucesso(true);
             setMensagemSucesso("Cliente cadastrado com sucesso!");
 
-            // sessionStorage.removeItem("Venda");
-            // sessionStorage.removeItem("Consignacao");
-            // sessionStorage.removeItem("Compra");
-            // sessionStorage.removeItem("Troca");
-
             sessionStorage.removeItem("NegocioAtual");
 
             setTimeout(() => {
@@ -635,7 +630,6 @@ const Cliente = () => {
     // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
-
     return (
         <>
             <Header />
@@ -721,26 +715,8 @@ const Cliente = () => {
                                 <div class="col-md-4 ">
                                     <label for="rg" class="form-label">RG</label>
                                     <input type="text" className={`form-control ${hasError("rg") && "is-invalid"}`} id="rg" name="rg" aria-describedby="rgHelp" value={fisica.rg} onChange={handleInputChangeFisica} />
-                                    {/* {vazio.includes("rg") && <div className="invalid-feedback">Informe o RG.</div>} */}
                                     {tamanho.includes("rg") && <div className="invalid-feedback">RG inválido (deve ter de 9 a 13 caracteres numéricos).</div>}
                                 </div>
-                                {/* <div class="col-md-4 ">
-                                    <label for="data" class="form-label">Data cadastro</label><br />
-                                    <DatePicker
-                                        calendarClassName="custom-datepicker-container"
-                                        className={`form-control ${hasError("data") && "is-invalid"}`}
-                                        type="text"
-                                        aria-describedby="dataHelp"
-                                        id="data_cadastro"
-                                        name="data_cadastro"
-                                        selected={cliente.data_cadastro}
-                                        onChange={(date) => setCliente({ ...cliente, data_cadastro: date })}
-                                        dateFormat="dd/MM/yyyy" // Formato da data
-                                    />
-                                    {vazio.includes("data") && <div className="invalid-feedback">Informe a data de cadastro.</div>}
-                                    {tipo.includes("data") && <div className="invalid-feedback">Data inválida.</div>}
-
-                                </div> */}
                             </div>
                         </fieldset>
 
@@ -839,7 +815,6 @@ const Cliente = () => {
                                 <div class="col-md-4">
                                     <label for="cnpj" class="form-label">CNPJ</label>
                                     <input type="text" className={`form-control ${hasError("cnpj") && "is-invalid"}`} id="cpf" name="cnpj" aria-describedby="cnpjHelp" value={juridica.cnpj} onChange={handleInputChangeJuridica} />
-
                                     {vazio.includes("cnpj") && <div className="invalid-feedback">Informe o CNPJ.</div>}
                                     {tamanho.includes("cnpj") && <div className="invalid-feedback">CNPJ inválido (deve ter 14 caracteres numéricos).</div>}
                                 </div>
@@ -852,26 +827,8 @@ const Cliente = () => {
                                 <div class="col-md-4">
                                     <label for="nome_responsavel" class="form-label">Nome do responsável</label>
                                     <input type="text" className={`form-control ${hasError("nome_responsavel") && "is-invalid"}`} id="nome_responsavel" name="nome_responsavel" aria-describedby="nome_responsavelHelp" value={juridica.nome_responsavel} onChange={handleInputChangeJuridica} />
-
                                     {vazio.includes("nome_responsavel") && <div className="invalid-feedback">Informe o nome do responsável.</div>}
                                 </div>
-                                {/* <div class="col-md-4">
-                                    <label for="data" class="form-label">Data cadastro</label><br />
-                                    <DatePicker
-                                        calendarClassName="custom-datepicker-container"
-                                        className={`form-control ${hasError("data") && "is-invalid"}`}
-                                        type="text"
-                                        aria-describedby="dataHelp"
-                                        id="data_cadastro"
-                                        name="data_cadastro"
-                                        selected={cliente.data_cadastro}
-                                        onChange={(date) => setCliente({ ...cliente, data_cadastro: date })}
-                                        dateFormat="dd/MM/yyyy" // Formato da data
-                                    />
-
-                                    {vazio.includes("data") && <div className="invalid-feedback">Informe a data.</div>}
-                                    {tipo.includes("data") && <div className="invalid-feedback">Data inválida.</div>}
-                                </div> */}
                             </div>
                         </fieldset>
 

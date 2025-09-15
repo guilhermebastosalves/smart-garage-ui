@@ -315,6 +315,8 @@ const Compra = () => {
         if (automovel.km && isNaN(automovel.km)) tipoErros.push("km");
         if (automovel.cor && (!isNaN(automovel.cor))) tipoErros.push("cor");
         if (automovel.ano_fabricacao && automovel.ano_modelo && automovel.ano_fabricacao > automovel.ano_modelo) tipoErros.push("ano_modelo_fabricacao");
+        const anoAtual = new Date().getFullYear();
+        if (automovel.ano_modelo && (!/^\d{4}$/.test(automovel.ano_modelo) || Number(automovel.ano_modelo) > anoAtual + 1)) { tipoErros.push("ano_modelo_futuro"); }
 
 
 
@@ -563,9 +565,10 @@ const Compra = () => {
                                 </div>
                                 <div className="col-md-2">
                                     <label htmlFor="anomodelo" className="form-label">Ano Modelo</label>
-                                    <input type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} />
+                                    <input type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"} ${hasError("ano_modelo_futuro") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} />
                                     {vazio.includes("ano_modelo") && <div className="invalid-feedback ms-1">Informe o ano modelo.</div>}
                                     {tipo.includes("ano_modelo") && <div className="invalid-feedback ms-1">Ano modelo inválido.</div>}
+                                    {tipo.includes("ano_modelo_futuro") && (<div className="invalid-feedback ms-1">Ano modelo inválido (não pode ser maior que {new Date().getFullYear() + 1}).</div>)}
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="placa" className="form-label">Placa</label>

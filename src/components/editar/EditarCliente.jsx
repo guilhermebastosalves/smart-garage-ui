@@ -63,16 +63,71 @@ const EditarCliente = () => {
         }
     }, [id]);
 
+    const optionsEstados = [
+        { label: "AC", value: "AC" }, { label: "AL", value: "AL" }, { label: "AP", value: "AP" },
+        { label: "AM", value: "AM" }, { label: "BA", value: "BA" }, { label: "CE", value: "CE" },
+        { label: "DF", value: "DF" }, { label: "ES", value: "ES" }, { label: "GO", value: "GO" },
+        { label: "MA", value: "MA" }, { label: "MT", value: "MT" }, { label: "MS", value: "MS" },
+        { label: "MG", value: "MG" }, { label: "PA", value: "PA" }, { label: "PB", value: "PB" },
+        { label: "PR", value: "PR" }, { label: "PE", value: "PE" }, { label: "PI", value: "PI" },
+        { label: "RJ", value: "RJ" }, { label: "RN", value: "RN" }, { label: "RS", value: "RS" },
+        { label: "RO", value: "RO" }, { label: "RR", value: "RR" }, { label: "SC", value: "SC" },
+        { label: "SP", value: "SP" }, { label: "SE", value: "SE" }, { label: "TO", value: "TO" }
+    ];
+
     // Lógica de validação (copiada e adaptada do seu Cliente.jsx)
-    const validateFields = () => {
-        // ... (Cole aqui suas funções 'validateFieldsPessoaFisica' e 'validateFieldsPessoaJuridica' do Cliente.jsx)
-        // Você pode unificá-las em uma única função se preferir.
-        return { vazioErros: [], tamanhoErros: [], tipoErros: [] }; // Placeholder
+    const validateFields = (tipoCliente) => {
+        let vazioErros = [];
+        let tamanhoErros = [];
+        let tipoErros = [];
+
+        // --- 1. VALIDAÇÃO DOS CAMPOS COMUNS ---
+        if (!cliente.nome) vazioErros.push("nome");
+        if (!cliente.email) vazioErros.push("email");
+        if (!cliente.telefone) vazioErros.push("telefone");
+        if (cliente.telefone && isNaN(cliente.telefone)) tamanhoErros.push("telefone");
+
+        if (!endereco.cep) vazioErros.push("cep");
+        if (endereco.cep && (endereco.cep.length !== 8 || isNaN(endereco.cep))) tamanhoErros.push("cep");
+
+        if (!endereco.logradouro) vazioErros.push("logradouro");
+        if (!endereco.bairro) vazioErros.push("bairro");
+        if (!endereco.numero) vazioErros.push("numero");
+        if (endereco.numero && isNaN(endereco.numero)) tipoErros.push("numero");
+
+        if (!cidade.nome) vazioErros.push("cidade");
+        if (!estado.uf) vazioErros.push("estado");
+
+        // --- 2. VALIDAÇÃO DOS CAMPOS ESPECÍFICOS ---
+        if (tipoCliente === 'fisica') {
+            if (!fisica.cpf) vazioErros.push("cpf");
+            if (fisica.cpf && (fisica.cpf.length !== 11 || isNaN(fisica.cpf))) tamanhoErros.push("cpf");
+
+            // RG é opcional, mas se preenchido, valida o tamanho
+            if (fisica.rg && (fisica.rg.length < 9 || fisica.rg.length > 13 || isNaN(fisica.rg))) tamanhoErros.push("rg");
+
+        } else if (tipoCliente === 'juridica') {
+            if (!juridica.cnpj) vazioErros.push("cnpj");
+            if (juridica.cnpj && (juridica.cnpj.length !== 14 || isNaN(juridica.cnpj))) tamanhoErros.push("cnpj");
+
+            if (!juridica.nome_responsavel) vazioErros.push("nome_responsavel");
+        }
+
+        return { vazioErros, tamanhoErros, tipoErros };
     };
 
     const handleInputChange = (setter) => (e) => {
         const { name, value } = e.target;
         setter(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleInputChangeCidade = (e) => {
+        const { value } = e.target;
+        setCidade({ ...cidade, nome: value });
+    };
+
+    const handleInputChangeEstado = (selectedOption) => {
+        setEstado({ ...estado, uf: selectedOption?.value ?? "" });
     };
 
     useEffect(() => {
@@ -88,8 +143,17 @@ const EditarCliente = () => {
         setErro('');
         setSucesso('');
 
-        // ... (Sua lógica de validação aqui)
 
+        const { vazioErros, tamanhoErros, tipoErros } = validateFields(opcao);
+
+        setVazio(vazioErros);
+        setTamanho(tamanhoErros);
+        setTipo(tipoErros);
+
+        if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
+            setIsSubmitting(false);
+            return; // Interrompe se houver erros de validaçã
+        }
 
         const dataPayload = {
             cliente,
@@ -141,6 +205,8 @@ const EditarCliente = () => {
         return <div className="text-center p-5"><Spinner animation="border" /></div>;
     }
 
+    const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
+
     return (
         <>
             <Header />
@@ -171,68 +237,129 @@ const EditarCliente = () => {
                     </ButtonGroup>
 
                     {/* Formulário de Informações do Cliente (comum a ambos) */}
-                    <Card className="form-card mb-4">
-                        <Card.Header>Informações Gerais</Card.Header>
-                        <Card.Body>
-                            <Row className="g-3">
-                                <Col md={4}><Form.Group><Form.Label>Nome</Form.Label><Form.Control name="nome" value={cliente.nome} onChange={handleInputChange(setCliente)} /></Form.Group></Col>
-                                <Col md={4}><Form.Group><Form.Label>Email</Form.Label><Form.Control name="email" type="email" value={cliente.email} onChange={handleInputChange(setCliente)} /></Form.Group></Col>
-                                <Col md={4}><Form.Group><Form.Label>Telefone</Form.Label><Form.Control name="telefone" value={cliente.telefone} onChange={handleInputChange(setCliente)} /></Form.Group></Col>
-                            </Row>
-                        </Card.Body>
-                    </Card>
+                    <fieldset className="mb-5">
+                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações do Cliente</legend>
+                        <div className="row g-3">
+                            <Col md={4}>
+                                <Form.Group><Form.Label>Nome</Form.Label><Form.Control className={`form-control ${hasError("nome") && "is-invalid"}`} name="nome" value={cliente.nome} onChange={handleInputChange(setCliente)} />
+                                    {vazio.includes("nome") && <div className="invalid-feedback">Informe o nome.</div>}
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group><Form.Label>Email</Form.Label><Form.Control className={`form-control ${hasError("email") && "is-invalid"}`} name="email" type="email" value={cliente.email} onChange={handleInputChange(setCliente)} />
+                                    {vazio.includes("email") && <div className="invalid-feedback">Informe o email.</div>}
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group><Form.Label>Telefone</Form.Label><Form.Control className={`form-control ${hasError("telefone") && "is-invalid"}`} name="telefone" value={cliente.telefone} onChange={handleInputChange(setCliente)} />
+                                    {vazio.includes("telefone") && <div className="invalid-feedback">Informe o telefone.</div>}
+                                    {tamanho.includes("telefone") && <div className="invalid-feedback">Telefone inválido.</div>}
+                                </Form.Group>
+                            </Col>
+                        </div>
+                    </fieldset>
 
                     {/* Formulário Condicional para Pessoa Física ou Jurídica */}
                     {opcao === 'fisica' && (
-                        <Card className="form-card mb-4">
-                            <Card.Header>Documentos (Pessoa Física)</Card.Header>
-                            <Card.Body>
-                                <Row className="g-3">
-                                    <Col md={6}><Form.Group><Form.Label>CPF</Form.Label><Form.Control name="cpf" value={fisica.cpf} onChange={handleInputChange(setFisica)} /></Form.Group></Col>
-                                    <Col md={6}><Form.Group><Form.Label>RG</Form.Label><Form.Control name="rg" value={fisica.rg} onChange={handleInputChange(setFisica)} /></Form.Group></Col>
-                                </Row>
-                            </Card.Body>
-                        </Card>
+                        <fieldset className="mb-5">
+                            <legend className="h5 fw-bold mb-3 border-bottom pb-2">Documentos (Pessoa Física)</legend>
+                            <div className="row g-3">
+                                <Col md={6}>
+                                    <Form.Group><Form.Label>CPF</Form.Label><Form.Control className={`form-control ${hasError("cpf") && "is-invalid"}`} name="cpf" value={fisica.cpf} onChange={handleInputChange(setFisica)} />
+                                        {vazio.includes("cpf") && <div className="invalid-feedback">Informe o CPF.</div>}
+                                        {tamanho.includes("cpf") && <div className="invalid-feedback">CPF inválido (deve ter 11 caracteres numéricos).</div>}
+                                    </Form.Group>
+                                </Col>
+                                <Col md={6}>
+                                    <Form.Group><Form.Label>RG</Form.Label><Form.Control className={`form-control ${hasError("rg") && "is-invalid"}`} name="rg" value={fisica.rg} onChange={handleInputChange(setFisica)} />
+                                        {tamanho.includes("rg") && <div className="invalid-feedback">RG inválido (deve ter de 9 a 13 caracteres numéricos).</div>}
+                                    </Form.Group>
+                                </Col>
+                            </div>
+                        </fieldset>
                     )}
                     {opcao === 'juridica' && (
-                        <Card className="form-card mb-4">
-                            <Card.Header>Documentos (Pessoa Jurídica)</Card.Header>
-                            <Card.Body>
-                                {/* ... Campos para CNPJ, Razão Social, etc. ... */}
-                                <Row className="g-3">
-                                    <Col md={4}><Form.Group><Form.Label>CNPJ</Form.Label><Form.Control name="cnpj" value={juridica.cnpj} onChange={handleInputChange(setJuridica)} /></Form.Group></Col>
-                                    <Col md={4}><Form.Group><Form.Label>Razão Social</Form.Label><Form.Control name="razao_social" value={juridica.razao_social} onChange={handleInputChange(setJuridica)} /></Form.Group></Col>
-                                    <Col md={4}><Form.Group><Form.Label>Nome do Responsável</Form.Label><Form.Control name="nome_responsavel" value={juridica.nome_responsavel} onChange={handleInputChange(setJuridica)} /></Form.Group></Col>
-                                </Row>
-                            </Card.Body>
-                        </Card>
+                        <fieldset className="mb-5">
+                            <legend className="h5 fw-bold mb-3 border-bottom pb-2">Documentos (Pessoa Jurídica)</legend>
+                            <div className="row g-3">
+                                <Col md={4}>
+                                    <Form.Group><Form.Label>CNPJ</Form.Label><Form.Control className={`form-control ${hasError("cnpj") && "is-invalid"}`} name="cnpj" value={juridica.cnpj} onChange={handleInputChange(setJuridica)} />
+                                        {vazio.includes("cnpj") && <div className="invalid-feedback">Informe o CNPJ.</div>}
+                                        {tamanho.includes("cnpj") && <div className="invalid-feedback">CNPJ inválido (deve ter 14 caracteres numéricos).</div>}
+                                    </Form.Group>
+                                </Col>
+                                <Col md={4}>
+                                    <Form.Group><Form.Label>Razão Social</Form.Label><Form.Control className={`form-control ${hasError("razao_social") && "is-invalid"}`} name="razao_social" value={juridica.razao_social} onChange={handleInputChange(setJuridica)} /></Form.Group>
+                                </Col>
+                                <Col md={4}>
+                                    <Form.Group><Form.Label>Nome do Responsável</Form.Label><Form.Control className={`form-control ${hasError("nome_responsavel") && "is-invalid"}`} name="nome_responsavel" value={juridica.nome_responsavel} onChange={handleInputChange(setJuridica)} />
+                                        {vazio.includes("nome_responsavel") && <div className="invalid-feedback">Informe o nome do responsável.</div>}
+                                    </Form.Group>
+                                </Col>
+                            </div>
+                        </fieldset>
                     )}
 
                     {/* Formulário de Endereço */}
-                    <Card className="form-card mb-4">
-                        <Card.Header>Endereço</Card.Header>
-                        <Card.Body>
-                            {/* ... Seus campos de endereço aqui, usando os estados 'endereco', 'cidade', 'estado' ... */}
-                            <Row className="g-3">
-                                <Col md={6}><Form.Group><Form.Label>CEP</Form.Label><Form.Control name="cep" value={endereco.cep} onChange={handleInputChange(setEndereco)} /></Form.Group></Col>
-                                <Col md={6}><Form.Group><Form.Label>Logradouro</Form.Label><Form.Control name="logradouro" value={endereco.logradouro} onChange={handleInputChange(setEndereco)} /></Form.Group></Col>
-                                <Col md={6}><Form.Group><Form.Label>Bairro</Form.Label><Form.Control name="bairro" value={endereco.bairro} onChange={handleInputChange(setEndereco)} /></Form.Group></Col>
-                                <Col md={6}><Form.Group><Form.Label>Numero</Form.Label><Form.Control name="numero" value={endereco.numero} onChange={handleInputChange(setEndereco)} /></Form.Group></Col>
-                            </Row>
-                        </Card.Body>
-                    </Card>
+                    <fieldset className="mb-5">
+                        <legend className="h5 fw-bold mb-3 border-bottom pb-2">Endereço</legend>
+                        <div className="row g-3">
+                            <Col md={4}>
+                                <Form.Group><Form.Label>CEP</Form.Label><Form.Control className={`form-control ${hasError("cep") && "is-invalid"}`} name="cep" value={endereco.cep} onChange={handleInputChange(setEndereco)} />
+                                    {vazio.includes("cep") && <div className="invalid-feedback">Informe o CEP.</div>}
+                                    {tamanho.includes("cep") && <div className="invalid-feedback">CEP inválido (deve ter 8 caracteres numéricos).</div>}
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group><Form.Label>Cidade</Form.Label><Form.Control className={`form-control ${hasError("cidade") && "is-invalid"}`} name="nome" value={cidade.nome} onChange={handleInputChangeCidade} />
+                                    {vazio.includes("cidade") && <div className="invalid-feedback">Informe a cidade.</div>}
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group >
+                                    <Form.Label>Estado</Form.Label>
+                                    <Select
+                                        className={`${hasError("estado") && "is-invalid"}`}
+                                        isSearchable={true}
+                                        isClearable={true}
+                                        placeholder="Selecione o estado"
+                                        options={optionsEstados}
+                                        value={optionsEstados.find(option => option.value === estado.uf)}
+                                        onChange={handleInputChangeEstado}
+                                    />
+                                    {vazio.includes("estado") && <div className="invalid-feedback">Informe o estado.</div>}
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group><Form.Label>Logradouro</Form.Label><Form.Control className={`form-control ${hasError("logradouro") && "is-invalid"}`} name="logradouro" value={endereco.logradouro} onChange={handleInputChange(setEndereco)} />
+                                    {vazio.includes("logradouro") && <div className="invalid-feedback">Informe o logradouro.</div>}
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group><Form.Label>Bairro</Form.Label><Form.Control className={`form-control ${hasError("bairro") && "is-invalid"}`} name="bairro" value={endereco.bairro} onChange={handleInputChange(setEndereco)} />
+                                    {vazio.includes("bairro") && <div className="invalid-feedback">Informe o bairro.</div>}
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group><Form.Label>Numero</Form.Label><Form.Control className={`form-control ${hasError("numero") && "is-invalid"}`} name="numero" value={endereco.numero} onChange={handleInputChange(setEndereco)} />
+                                    {vazio.includes("numero") && <div className="invalid-feedback">Informe o número.</div>}
+                                    {tipo.includes("numero") && <div className="invalid-feedback">Número inválido.</div>}
+                                </Form.Group>
+                            </Col>
+                        </div>
+                    </fieldset>
 
                     {/* Botões de Ação */}
                     <div className="d-flex justify-content-end pb-3">
                         <Button variant="outline-secondary" size="lg" className="me-3" onClick={() => navigate('/listagem/clientes')}>
-                            Cancelar
+                            Voltar
                         </Button>
                         <Button variant="primary" type="submit" size="lg" disabled={isSubmitting}>
                             {isSubmitting ? 'Salvando...' : 'Salvar'}
                         </Button>
                     </div>
                 </form>
-            </div>
+            </div >
         </>
     );
 };

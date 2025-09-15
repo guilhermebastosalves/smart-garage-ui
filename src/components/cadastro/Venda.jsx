@@ -530,7 +530,7 @@ const Venda = () => {
                     </div>
 
                     <div className="d-flex justify-content-end pb-3">
-                        <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
+                        <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(`/detalhes/${automovelId}`)}>
                             Voltar
                         </button>
                         <button type="submit" className="btn btn-primary btn-lg px-4" disabled={isSubmitting}>
