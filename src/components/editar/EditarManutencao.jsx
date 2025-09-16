@@ -25,11 +25,9 @@ const EditarManutencao = () => {
 
 
     const [formData, setFormData] = useState({
-        // Campos do Automóvel
         valor: "", data_envio: "", descricao: "", previsao_retorno: "",
 
 
-        // IDs das associações
         automovelId: null,
 
     });
@@ -37,8 +35,7 @@ const EditarManutencao = () => {
 
     useEffect(() => {
         setLoading(true);
-        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-        // Use Promise.all para esperar todas as chamadas essenciais terminarem
+        const timeout = setTimeout(() => setLoading(false), 8000);
         Promise.all([
             ManutencaoDataService.getById(id),
             AutomovelDataService.getAll(),
@@ -48,25 +45,23 @@ const EditarManutencao = () => {
             const manutencao = manutencaoId.data;
             setFormData(prev => ({ ...prev, ...manutencao }));
 
-            // Ajusta a data da compra antes de colocá-la no estado
             const dataEnvioAjustada = ajustarDataParaFusoLocal(manutencao.data_envio);
             const previsaoRetornoAjustada = ajustarDataParaFusoLocal(manutencao.previsao_retorno);
-            // Define o estado do formulário com a data já corrigida
+
             setFormData({
                 ...manutencao,
                 data_envio: dataEnvioAjustada,
                 previsao_retorno: previsaoRetornoAjustada
             });
 
-            // setCompra(compras.data);
             setAutomovel(automoveis.data);
             setModelo(modelos.data);
             setMarca(marcas.data);
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
+            setLoading(false);
         }).finally(() => {
-            setLoading(false); // Esconde o loading quando tudo terminar
+            setLoading(false);
             clearTimeout(timeout);
         });
     }, []);
@@ -76,17 +71,14 @@ const EditarManutencao = () => {
 
         const dataUtc = new Date(dataString);
 
-        // getTimezoneOffset() retorna a diferença em minutos entre UTC e o local (ex: 180 para GMT-3)
         const timezoneOffsetEmMs = dataUtc.getTimezoneOffset() * 60 * 1000;
 
-        // Cria uma nova data somando o tempo UTC com o offset, efetivamente "cancelando" a conversão.
         const dataCorrigida = new Date(dataUtc.valueOf() + timezoneOffsetEmMs);
 
         return dataCorrigida;
     };
 
 
-    // --- Event Handlers ---
     const handleAutomovelChange = (selectedOption) => {
         setFormData({ ...formData, automovelId: selectedOption ? selectedOption.value : "" });
     };
@@ -98,10 +90,8 @@ const EditarManutencao = () => {
     };
 
 
-    // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Mensagens de sucesso e erro
     const [mensagemErro, setMensagemErro] = useState('');
     const [erro, setErro] = useState(false);
 
@@ -127,11 +117,8 @@ const EditarManutencao = () => {
         // Tipo
         if (formData.data_envio && formData.data_envio > new Date()) tipoErros.push("data_envio");
 
-        // Crie uma data para o momento atual
         const hoje = new Date();
 
-        // Zere as horas, minutos, segundos e milissegundos
-        // Isso garante que estamos comparando apenas a data (o início do dia)
         hoje.setHours(0, 0, 0, 0);
 
         if (formData.previsao_retorno && formData.previsao_retorno < hoje) tipoErros.push("previsao_retorno");
@@ -146,9 +133,6 @@ const EditarManutencao = () => {
         const nomeModelo = modelo?.find(modelo => modelo.marcaId === nomeMarca.id);
 
         return {
-            // value: d.id,
-            // label: `Modelo: ${nomeModelo ? nomeModelo?.nome + " |" : ""} Marca: ${nomeMarca ? nomeMarca?.nome + " |" : ""} | Renavam: ${d.renavam} | Ano: ${d.ano_modelo}`
-
             value: d.id,
 
             label: {
@@ -163,17 +147,13 @@ const EditarManutencao = () => {
 
     const formatOptionLabel = ({ value, label }) => (
         <div className="d-flex align-items-center">
-            {/* Ícone principal à esquerda */}
             <FaCar size="2.5em" color="#0d6efd" className="me-3" />
 
-            {/* Div para o conteúdo de texto */}
             <div>
-                {/* Linha Principal: Marca e Modelo */}
                 <div className="fw-bold fs-6">
                     {label.marca || "Marca não encontrada"} {label.modelo || ""}
                 </div>
 
-                {/* Linha Secundária: Renavam e Ano com ícones */}
                 <div className="small text-muted d-flex align-items-center mt-1">
                     <FaRegIdCard className="me-1" />
                     <span>Renavam: {label.renavam}</span>
@@ -189,7 +169,7 @@ const EditarManutencao = () => {
     const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
-            padding: 15,
+            padding: 10,
             fontSize: '1rem',
             fontWeight: 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
@@ -199,7 +179,6 @@ const EditarManutencao = () => {
         control: (provided) => ({
             ...provided,
             fontSize: '1rem',
-            // Adiciona a borda vermelha se o campo tiver erro
             borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
             '&:hover': {
                 borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
@@ -220,12 +199,11 @@ const EditarManutencao = () => {
 
     const editarManutencao = async (e) => {
 
-        // Prevents the default page refresh
         e.preventDefault();
         setErro(false);
         setSucesso(false);
         setVazio([]);
-        setIsSubmitting(true); // Desabilita o botão
+        setIsSubmitting(true);
 
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFields();
@@ -234,7 +212,6 @@ const EditarManutencao = () => {
         setTamanho(tamanhoErros);
         setTipo(tipoErros);
 
-        // Só continua se não houver erros
         if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
             setIsSubmitting(false);
             return;
@@ -261,13 +238,11 @@ const EditarManutencao = () => {
 
         } catch (error) {
             console.error("Erro ao atualizar manutenção:", error);
-            // Lógica para tratar erros...
         } finally {
             setIsSubmitting(false);
         }
     }
 
-    // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
     const CustomDateInput = React.forwardRef(({ value, onClick, className }, ref) => (
@@ -307,12 +282,11 @@ const EditarManutencao = () => {
                     </div>
                 }
 
-                {/* Formulário com Seções */}
                 <form onSubmit={editarManutencao} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
                     <div className="card mb-4 form-card">
                         <div className="card-header d-flex align-items-center">
-                            <FaFileSignature className="me-2" /> {/* Ícone para a seção */}
+                            <FaFileSignature className="me-2" />
                             Detalhes da Manutenção
                         </div>
                         <div className="card-body">
@@ -395,7 +369,6 @@ const EditarManutencao = () => {
                         </div>
                     </div>
 
-                    {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end">
                         <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
                             Voltar

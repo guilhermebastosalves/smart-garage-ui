@@ -8,10 +8,9 @@ import Select from "react-select";
 import { Form, Button, Card, Alert, Spinner, ToggleButton, ButtonGroup, Row, Col } from 'react-bootstrap';
 
 const EditarCliente = () => {
-    const { id } = useParams(); // Pega o ID da URL
+    const { id } = useParams();
     const navigate = useNavigate();
 
-    // Estados para os dados do formulário
     const [cliente, setCliente] = useState({ nome: "", email: "", telefone: "" });
     const [fisica, setFisica] = useState({ cpf: "", rg: "" });
     const [juridica, setJuridica] = useState({ cnpj: "", razao_social: "", nome_responsavel: "" });
@@ -19,8 +18,7 @@ const EditarCliente = () => {
     const [cidade, setCidade] = useState({ nome: "" });
     const [estado, setEstado] = useState({ uf: "" });
 
-    // Estados de controle da UI
-    const [opcao, setOpcao] = useState(''); // 'fisica' ou 'juridica'
+    const [opcao, setOpcao] = useState('');
     const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [erro, setErro] = useState('');
@@ -29,7 +27,6 @@ const EditarCliente = () => {
     const [tamanho, setTamanho] = useState([]);
     const [tipo, setTipo] = useState([]);
 
-    // Efeito para buscar os dados do cliente quando o componente carrega
     useEffect(() => {
         if (id) {
             setLoading(true);
@@ -75,7 +72,6 @@ const EditarCliente = () => {
         { label: "SP", value: "SP" }, { label: "SE", value: "SE" }, { label: "TO", value: "TO" }
     ];
 
-    // Lógica de validação (copiada e adaptada do seu Cliente.jsx)
     const validateFields = (tipoCliente) => {
         let vazioErros = [];
         let tamanhoErros = [];
@@ -98,12 +94,10 @@ const EditarCliente = () => {
         if (!cidade.nome) vazioErros.push("cidade");
         if (!estado.uf) vazioErros.push("estado");
 
-        // --- 2. VALIDAÇÃO DOS CAMPOS ESPECÍFICOS ---
         if (tipoCliente === 'fisica') {
             if (!fisica.cpf) vazioErros.push("cpf");
             if (fisica.cpf && (fisica.cpf.length !== 11 || isNaN(fisica.cpf))) tamanhoErros.push("cpf");
 
-            // RG é opcional, mas se preenchido, valida o tamanho
             if (fisica.rg && (fisica.rg.length < 9 || fisica.rg.length > 13 || isNaN(fisica.rg))) tamanhoErros.push("rg");
 
         } else if (tipoCliente === 'juridica') {
@@ -136,7 +130,6 @@ const EditarCliente = () => {
         }
     }, [erro]);
 
-    // Função para salvar as alterações
     const handleUpdate = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -152,7 +145,7 @@ const EditarCliente = () => {
 
         if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
             setIsSubmitting(false);
-            return; // Interrompe se houver erros de validaçã
+            return;
         }
 
         const dataPayload = {
@@ -230,13 +223,11 @@ const EditarCliente = () => {
                 }
 
                 <form onSubmit={handleUpdate} className={sucesso ? 'd-none' : ''}>
-                    {/* Botões de tipo de pessoa - desabilitados na edição */}
                     <ButtonGroup className="mb-4">
                         <ToggleButton variant="outline-primary" checked={opcao === 'fisica'} disabled type="radio">Pessoa Física</ToggleButton>
                         <ToggleButton variant="outline-primary" checked={opcao === 'juridica'} disabled type="radio">Pessoa Jurídica</ToggleButton>
                     </ButtonGroup>
 
-                    {/* Formulário de Informações do Cliente (comum a ambos) */}
                     <fieldset className="mb-5">
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações do Cliente</legend>
                         <div className="row g-3">
@@ -259,7 +250,6 @@ const EditarCliente = () => {
                         </div>
                     </fieldset>
 
-                    {/* Formulário Condicional para Pessoa Física ou Jurídica */}
                     {opcao === 'fisica' && (
                         <fieldset className="mb-5">
                             <legend className="h5 fw-bold mb-3 border-bottom pb-2">Documentos (Pessoa Física)</legend>
@@ -300,7 +290,6 @@ const EditarCliente = () => {
                         </fieldset>
                     )}
 
-                    {/* Formulário de Endereço */}
                     <fieldset className="mb-5">
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Endereço</legend>
                         <div className="row g-3">

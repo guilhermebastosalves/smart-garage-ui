@@ -32,87 +32,6 @@ const Historico = () => {
         MarcaDataService.getAll().then(res => setMarca(res.data)).catch(console.error);
     }, []);
 
-    // const retrieveCompra = useCallback(() => {
-    //     CompraDataService.getAll()
-    //         .then(response => {
-    //             setCompra(response.data);
-    //             // console.log("Automóveis carregados:", response.data);
-    //         })
-    //         .catch(e => {
-    //             console.error("Erro ao buscar compras:", e);
-    //         });
-    // }, []);
-
-
-    // useEffect(() => {
-    //     retrieveCompra();
-    // }, [retrieveCompra]);
-
-    // const retrieveConsignacao = useCallback(() => {
-    //     ConsignacaoDataService.getAll()
-    //         .then(response => {
-    //             setConsignacao(response.data);
-    //             // console.log("Automóveis carregados:", response.data);
-    //         })
-    //         .catch(e => {
-    //             console.error("Erro ao buscar consignações:", e);
-    //         });
-    // }, []);
-
-
-    // useEffect(() => {
-    //     retrieveConsignacao();
-    // }, [retrieveConsignacao]);
-
-    // const retrieveAutomovel = useCallback(() => {
-    //     AutomovelDataService.getAll()
-    //         .then(response => {
-    //             setAutomovel(response.data);
-    //             // console.log("Automóveis carregados:", response.data);
-    //         })
-    //         .catch(e => {
-    //             console.error("Erro ao buscar automóveis:", e);
-    //         });
-    // }, []);
-
-
-    // useEffect(() => {
-    //     retrieveAutomovel();
-    // }, [retrieveAutomovel]);
-
-    // const retrieveModelo = useCallback(() => {
-    //     ModeloDataService.getAll()
-    //         .then(response => {
-    //             setModelo(response.data);
-    //             // console.log("Automóveis carregados:", response.data);
-    //         })
-    //         .catch(e => {
-    //             console.error("Erro ao buscar modelos:", e);
-    //         });
-    // }, []);
-
-
-    // useEffect(() => {
-    //     retrieveModelo();
-    // }, [retrieveModelo]);
-
-
-    // const retrieveMarca = useCallback(() => {
-    //     MarcaDataService.getAll()
-    //         .then(response => {
-    //             setMarca(response.data);
-    //             // console.log("Automóveis carregados:", response.data);
-    //         })
-    //         .catch(e => {
-    //             console.error("Erro ao buscar marcas:", e);
-    //         });
-    // }, []);
-
-
-    // useEffect(() => {
-    //     retrieveMarca();
-    // }, [retrieveMarca]);
-
     const [currentPage, setCurrentPage] = useState(1);
     const recordsPerPage = 15;
     const lastIndex = currentPage * recordsPerPage;
@@ -289,11 +208,6 @@ const Historico = () => {
 
                     )
                 )}
-
-
-
-
-
 
             </div>
         </>

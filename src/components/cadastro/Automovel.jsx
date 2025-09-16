@@ -21,17 +21,17 @@ const Automovel = () => {
 
         if (compra) {
             setModeloNegocio(JSON.parse(compra));
-            localStorage.removeItem("Compra"); // Opcional: apaga após usar
+            localStorage.removeItem("Compra");
         }
 
         if (consignacao) {
             setModeloNegocio(JSON.parse(consignacao));
-            localStorage.removeItem("Consignacao"); // Opcional: apaga após usar
+            localStorage.removeItem("Consignacao");
         }
 
         if (troca) {
             setModeloNegocio(JSON.parse(troca));
-            localStorage.removeItem("Troca"); // Opcional: apaga após usar
+            localStorage.removeItem("Troca");
         }
     }, []);
 
@@ -80,7 +80,7 @@ const Automovel = () => {
     const [marca, setMarca] = useState(initialMarcaState);
 
 
-    // --- Event Handlers ---
+    // Handlers
     const handleInputChangeAutomovel = event => {
         const { name, value } = event.target;
         setAutomovel({ ...automovel, [name]: value });
@@ -96,10 +96,8 @@ const Automovel = () => {
         setMarca({ ...marca, [name]: value });
     };
 
-    // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Mensagens de sucesso e erro
     const [mensagemErro, setMensagemErro] = useState('');
     const [erro, setErro] = useState(false);
 
@@ -147,12 +145,11 @@ const Automovel = () => {
 
     const saveAutomovel = async (e) => {
 
-        // Prevents the default page refresh
         e.preventDefault();
         setErro(false);
         setSucesso(false);
         setVazio([]);
-        setIsSubmitting(true); // Desabilita o botão
+        setIsSubmitting(true);
 
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFields();
@@ -175,7 +172,7 @@ const Automovel = () => {
             })
 
             if (verificacao.data.erro) {
-                setErro(verificacao.data.erro); // erro vindo do back
+                setErro(verificacao.data.erro);
                 setMensagemErro(verificacao.data.mensagemErro);
                 return;
             }
@@ -188,10 +185,9 @@ const Automovel = () => {
             setMensagemErro(erro.response.data.mensagemErro);
             return;
         } finally {
-            setIsSubmitting(false); // A mágica acontece aqui!
+            setIsSubmitting(false);
         }
 
-        // aqui crio os JSON's auxiliares, para ficar igual no bd, chamo os campos de nome
         var dataMarca = {
             nome: marca.marca
         }
@@ -201,29 +197,12 @@ const Automovel = () => {
                 console.error("Erro ao criar marca:", e);
             });
 
-        // const marcaId = marcaResp.data.id;
-
         setMarca(marcaResp.data);
 
         var dataModelo = {
             nome: modelo.modelo,
             marcaId: marcaResp?.data.id
         }
-
-        // var data = {
-        //     ano_fabricacao: automovel.ano_fabricacao,
-        //     ano_modelo: automovel.ano_modelo,
-        //     ativo: automovel.ativo,
-        //     cor: automovel.cor,
-        //     combustivel: automovel.combustivel,
-        //     km: automovel.km,
-        //     origem: automovel.origem,
-        //     placa: automovel.placa,
-        //     renavam: automovel.renavam,
-        //     valor: automovel.valor,
-        //     marcaId: marcaResp?.data.id,
-        //     imagem: automovel.imagem
-        // }
 
         const formData = new FormData();
 
@@ -238,7 +217,7 @@ const Automovel = () => {
         formData.append("renavam", automovel.renavam);
         formData.append("valor", automovel.valor);
         formData.append("marcaId", marcaResp?.data.id);
-        formData.append("file", automovel.file); // importante: nome "file" igual ao backend
+        formData.append("file", automovel.file);
 
         const modeloResp = await ModeloDataService.create(dataModelo)
             .catch(e => {
@@ -247,13 +226,10 @@ const Automovel = () => {
 
         setModelo(modeloResp.data);
 
-        // console.log("Dados enviados para automóvel:", data);
-
         const automovelResp = await AutomovelDataService.create(formData, {
             headers: { "Content-type": "multipart/form-data" }
         })
             .catch(e => {
-                // console.error("Erro ao cadastrar automovel:", e);
                 console.error("Erro ao cadastrar automovel:", e.response?.data || e.message);
             });
 
@@ -281,20 +257,19 @@ const Automovel = () => {
         }
     }
 
-    // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
     return (
         <>
             <Header />
             <div className="container py-5">
-                {/* Cabeçalho da Página */}
+
                 <div className="mb-4">
                     <h1 className="fw-bold">Cadastro de Automóvel</h1>
                     <p className="text-muted">Preencha os dados abaixo para registrar um novo automóvel no sistema.</p>
                 </div>
 
-                {/* Alertas */}
+
                 {erro && (
                     <div className="alert alert-danger d-flex align-items-center" role="alert">
                         <i className="bi bi-exclamation-triangle-fill me-2"></i>
@@ -308,10 +283,8 @@ const Automovel = () => {
                     </div>
                 )}
 
-                {/* Formulário com Seções */}
-                <form onSubmit={saveAutomovel} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
-                    {/* Seção 1: Informações Principais */}
+                <form onSubmit={saveAutomovel} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
                     <fieldset className="mb-5">
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações Principais</legend>
@@ -355,17 +328,12 @@ const Automovel = () => {
                                         const file = e.target.files[0];
                                         if (file) {
                                             setAutomovel({ ...automovel, file });
-                                            // ou só file.name, dependendo do backend
                                         }
                                     }}
                                 />
                             </div>
                         </div>
                     </fieldset>
-
-
-                    {/* Seção 2: Documentação e Valores */}
-
 
                     <fieldset className="mb-5">
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Documentação e Valores</legend>
@@ -390,9 +358,6 @@ const Automovel = () => {
                             </div>
                         </div>
                     </fieldset>
-
-
-                    {/* Seção 3: Detalhes Adicionais */}
 
                     <fieldset className="mb-5">
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Detalhes Adicionais</legend>
@@ -427,8 +392,6 @@ const Automovel = () => {
                         </div>
                     </fieldset>
 
-
-                    {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end">
                         <button type="submit" className="btn btn-primary btn-lg" disabled={isSubmitting}>
                             {isSubmitting ? (

@@ -32,11 +32,9 @@ const EditarVenda = () => {
 
 
     const [formData, setFormData] = useState({
-        // Campos do Automóvel
+
         valor: "", data: "", forma_pagamento: "", comissao: "",
 
-
-        // IDs das associações
         clienteId: null,
         automovelId: null,
 
@@ -45,8 +43,7 @@ const EditarVenda = () => {
 
     useEffect(() => {
         setLoading(true);
-        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-        // Use Promise.all para esperar todas as chamadas essenciais terminarem
+        const timeout = setTimeout(() => setLoading(false), 8000);
         Promise.all([
             VendaDataService.getById(id),
             AutomovelDataService.getAll(),
@@ -59,15 +56,13 @@ const EditarVenda = () => {
             const venda = vendaId.data;
             setFormData(prev => ({ ...prev, ...venda }));
 
-            // Ajusta a data da compra antes de colocá-la no estado
             const dataVendaAjustada = ajustarDataParaFusoLocal(venda.data);
-            // Define o estado do formulário com a data já corrigida
+
             setFormData({
                 ...venda,
                 data: dataVendaAjustada
             });
 
-            // setCompra(compras.data);
             setAutomovel(automoveis.data);
             setModelo(modelos.data);
             setMarca(marcas.data);
@@ -76,9 +71,9 @@ const EditarVenda = () => {
             setJuridica(juridica.data);
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
+            setLoading(false);
         }).finally(() => {
-            setLoading(false); // Esconde o loading quando tudo terminar
+            setLoading(false);
             clearTimeout(timeout);
         });
     }, []);
@@ -88,17 +83,14 @@ const EditarVenda = () => {
 
         const dataUtc = new Date(dataString);
 
-        // getTimezoneOffset() retorna a diferença em minutos entre UTC e o local (ex: 180 para GMT-3)
         const timezoneOffsetEmMs = dataUtc.getTimezoneOffset() * 60 * 1000;
 
-        // Cria uma nova data somando o tempo UTC com o offset, efetivamente "cancelando" a conversão.
         const dataCorrigida = new Date(dataUtc.valueOf() + timezoneOffsetEmMs);
 
         return dataCorrigida;
     };
 
 
-    // --- Event Handlers ---
     const handleProprietarioChange = (selectedOption) => {
         setFormData({ ...formData, clienteId: selectedOption ? selectedOption.value : "" });
     };
@@ -115,24 +107,23 @@ const EditarVenda = () => {
 
 
     useEffect(() => {
-        // Só atualiza se o usuário não digitou manualmente
-        // if (!troca.comissao) {
+
         let comissao = "";
+
         if (formData?.valor !== "") {
             comissao = formData?.valor < 50000 ? 300 : formData?.valor >= 100000 ? 700 : 500;
         }
+
         setFormData(prev => ({
             ...prev,
             comissao: comissao
         }));
-        // }
+
     }, [formData?.valor]);
 
 
-    // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Mensagens de sucesso e erro
     const [mensagemErro, setMensagemErro] = useState('');
     const [erro, setErro] = useState(false);
 
@@ -173,9 +164,6 @@ const EditarVenda = () => {
         const pessoaJuridica = juridica.find(pessoa => pessoa.clienteId === d.id);
 
         return {
-            // value: d.id,
-            // label: `Nome: ${d.nome || ""}\n${pessoaJuridica ? pessoaJuridica?.razao_social + "\n" : ""}${pessoaFisica ? "CPF: " + pessoaFisica?.cpf + "\n" : ""}${pessoaJuridica ? "CNPJ: " + pessoaJuridica?.cnpj : ""}`
-
             value: d.id,
 
             label: {
@@ -183,7 +171,6 @@ const EditarVenda = () => {
                 razaoSocial: pessoaJuridica?.razao_social,
                 cpf: pessoaFisica?.cpf,
                 cnpj: pessoaJuridica?.cnpj,
-                // Adicionamos um 'tipo' para facilitar a lógica na formatação
                 tipo: pessoaJuridica ? 'juridica' : 'fisica'
             }
         }
@@ -191,27 +178,18 @@ const EditarVenda = () => {
 
     const formatOptionLabelFornecedor = ({ value, label }) => {
 
-        // Define o ícone e o título principal com base no tipo de fornecedor
         const isPessoaJuridica = label.tipo === 'juridica';
         const IconePrincipal = isPessoaJuridica ? FaBuilding : FaUserTie;
 
-        // const titulo = label.nome;
-
-        // --- LÓGICA CORRIGIDA ---
-        // CORREÇÃO 1: Se for PJ, tenta usar a Razão Social. Se for nula, usa o Nome como fallback.
         const titulo = isPessoaJuridica ? (label.razaoSocial || label.nome) : label.nome;
 
         return (
             <div className="d-flex align-items-center">
-                {/* Ícone principal à esquerda (Empresa ou Pessoa) */}
                 <IconePrincipal size="2.5em" color="#0d6efd" className="me-3" />
 
-                {/* Div para o conteúdo de texto */}
                 <div>
-                    {/* Linha Principal: Razão Social ou Nome */}
                     <div className="fw-bold fs-6">{titulo}</div>
 
-                    {/* Linha Secundária: Nome Fantasia (se for PJ) ou Documento */}
                     <div className="small text-muted d-flex align-items-center mt-1">
                         {isPessoaJuridica ? (
                             <>
@@ -235,9 +213,6 @@ const EditarVenda = () => {
         const nomeModelo = modelo?.find(modelo => modelo.id === d.modeloId);
 
         return {
-            // value: d.id,
-            // label: `Modelo: ${nomeModelo ? nomeModelo?.nome + " |" : ""} Marca: ${nomeMarca ? nomeMarca?.nome + " |" : ""} | Renavam: ${d.renavam} | Ano: ${d.ano_modelo}`
-
             value: d.id,
 
             label: {
@@ -252,17 +227,13 @@ const EditarVenda = () => {
 
     const formatOptionLabel = ({ value, label }) => (
         <div className="d-flex align-items-center">
-            {/* Ícone principal à esquerda */}
             <FaCar size="2.5em" color="#0d6efd" className="me-3" />
 
-            {/* Div para o conteúdo de texto */}
             <div>
-                {/* Linha Principal: Marca e Modelo */}
                 <div className="fw-bold fs-6">
                     {label.marca || "Marca não encontrada"} {label.modelo || ""}
                 </div>
 
-                {/* Linha Secundária: Renavam e Ano com ícones */}
                 <div className="small text-muted d-flex align-items-center mt-1">
                     <FaRegIdCard className="me-1" />
                     <span>Renavam: {label.renavam}</span>
@@ -278,7 +249,7 @@ const EditarVenda = () => {
     const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
-            padding: 15,
+            padding: 10,
             fontSize: '1rem',
             fontWeight: 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
@@ -288,7 +259,6 @@ const EditarVenda = () => {
         control: (provided) => ({
             ...provided,
             fontSize: '1rem',
-            // Adiciona a borda vermelha se o campo tiver erro
             borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
             '&:hover': {
                 borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
@@ -309,12 +279,11 @@ const EditarVenda = () => {
 
     const editarVenda = async (e) => {
 
-        // Prevents the default page refresh
         e.preventDefault();
         setErro(false);
         setSucesso(false);
         setVazio([]);
-        setIsSubmitting(true); // Desabilita o botão
+        setIsSubmitting(true);
 
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFields();
@@ -323,7 +292,6 @@ const EditarVenda = () => {
         setTamanho(tamanhoErros);
         setTipo(tipoErros);
 
-        // Só continua se não houver erros
         if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
             setIsSubmitting(false);
             return;
@@ -352,13 +320,11 @@ const EditarVenda = () => {
 
         } catch (error) {
             console.error("Erro ao atualizar venda:", error);
-            // Lógica para tratar erros...
         } finally {
             setIsSubmitting(false);
         }
     }
 
-    // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
     const CustomDateInput = React.forwardRef(({ value, onClick, className }, ref) => (
@@ -418,12 +384,11 @@ const EditarVenda = () => {
                     </div>
                 }
 
-                {/* Formulário com Seções */}
                 <form onSubmit={editarVenda} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
                     <div className="card mb-4 form-card">
                         <div className="card-header d-flex align-items-center">
-                            <FaFileSignature className="me-2" /> {/* Ícone para a seção */}
+                            <FaFileSignature className="me-2" />
                             Detalhes da Venda
                         </div>
                         <div className="card-body">
@@ -461,9 +426,6 @@ const EditarVenda = () => {
                                         onChange={(date) => setFormData({ ...formData, data: date })}
                                         dateFormat="dd/MM/yyyy"
                                     />
-
-                                    {/* {vazio.includes("data") && <div className="invalid-feedback">Informe a data.</div>}
-                                {tipo.includes("data") && <div className="invalid-feedback">Data inválida.</div>} */}
 
                                     {(vazio.includes("data") || tipo.includes("data")) && (
                                         <div className="invalid-feedback" style={{ display: "block" }}>
@@ -509,7 +471,6 @@ const EditarVenda = () => {
                         </div>
                     </div>
 
-                    {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end">
                         <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
                             Voltar

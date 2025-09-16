@@ -14,43 +14,33 @@ const EditarAutomovel = () => {
     const { id } = useParams();
 
     const [formData, setFormData] = useState({
-        // Campos do Automóvel
         ano_fabricacao: "", ano_modelo: "", cor: "", combustivel: "",
         km: "", origem: "", placa: "", renavam: "", valor: "",
 
-        // IDs das associações
         marcaId: null,
         modeloId: null,
 
-        // Arquivo de imagem
         file: null
     });
 
     useEffect(() => {
-        // 1. Busca o automóvel
         AutomovelDataService.getById(id).then(automovelResp => {
             const automovel = automovelResp.data;
-            // Coloca os dados do automóvel no formData
             setFormData(prev => ({ ...prev, ...automovel }));
 
         }).catch(e => console.error("Erro ao carregar dados:", e));
-    }, [id]); // Roda apenas uma vez quando o ID muda
+    }, [id]);
 
-
-    // Busca as marcas ao carregar a página
     useEffect(() => {
         MarcaDataService.getAll().then(response => {
             setMarcasOptions(response.data.map(m => ({ value: m.id, label: m.nome })));
         });
-        // ... (busque clientes, etc. aqui também)
     }, []);
 
-    // 2. EFEITO EM CASCATA: Busca os modelos quando uma marca é selecionada
     useEffect(() => {
-        // Se nenhuma marca estiver selecionada, limpa as opções de modelo
         if (!formData.marcaId) {
             setModelosOptions([]);
-            setFormData(prev => ({ ...prev, modeloId: '' })); // Limpa o modelo selecionado
+            setFormData(prev => ({ ...prev, modeloId: '' }));
             return;
         }
 
@@ -66,10 +56,9 @@ const EditarAutomovel = () => {
             .catch(e => console.error("Erro ao buscar modelos:", e))
             .finally(() => setIsModelosLoading(false));
 
-    }, [formData.marcaId]); // Roda toda vez que o marcaId mudar
+    }, [formData.marcaId]);
 
 
-    // States para as opções dos selects
     const [marcasOptions, setMarcasOptions] = useState([]);
     const [modelosOptions, setModelosOptions] = useState([]);
     const [isModelosLoading, setIsModelosLoading] = useState(false);
@@ -80,9 +69,6 @@ const EditarAutomovel = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // const handleFileChange = (event) => {
-    //     setFormData(prev => ({ ...prev, file: event.target.files[0] }));
-    // };
 
     const handleSelectChange = (selectedOption, fieldName) => {
         setFormData(prev => ({ ...prev, [fieldName]: selectedOption ? selectedOption.value : '' }));
@@ -93,7 +79,6 @@ const EditarAutomovel = () => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
 
-        // Limpa erros anteriores
         setFileError('');
 
         if (!file) {
@@ -101,34 +86,29 @@ const EditarAutomovel = () => {
             return;
         }
 
-        // 1. Validação do Tipo/Extensão
         const tiposPermitidos = ['image/jpeg', 'image/png'];
         if (!tiposPermitidos.includes(file.type)) {
             setFileError('Formato de arquivo inválido. Por favor, envie apenas imagens JPG ou PNG.');
-            e.target.value = null; // Limpa o input
+            e.target.value = null;
             setFormData({ ...formData, file: null });
             return;
         }
 
-        // 2. Validação do Tamanho (5 MB)
         const tamanhoMaximo = 5 * 1024 * 1024; // 5MB em bytes
         if (file.size > tamanhoMaximo) {
             setFileError('Arquivo muito grande. O tamanho máximo permitido é de 5 MB.');
-            e.target.value = null; // Limpa o input
+            e.target.value = null;
             setFormData({ ...formData, file: null });
             return;
         }
 
-        // Se passou em todas as validações, armazena o arquivo
         setFormData({ ...formData, file });
     };
 
 
-    // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
 
 
-    // Mensagens de sucesso e erro
     const [mensagemErro, setMensagemErro] = useState('');
     const [erro, setErro] = useState(false);
 
@@ -181,12 +161,11 @@ const EditarAutomovel = () => {
 
     const editAutomovel = async (e) => {
 
-        // Prevents the default page refresh
         e.preventDefault();
         setErro(false);
         setSucesso(false);
         setVazio([]);
-        setIsSubmitting(true); // Desabilita o botão
+        setIsSubmitting(true);
 
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFields();
@@ -195,7 +174,6 @@ const EditarAutomovel = () => {
         setTamanho(tamanhoErros);
         setTipo(tipoErros);
 
-        // Só continua se não houver erros
         if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
             setIsSubmitting(false);
             return;
@@ -216,7 +194,6 @@ const EditarAutomovel = () => {
 
             }
 
-            // --- ETAPA 3: ATUALIZAR AUTOMÓVEL ---
             const automovelData = new FormData();
             automovelData.append("ano_fabricacao", formData.ano_fabricacao);
             automovelData.append("ano_modelo", formData.ano_modelo);
@@ -236,7 +213,6 @@ const EditarAutomovel = () => {
                 headers: { "Content-type": "multipart/form-data" }
             });
 
-            // --- ETAPA 4: SUCESSO ---
             setSucesso(true);
             setMensagemSucesso("Atualizações realizadas com sucesso!");
             setTimeout(() => navigate(`/detalhes/${id}`), 1500);
@@ -251,13 +227,12 @@ const EditarAutomovel = () => {
 
     }
 
-    // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
     const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
-            padding: 15,
+            padding: 10,
             fontSize: '1rem',
             fontWeight: 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
@@ -267,7 +242,6 @@ const EditarAutomovel = () => {
         control: (provided) => ({
             ...provided,
             fontSize: '1rem',
-            // Adiciona a borda vermelha se o campo tiver erro
             borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
             '&:hover': {
                 borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
@@ -309,19 +283,17 @@ const EditarAutomovel = () => {
                     </div>
                 }
 
-                {/* Formulário com Seções */}
                 <form onSubmit={editAutomovel} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
                     <div className="form-card card mb-4">
                         <div className="card-header d-flex align-items-center">
-                            <FaCar className="me-2" /> {/* Ícone para a seção */}
+                            <FaCar className="me-2" />
                             Informações Principais do Automóvel
                         </div>
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-4">
                                     <label htmlFor="marca" className="form-label">Marca</label>
-                                    {/* <input value={formData.marcaNome ?? ""} type="text" className={`form-control ${hasError("marca") && "is-invalid"}`} id="marcaNome" name="marcaNome" onChange={handleInputChange} /> */}
                                     <Select
                                         placeholder="Selecione uma marca..."
                                         options={marcasOptions}
@@ -334,14 +306,13 @@ const EditarAutomovel = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="modelo" className="form-label">Modelo</label>
-                                    {/* <input value={formData.modeloNome ?? ""} type="text" className={`form-control ${hasError("modelo") && "is-invalid"}`} id="modeloNome" name="modeloNome" onChange={handleInputChange} /> */}
                                     <Select
                                         placeholder="Selecione um modelo..."
                                         options={modelosOptions}
                                         value={modelosOptions.find(option => option.value === formData.modeloId) || null}
                                         onChange={(option) => handleSelectChange(option, 'modeloId')}
-                                        isDisabled={!formData.marcaId} // Desabilita se nenhuma marca for selecionada
-                                        isLoading={isModelosLoading}   // Mostra um spinner enquanto carrega
+                                        isDisabled={!formData.marcaId}
+                                        isLoading={isModelosLoading}
                                         isClearable isSearchable
                                         styles={getCustomStyles("modelo")}
                                     />
@@ -419,8 +390,8 @@ const EditarAutomovel = () => {
                                         className={`form-control ${fileError ? 'is-invalid' : ''}`}
                                         id="foto"
                                         name="file"
-                                        accept="image/png, image/jpeg" // Sugere os tipos corretos para o usuário
-                                        onChange={handleFileChange} // Usa a nova função de validação
+                                        accept="image/png, image/jpeg"
+                                        onChange={handleFileChange}
                                     />
                                     {fileError && <div className="invalid-feedback d-block">{fileError}</div>}
                                 </div>
@@ -430,7 +401,6 @@ const EditarAutomovel = () => {
                     </div>
 
 
-                    {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end">
                         <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
                             Voltar

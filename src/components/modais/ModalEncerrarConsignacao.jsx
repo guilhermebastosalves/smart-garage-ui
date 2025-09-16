@@ -9,18 +9,13 @@ const ModalEncerrarConsignacao = ({ show, onHide, consignacao, onSuccess }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // --- ADIÇÃO DA LÓGICA DE LIMPEZA ---
     useEffect(() => {
-        // Este efeito roda toda vez que a propriedade 'show' muda.
-        if (show) {
-            // Se o modal está sendo aberto (show === true),
-            // limpamos qualquer mensagem de erro anterior.
-            setError('');
 
-            // Opcional, mas recomendado: resetar a data para o dia atual também.
+        if (show) {
+            setError('');
             setDataFim(new Date());
         }
-    }, [show]); // A "lista de dependências" garante que o efeito rode apenas quando 'show' mudar.
+    }, [show]);
 
     const handleEncerrar = async () => {
         if (!consignacao || !consignacao.id) return;
@@ -34,9 +29,8 @@ const ModalEncerrarConsignacao = ({ show, onHide, consignacao, onSuccess }) => {
                 data_termino: dataFim
             });
 
-            // Chama a função de sucesso passada pelo pai para atualizar a lista
             onSuccess(consignacao.id);
-            onHide(); // Fecha o modal
+            onHide();
         } catch (err) {
             const msg = err.response?.data?.mensagemErro || "Erro ao encerrar consignação.";
             setError(msg);

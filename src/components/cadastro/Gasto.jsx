@@ -19,8 +19,7 @@ const Gasto = () => {
 
     useEffect(() => {
         setLoading(true);
-        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-        // Use Promise.all para esperar todas as chamadas essenciais terminarem
+        const timeout = setTimeout(() => setLoading(false), 8000);
         Promise.all([
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
@@ -31,9 +30,9 @@ const Gasto = () => {
             setMarca(marcas.data);
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
+            setLoading(false);
         }).finally(() => {
-            setLoading(false); // Esconde o loading quando tudo terminar
+            setLoading(false);
             clearTimeout(timeout);
         });
     }, []);
@@ -67,10 +66,8 @@ const Gasto = () => {
 
     const [loading, setLoading] = useState(true);
 
-    // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Mensagens de sucesso e erro
     const [mensagemErro, setMensagemErro] = useState('');
     const [erro, setErro] = useState(false);
 
@@ -102,7 +99,6 @@ const Gasto = () => {
         return { vazioErros, tamanhoErros, tipoErros };
     };
 
-    // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
     const optionsAutomovel = automovel?.map((d) => {
@@ -110,9 +106,6 @@ const Gasto = () => {
         const nomeModelo = modelo?.find(modelo => modelo.id === d.modeloId);
 
         return {
-            // value: d.id,
-            // label: `Modelo: ${nomeModelo ? nomeModelo?.nome + " |" : ""} Marca: ${nomeMarca ? nomeMarca?.nome + " |" : ""} | Renavam: ${d.renavam} | Ano: ${d.ano_modelo}`
-
             value: d.id,
 
             label: {
@@ -127,21 +120,16 @@ const Gasto = () => {
 
     const formatOptionLabel = ({ value, label }) => (
         <div className="d-flex align-items-center">
-            {/* Ícone principal à esquerda */}
             <FaCar size="2.5em" color="#0d6efd" className="me-3" />
 
-            {/* Div para o conteúdo de texto */}
             <div>
-                {/* Linha Principal: Marca e Modelo */}
                 <div className="fw-bold fs-6">
                     {label.marca || "Marca não encontrada"} {label.modelo || ""}
                 </div>
 
-                {/* Linha Secundária: Renavam e Ano com ícones */}
                 <div className="small text-muted d-flex align-items-center mt-1">
                     <FaRegIdCard className="me-1" />
                     <span>Renavam: {label.renavam}</span>
-                    {/* <span>Placa: {label.placa}</span> */}
                     <span className="mx-2">|</span>
                     <FaCalendarAlt className="me-1" />
                     <span>Ano: {label.ano}</span>
@@ -160,19 +148,15 @@ const Gasto = () => {
         if (!renavam || renavam.trim() === "") {
             setErro(true);
             setMensagemErro("Informe o renavam para buscar.");
-            return; // Interrompe a execução da função aqui
+            return;
         }
 
         try {
 
             const autoResp = await AutomovelDataService.getByRenavam(renavam)
-            // .catch(e => {
-            //     console.error("Erro ao buscar automovel:", e);
-            // });
-
 
             if (autoResp.data.erro) {
-                setErro(autoResp.data.erro); // erro vindo do back
+                setErro(autoResp.data.erro);
                 setMensagemErro(autoResp.data.mensagemErro);
                 throw new Error(autoResp.data.mensagemErro);
 
@@ -188,10 +172,8 @@ const Gasto = () => {
             }
 
         } catch (error) {
-            // Se qualquer 'await' falhar, o código vem para cá
             console.error("Erro no processo de busca pelo automovel:", error);
             setErro(true);
-            // Tenta pegar a mensagem de erro da resposta da API, ou usa uma mensagem padrão
             const mensagem = error.response?.data?.mensagemErro || error.message || "Ocorreu um erro inesperado.";
             setMensagemErro(mensagem);
         }
@@ -200,7 +182,7 @@ const Gasto = () => {
     const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
-            padding: 15,
+            padding: 10,
             fontSize: '1rem',
             fontWeight: 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
@@ -210,7 +192,6 @@ const Gasto = () => {
         control: (provided) => ({
             ...provided,
             fontSize: '1rem',
-            // Adiciona a borda vermelha se o campo tiver erro
             borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
             '&:hover': {
                 borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
@@ -230,14 +211,13 @@ const Gasto = () => {
 
     const saveGasto = async (e) => {
 
-        // Prevents the default page refresh
         e.preventDefault();
         setErro(false);
         setSucesso(false);
         setVazio([]);
         setTamanho([]);
         setTipo([]);
-        setIsSubmitting(true); // Desabilita o botão
+        setIsSubmitting(true);
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFields();
 
@@ -268,7 +248,6 @@ const Gasto = () => {
 
             setGasto(gastoResp.data);
 
-            // --- SUCESSO! ---
             setSucesso(true);
             setMensagemSucesso("Registro de gasto realizado com sucesso!");
 
@@ -278,15 +257,12 @@ const Gasto = () => {
 
 
         } catch (error) {
-            // Se qualquer 'await' falhar, o código vem para cá
             console.error("Erro no processo de salvamento:", error);
             setErro(true);
-            // Tenta pegar a mensagem de erro da resposta da API, ou usa uma mensagem padrão
             const mensagem = error.response?.data?.mensagemErro || error.message || "Ocorreu um erro inesperado.";
             setMensagemErro(mensagem);
         } finally {
-            // Este bloco será executado sempre no final, tanto em caso de sucesso quanto de erro
-            setIsSubmitting(false); // Reabilita o botão aqui!
+            setIsSubmitting(false);
         }
 
     }
@@ -296,8 +272,6 @@ const Gasto = () => {
         <>
             <Header />
             <div className="container">
-
-                {/* Cabeçalho da Página */}
                 <div className="mb-4 mt-3">
                     <h1 className="fw-bold">Registro de Gastos</h1>
                     <p className="text-muted">Preencha os dados abaixo para registrar um novo gasto.</p>
@@ -339,13 +313,12 @@ const Gasto = () => {
                     </div>
                 </form>
 
-                {/* Formulário com Seções */}
                 <form onSubmit={saveGasto} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
 
                     <div className="card mb-4 form-card">
                         <div className="card-header d-flex align-items-center">
-                            <FaFileSignature className="me-2" /> {/* Ícone para a seção */}
+                            <FaFileSignature className="me-2" />
                             Detalhes do Gasto
                         </div>
                         <div className="card-body">
@@ -368,7 +341,7 @@ const Gasto = () => {
                                         name="data"
                                         selected={gasto.data}
                                         onChange={(date) => setGasto({ ...gasto, data: date })}
-                                        dateFormat="dd/MM/yyyy" // Formato da data
+                                        dateFormat="dd/MM/yyyy"
                                     />
                                     {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
                                     {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
@@ -392,13 +365,11 @@ const Gasto = () => {
                                 <div className="col-md-8">
                                     <label for="descricao" class="form-label">Descrição</label>
                                     <textarea type="text" placeholder="Detalhes do serviço, peças trocadas, etc." className={`form-control ${hasError("descricao") && "is-invalid"}`} id="descricao" name="descricao" aria-describedby="descricaoHelp" onChange={handleInputChangeGasto} />
-                                    {/* {tipo.includes("descricao") && <div id="descricaohelp" class="form-text text-danger ms-1">Descrição inválida.</div>} */}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end pb-3">
                         <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
                             Voltar

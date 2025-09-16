@@ -29,8 +29,6 @@ const Detalhes = () => {
                 setAutomovel(response.data);
             }).catch(e => {
                 console.log("Erro ao buscar automóvel:", e);
-                // Opcional: redirecionar para uma página de erro ou estoque
-                // navigate('/estoque');
             }).finally(() => {
                 setLoading(false);
             });
@@ -42,7 +40,6 @@ const Detalhes = () => {
 
     useEffect(() => {
         setLoading(true);
-        // Carrega todos os dados em paralelo para melhor performance
         Promise.all([
             MarcaDataService.getAll(),
             ModeloDataService.getAll(),
@@ -99,25 +96,22 @@ const Detalhes = () => {
                                     className="img-fluid rounded shadow-lg w-100"
                                     style={{ objectFit: 'cover', maxHeight: '500px' }}
                                 />) : (
-                                // Se NÃO EXISTE imagem, renderiza um container com o ícone
                                 <div
                                     className="d-flex justify-content-center align-items-center w-100 rounded"
                                     style={{
-                                        height: '500px', // Mesma altura máxima para não quebrar o layout
-                                        backgroundColor: '#f8f9fa' // Um fundo cinza claro para destacar
+                                        height: '500px',
+                                        backgroundColor: '#f8f9fa'
                                     }}
                                 >
                                     <FaCar size={100} color="#6c757d" />
-                                    {/* 'size' controla o tamanho do ícone.'color' controla a cor. */}
                                 </div>
                             )
                         }
                     </div>
 
-                    {/* Coluna das Informações */}
                     <div className="col-lg-5">
                         <div className="p-3">
-                            <h1 className="display-5 fw-bold">{`${marcaNome?.nome} ${modeloNome?.nome}`}</h1> {/* Exemplo, idealmente viria do DB */}
+                            <h1 className="display-5 fw-bold">{`${marcaNome?.nome} ${modeloNome?.nome}`}</h1>
                             <p className="lead text-muted">ID do Automóvel: {automovel && automovel.id}</p>
 
                             <h2 className="text-primary my-4">{automovel && automovel.valor && `${parseFloat(automovel.valor).toLocaleString('pt-BR', {

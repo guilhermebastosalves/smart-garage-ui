@@ -14,7 +14,6 @@ const ModalConfirmacao = ({ show, onHide, onConfirm, titulo, corpo, loading, bot
                     Cancelar
                 </Button>
                 <Button variant={`${status ? (status === true ? "outline-success" : "outline-danger") : "outline-danger"}`} onClick={onConfirm} disabled={loading}>
-                    {/* {loading ? 'Excluindo...' : 'Confirmar Exclusão'} */}
                     {botao ? botao : 'Confirmar Exclusão'}
                 </Button>
             </Modal.Footer>

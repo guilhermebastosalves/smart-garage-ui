@@ -20,8 +20,7 @@ const Manutencao = () => {
 
     useEffect(() => {
         setLoading(true);
-        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-        // Use Promise.all para esperar todas as chamadas essenciais terminarem
+        const timeout = setTimeout(() => setLoading(false), 8000);
         Promise.all([
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
@@ -32,9 +31,9 @@ const Manutencao = () => {
             setMarca(marcas.data);
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
+            setLoading(false);
         }).finally(() => {
-            setLoading(false); // Esconde o loading quando tudo terminar
+            setLoading(false);
             clearTimeout(timeout);
         });
     }, []);
@@ -47,14 +46,12 @@ const Manutencao = () => {
 
     const initialManutencaoState = {
         id: null,
-        // ativo: "",
         data_envio: "",
         data_retorno: null,
         previsao_retorno: null,
         descricao: "",
         valor: "",
-        automovelId: "",
-        // gerenteId: ""
+        automovelId: ""
     };
 
     const [manutencao, setManutencao] = useState(initialManutencaoState);
@@ -80,10 +77,8 @@ const Manutencao = () => {
     const [juridica, setJuridica] = useState([]);
 
 
-    // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Mensagens de sucesso e erro
     const [mensagemErro, setMensagemErro] = useState('');
     const [erro, setErro] = useState(false);
 
@@ -109,11 +104,8 @@ const Manutencao = () => {
         // Tipo
         if (manutencao.data_envio && manutencao.data_envio > new Date()) tipoErros.push("data_envio");
 
-        // Crie uma data para o momento atual
         const hoje = new Date();
 
-        // Zere as horas, minutos, segundos e milissegundos
-        // Isso garante que estamos comparando apenas a data (o início do dia)
         hoje.setHours(0, 0, 0, 0);
 
         if (manutencao.previsao_retorno && manutencao.previsao_retorno < hoje) tipoErros.push("previsao_retorno");
@@ -125,7 +117,7 @@ const Manutencao = () => {
     const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
-            padding: 15,
+            padding: 10,
             fontSize: '1rem',
             fontWeight: 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
@@ -135,7 +127,6 @@ const Manutencao = () => {
         control: (provided) => ({
             ...provided,
             fontSize: '1rem',
-            // Adiciona a borda vermelha se o campo tiver erro
             borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
             '&:hover': {
                 borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
@@ -152,7 +143,6 @@ const Manutencao = () => {
         }),
     });
 
-    // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
     const optionsAutomovel = automovel?.map((d) => {
@@ -160,9 +150,6 @@ const Manutencao = () => {
         const nomeModelo = modelo?.find(modelo => modelo.id === d.modeloId);
 
         return {
-            // value: d.id,
-            // label: `Modelo: ${nomeModelo ? nomeModelo?.nome + " |" : ""} Marca: ${nomeMarca ? nomeMarca?.nome + " |" : ""} | Renavam: ${d.renavam} | Ano: ${d.ano_modelo}`
-
             value: d.id,
 
             label: {
@@ -177,17 +164,13 @@ const Manutencao = () => {
 
     const formatOptionLabel = ({ value, label }) => (
         <div className="d-flex align-items-center">
-            {/* Ícone principal à esquerda */}
             <FaCar size="2.5em" color="#0d6efd" className="me-3" />
 
-            {/* Div para o conteúdo de texto */}
             <div>
-                {/* Linha Principal: Marca e Modelo */}
                 <div className="fw-bold fs-6">
                     {label.marca || "Marca não encontrada"} {label.modelo || ""}
                 </div>
 
-                {/* Linha Secundária: Renavam e Ano com ícones */}
                 <div className="small text-muted d-flex align-items-center mt-1">
                     <FaRegIdCard className="me-1" />
                     <span>Renavam: {label.renavam}</span>
@@ -209,18 +192,15 @@ const Manutencao = () => {
         if (!renavam || renavam.trim() === "") {
             setErro(true);
             setMensagemErro("Informe o renavam para buscar.");
-            return; // Interrompe a execução da função aqui
+            return;
         }
 
         try {
 
             const autoResp = await AutomovelDataService.getByRenavam(renavam)
-            // .catch(e => {
-            //     console.error("Erro ao buscar automovel:", e);
-            // });
 
             if (autoResp.data.erro) {
-                setErro(autoResp.data.erro); // erro vindo do back
+                setErro(autoResp.data.erro);
                 setMensagemErro(autoResp.data.mensagemErro);
                 throw new Error(autoResp.data.mensagemErro);
 
@@ -236,10 +216,8 @@ const Manutencao = () => {
             }
 
         } catch (error) {
-            // Se qualquer 'await' falhar, o código vem para cá
             console.error("Erro no processo de busca pelo automovel:", error);
             setErro(true);
-            // Tenta pegar a mensagem de erro da resposta da API, ou usa uma mensagem padrão
             const mensagem = error.response?.data?.mensagemErro || error.message || "Ocorreu um erro inesperado.";
             setMensagemErro(mensagem);
         }
@@ -247,14 +225,13 @@ const Manutencao = () => {
 
     const saveManutencao = async (e) => {
 
-        // Prevents the default page refresh
         e.preventDefault();
         setErro(false);
         setSucesso(false);
         setVazio([]);
         setTamanho([]);
         setTipo([]);
-        setIsSubmitting(true); // Desabilita o botão
+        setIsSubmitting(true);
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFields();
 
@@ -262,7 +239,6 @@ const Manutencao = () => {
         setTamanho(tamanhoErros);
         setTipo(tipoErros);
 
-        // Só continua se não houver erros
         if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
             setIsSubmitting(false);
             return;
@@ -279,7 +255,6 @@ const Manutencao = () => {
                 valor: manutencao.valor,
                 descricao: manutencao.descricao,
                 automovelId: manutencao.automovelId,
-                // gerenteId: manutencao.gerenteId
             }
 
             const manutencaoResp = await ManutencaoDataService.create(dataManutencao)
@@ -299,15 +274,12 @@ const Manutencao = () => {
 
 
         } catch (error) {
-            // Se qualquer 'await' falhar, o código vem para cá
             console.error("Erro no processo de salvamento:", error);
             setErro(true);
-            // Tenta pegar a mensagem de erro da resposta da API, ou usa uma mensagem padrão
             const mensagem = error.response?.data?.mensagemErro || error.message || "Ocorreu um erro inesperado.";
             setMensagemErro(mensagem);
         } finally {
-            // Este bloco será executado sempre no final, tanto em caso de sucesso quanto de erro
-            setIsSubmitting(false); // Reabilita o botão aqui!
+            setIsSubmitting(false);
         }
 
     }
@@ -318,19 +290,11 @@ const Manutencao = () => {
             <Header />
             <div className="container">
 
-                {/* Cabeçalho da Página */}
                 <div className="mb-4 mt-3">
                     <h1 className="fw-bold">Registro de Manutenções</h1>
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova manutenção.</p>
                 </div>
 
-                {/* Alertas */}
-                {/* {erro && (
-                    <div className="alert alert-danger d-flex align-items-center" role="alert">
-                        <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                        <div>{mensagemErro}</div>
-                    </div>
-                )} */}
                 {sucesso && (
                     <div className="alert alert-success d-flex align-items-center" role="alert">
                         <i className="bi bi-check-circle-fill me-2"></i>
@@ -364,12 +328,11 @@ const Manutencao = () => {
                     </div>
                 </form>
 
-                {/* Formulário com Seções */}
                 <form onSubmit={saveManutencao} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
                     <div className="card mb-4 form-card">
                         <div className="card-header d-flex align-items-center">
-                            <FaFileSignature className="me-2" /> {/* Ícone para a seção */}
+                            <FaFileSignature className="me-2" />
                             Detalhes da Manutenção
                         </div>
                         <div className="card-body">
@@ -413,7 +376,7 @@ const Manutencao = () => {
                                             name="previsao_retorno"
                                             selected={manutencao.previsao_retorno}
                                             onChange={(date) => setManutencao({ ...manutencao, previsao_retorno: date })}
-                                            dateFormat="dd/MM/yyyy" // Formato da data
+                                            dateFormat="dd/MM/yyyy"
                                         />
                                     </div>
                                     {vazio.includes("previsao_retorno") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a previsão de retorno.</div>}
@@ -445,7 +408,6 @@ const Manutencao = () => {
                         </div>
                     </div>
 
-                    {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end pb-3">
                         <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
                             Voltar

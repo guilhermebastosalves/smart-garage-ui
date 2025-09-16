@@ -1,13 +1,8 @@
 .navbar-color {
-    /* background-color: rgba(1, 129, 233, 0.1); */
-
-    /* background-color: rgba(133, 184, 203, 0.3); */
     border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 .card-color {
-    /* background-color: rgba(1, 129, 233, 0.1) !important; */
-
     background-color: rgba(133, 184, 203, 0) !important;
 
 }
@@ -35,20 +30,14 @@ body {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Garante que a imagem do carro preencha o espaço sem distorcer */
 .card-img-top.car-image {
     object-fit: cover;
     height: 200px;
-    /* Altura fixa para a imagem, mas o card será flexível */
 }
 
 .card-form {
     background-color: rgb(172, 192, 221) !important;
 }
-
-/* .color-form-pers {
-    background-color: rgba(133, 184, 203, 0.00001) !important;
-} */
 
 .date-picker {
     width: 300px;
@@ -60,7 +49,6 @@ body {
     display: block;
 }
 
-/* Estilo geral para o container do calendário */
 .custom-datepicker-container {
     border-radius: 0.5rem;
     border: 1px solid #dee2e6;
@@ -68,7 +56,6 @@ body {
     font-family: sans-serif;
 }
 
-/* Cabeçalho com o mês e os botões de navegação */
 .custom-datepicker-container .react-datepicker__header {
     background-color: #0d6efd;
     /* Azul primário do Bootstrap */
@@ -78,7 +65,6 @@ body {
     padding-top: 15px;
 }
 
-/* Texto do mês (ex: "Agosto 2025") */
 .custom-datepicker-container .react-datepicker__current-month {
     color: #ffffff;
     font-size: 1.1rem;
@@ -86,137 +72,86 @@ body {
     padding-bottom: 10px;
 }
 
-/* Setas de navegação */
 .custom-datepicker-container .react-datepicker__navigation-icon::before {
     border-color: #ffffff;
     border-width: 2px 2px 0 0;
 }
 
-/* Nomes dos dias da semana (D, S, T, Q, Q, S, S) */
 .custom-datepicker-container .react-datepicker__day-name {
     color: #ffffff;
     font-weight: bold;
     opacity: 0.8;
 }
 
-/* Estilo para cada dia no calendário */
 .custom-datepicker-container .react-datepicker__day {
     border-radius: 50%;
     transition: all 0.2s ease-in-out;
     font-weight: 500;
 }
 
-/* Dia quando o mouse passa por cima */
 .custom-datepicker-container .react-datepicker__day:hover {
     background-color: #e9ecef;
     transform: scale(1.05);
 }
 
-/* Dia selecionado */
 .custom-datepicker-container .react-datepicker__day--selected {
     background-color: #0d6efd;
     color: #ffffff;
     font-weight: bold;
 }
 
-/* Dia de hoje (não selecionado) */
 .custom-datepicker-container .react-datepicker__day--today {
     font-weight: bold;
     border: 1px solid #0d6efd;
 }
 
-/* Dias fora do mês atual */
 .custom-datepicker-container .react-datepicker__day--outside-month {
     opacity: 0.4;
 }
 
-/* --- CORREÇÃO PARA LARGURA TOTAL (width: 100%) --- */
 
-/* O 'div' que o DatePicker cria ao redor do input */
 .react-datepicker-wrapper {
     width: 100%;
 }
 
-/* O container do input dentro do wrapper */
 .react-datepicker__input-container {
     width: 100%;
 }
 
-/* Opcional: Garante que o input dentro também tenha 100% (o form-control já faz isso, mas é uma garantia extra) */
 .react-datepicker__input-container input {
     width: 100%;
 }
 
 .navbar-logo {
     height: 3.8rem;
-    /* Ex: 40px. Ajuste conforme necessário. */
     width: auto;
-    /* A largura se ajustará automaticamente. */
 }
 
 
 .form-card {
-    /* Sombra suave para dar profundidade e "elevar" o card */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-
-    /* Borda sutil para definir o contorno */
     border: 1px solid #e9ecef;
-
-    /* Fundo ligeiramente diferente do body para reforçar a separação */
     background-color: rgba(133, 184, 203, 0) !important;
-
-    /* Transição suave para efeitos de hover */
     transition: all 0.2s ease-in-out;
 }
 
 
-/* .form-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    transform: translateY(-3px);
-} */
-
 .form-card .card-header {
     background-color: rgba(133, 184, 203, 0) !important;
-    /* Um cinza muito claro para o cabeçalho */
-    /* border-bottom: 1px solid #e9ecef; */
     border-bottom: none;
-    /* Linha que separa o cabeçalho do corpo */
     font-weight: 600;
-    /* Deixa a fonte um pouco mais forte */
     padding: 1rem 1.25rem;
-    /* Espaçamento padrão do Bootstrap */
 }
 
 
-/* Adicione isso ao seu arquivo CSS global */
-
 .login-page-wrapper {
-    /* Fundo com gradiente suave */
-    /* background: linear-gradient(-45deg, #0d6efd, #0dcaf0, #6f42c1); */
-    /* background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite; */
+
     height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Animação para o gradiente se mover suavemente */
-/* @keyframes gradientBG {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    } */
-/* } */
-
-/* Animação para o card de login surgir */
 .login-card-animated {
     animation: fadeIn 0.6s ease-out forwards;
 }
@@ -232,12 +167,6 @@ body {
         transform: translateY(0);
     }
 }
-
-/* .chart-container-bar {
-    max-width: 800px;
-    margin: auto;
-    position: relative;
-} */
 
 .chart-container {
     position: relative;
@@ -257,10 +186,8 @@ body {
     display: inline-flex;
     align-items: center;
     padding: 0.25em 0.75em;
-    /* border-radius: 16px; */
     font-size: 0.95em;
     font-weight: 500;
-    /* background: #e3f2fd; */
     color: #1976d2;
     gap: 0.5em;
     border: none;

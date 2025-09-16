@@ -92,8 +92,7 @@ const Venda = () => {
 
     useEffect(() => {
         setLoading(true);
-        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-        // Use Promise.all para esperar todas as chamadas essenciais terminarem
+        const timeout = setTimeout(() => setLoading(false), 8000);
         Promise.all([
             ClienteDataService.getAll(),
             FisicaDataService.getAll(),
@@ -118,10 +117,8 @@ const Venda = () => {
     }, []);
 
 
-    // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Mensagens de sucesso e erro
     const [mensagemErro, setMensagemErro] = useState('');
     const [erro, setErro] = useState(false);
 
@@ -159,9 +156,6 @@ const Venda = () => {
         const pessoaJuridica = juridica.find(pessoa => pessoa.clienteId === d.id);
 
         return {
-            // value: d.id,
-            // label: `Nome: ${d.nome || ""}\n${pessoaJuridica ? pessoaJuridica?.razao_social + "\n" : ""}${pessoaFisica ? "CPF: " + pessoaFisica?.cpf + "\n" : ""}${pessoaJuridica ? "CNPJ: " + pessoaJuridica?.cnpj : ""}`
-
             value: d.id,
 
             label: {
@@ -169,7 +163,6 @@ const Venda = () => {
                 razaoSocial: pessoaJuridica?.razao_social,
                 cpf: pessoaFisica?.cpf,
                 cnpj: pessoaJuridica?.cnpj,
-                // Adicionamos um 'tipo' para facilitar a lógica na formatação
                 tipo: pessoaJuridica ? 'juridica' : 'fisica'
             }
         }
@@ -177,27 +170,18 @@ const Venda = () => {
 
     const formatOptionLabelFornecedor = ({ value, label }) => {
 
-        // Define o ícone e o título principal com base no tipo de fornecedor
         const isPessoaJuridica = label.tipo === 'juridica';
         const IconePrincipal = isPessoaJuridica ? FaBuilding : FaUserTie;
 
-        // const titulo = label.nome;
-
-        // --- LÓGICA CORRIGIDA ---
-        // CORREÇÃO 1: Se for PJ, tenta usar a Razão Social. Se for nula, usa o Nome como fallback.
         const titulo = isPessoaJuridica ? (label.razaoSocial || label.nome) : label.nome;
 
         return (
             <div className="d-flex align-items-center">
-                {/* Ícone principal à esquerda (Empresa ou Pessoa) */}
                 <IconePrincipal size="2.5em" color="#0d6efd" className="me-3" />
 
-                {/* Div para o conteúdo de texto */}
                 <div>
-                    {/* Linha Principal: Razão Social ou Nome */}
                     <div className="fw-bold fs-6">{titulo}</div>
 
-                    {/* Linha Secundária: Nome Fantasia (se for PJ) ou Documento */}
                     <div className="small text-muted d-flex align-items-center mt-1">
                         {isPessoaJuridica ? (
                             <>
@@ -221,9 +205,6 @@ const Venda = () => {
         const nomeModelo = modeloOpt?.find(modelo => modelo.id === d.modeloId);
 
         return {
-            // value: d.id,
-            // label: `Modelo: ${nomeModelo ? nomeModelo?.nome + " |" : ""} Marca: ${nomeMarca ? nomeMarca?.nome + " |" : ""} | Renavam: ${d.renavam} | Ano: ${d.ano_modelo}`
-
             value: d.id,
 
             label: {
@@ -238,17 +219,13 @@ const Venda = () => {
 
     const formatOptionLabel = ({ value, label }) => (
         <div className="d-flex align-items-center">
-            {/* Ícone principal à esquerda */}
             <FaCar size="2.5em" color="#0d6efd" className="me-3" />
 
-            {/* Div para o conteúdo de texto */}
             <div>
-                {/* Linha Principal: Marca e Modelo */}
                 <div className="fw-bold fs-6">
                     {label.marca || "Marca não encontrada"} {label.modelo || ""}
                 </div>
 
-                {/* Linha Secundária: Renavam e Ano com ícones */}
                 <div className="small text-muted d-flex align-items-center mt-1">
                     <FaRegIdCard className="me-1" />
                     <span>Renavam: {label.renavam}</span>
@@ -282,7 +259,7 @@ const Venda = () => {
     const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
-            padding: 15,
+            padding: 10,
             fontSize: '1rem',
             fontWeight: 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
@@ -292,7 +269,6 @@ const Venda = () => {
         control: (provided) => ({
             ...provided,
             fontSize: '1rem',
-            // Adiciona a borda vermelha se o campo tiver erro
             borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
             '&:hover': {
                 borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
@@ -311,32 +287,31 @@ const Venda = () => {
 
 
     useEffect(() => {
-        // Só atualiza se o usuário não digitou manualmente
-        // if (!troca.comissao) {
+
         let comissao = "";
+
         if (venda?.valor !== "") {
             comissao = venda?.valor < 50000 ? 300 : venda?.valor > 100000 ? 1500 : 500;
         }
+
         setVenda(prev => ({
             ...prev,
             comissao: comissao
         }));
-        // }
+
     }, [venda?.valor]);
 
-    // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
     const saveVenda = async (e) => {
 
-        // Prevents the default page refresh
         e.preventDefault();
         setErro(false);
         setSucesso(false);
         setVazio([]);
         setTamanho([]);
         setTipo([]);
-        setIsSubmitting(true); // Desabilita o botão
+        setIsSubmitting(true);
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFields();
 
@@ -344,12 +319,10 @@ const Venda = () => {
         setTamanho(tamanhoErros);
         setTipo(tipoErros);
 
-        // Só continua se não houver erros
         if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
             setIsSubmitting(false);
             return;
         }
-
 
         try {
 
@@ -370,14 +343,12 @@ const Venda = () => {
 
             setVenda(vendaResp.data);
 
-            //buscar consignacão pelo pelo automovelId
             const buscaConsignacao = await ConsignacaoDataService.getByAutomovel(automovelId)
                 .catch(e => {
                     console.error("Erro ao buscar consignacao:", e);
                 });
 
 
-            //se retornar algo, devo setar essa consignação como inativa
             if (buscaConsignacao) {
 
                 const id = buscaConsignacao.data.id;
@@ -390,7 +361,6 @@ const Venda = () => {
                     });
             }
 
-            //setar automóvel como inativo
             const updateAutomovel = await AutomovelDataService.update(automovelId,
                 { ativo: false }
             )
@@ -398,7 +368,6 @@ const Venda = () => {
                     console.error("Erro ao buscar automóvel:", e);
                 });
 
-            // --- SUCESSO! ---
             setSucesso(true);
             setMensagemSucesso("Operação de venda realizada com sucesso!");
 
@@ -408,15 +377,12 @@ const Venda = () => {
 
 
         } catch (error) {
-            // Se qualquer 'await' falhar, o código vem para cá
             console.error("Erro no processo de salvamento:", error);
             setErro(true);
-            // Tenta pegar a mensagem de erro da resposta da API, ou usa uma mensagem padrão
             const mensagem = error.response?.data?.mensagemErro || error.message || "Ocorreu um erro inesperado.";
             setMensagemErro(mensagem);
         } finally {
-            // Este bloco será executado sempre no final, tanto em caso de sucesso quanto de erro
-            setIsSubmitting(false); // Reabilita o botão aqui!
+            setIsSubmitting(false);
         }
 
     }
@@ -427,13 +393,11 @@ const Venda = () => {
             <Header />
             <div className="container">
 
-                {/* Cabeçalho da Página */}
                 <div className="mb-4 mt-3">
                     <h1 className="fw-bold">Registro de Venda</h1>
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova venda no sistema.</p>
                 </div>
 
-                {/* Alertas */}
                 {erro && (
                     <div className="alert alert-danger d-flex align-items-center" role="alert">
                         <i className="bi bi-exclamation-triangle-fill me-2"></i>
@@ -447,12 +411,11 @@ const Venda = () => {
                     </div>
                 )}
 
-                {/* Formulário com Seções */}
                 <form onSubmit={saveVenda} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
                     <div className="card mb-4 form-card">
                         <div className="card-header d-flex align-items-center">
-                            <FaFileSignature className="me-2" /> {/* Ícone para a seção */}
+                            <FaFileSignature className="me-2" />
                             Detalhes da Venda
                         </div>
                         <div className="card-body">
@@ -487,7 +450,7 @@ const Venda = () => {
                                         name="data"
                                         selected={venda.data}
                                         onChange={(date) => setVenda({ ...venda, data: date })}
-                                        dateFormat="dd/MM/yyyy" // Formato da data
+                                        dateFormat="dd/MM/yyyy"
                                     />
                                     {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
                                     {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
@@ -495,7 +458,6 @@ const Venda = () => {
                                 <div className="col-md-4">
                                     <label for="fornecedor" class="form-label">Fornecedor</label>
                                     <Select formatOptionLabel={formatOptionLabelFornecedor} styles={getCustomStyles("clienteId")}
-                                        // onChange={(option) => handleSelectChange(option, 'clienteId')}
                                         isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="clienteId" name="clienteId" placeholder="Selecione o fornecedor" options={optionsFornecedor} value={optionsFornecedor.find(option => option.value === venda.clienteId) || null} isClearable={true} filterOption={(option, inputValue) => {
                                             const label = option.label;
                                             const texto = [
@@ -512,7 +474,6 @@ const Venda = () => {
                                 <div className="col-md-4">
                                     <label for="automovel_fornecido" class="form-label">Automóvel Fornecido</label>
                                     <Select formatOptionLabel={formatOptionLabel} styles={getCustomStyles("automovelId")} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovelId" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} value={optionsAutomovel.find(option => option.value === venda.automovelId) || null} isClearable={true}
-                                        // onChange={(option) => handleSelectChange(option, 'automovelId')}
                                         filterOption={(option, inputValue) => {
                                             const label = option.label;
                                             const texto = [

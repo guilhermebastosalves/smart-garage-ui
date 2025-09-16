@@ -4,12 +4,12 @@ import { useAuth } from '../context/AuthContext'; // Importe o hook
 const Header = () => {
 
     const location = useLocation();
-    const { user, logout } = useAuth(); // Pegue o usuário e a função de logout
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
         logout();
-        navigate('/'); // Redireciona para a página de login
+        navigate('/');
     };
 
 
@@ -18,7 +18,6 @@ const Header = () => {
             <nav className="navbar navbar-color">
                 <div className="container-fluid mx-5">
                     <img src="/static/img/logo.png" alt="Smart Garage Logo" className="navbar-logo mb-1" />
-                    {/* <a className="navbar-brand fs-4" href="#">Smart Garage</a> */}
                     <button className="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>

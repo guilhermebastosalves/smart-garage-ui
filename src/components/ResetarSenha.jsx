@@ -4,7 +4,7 @@ import AuthService from '../services/authDataService';
 import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 
 const ResetarSenha = () => {
-    const { token } = useParams(); // Pega o token da URL
+    const { token } = useParams();
     const navigate = useNavigate();
 
     const [senha, setSenha] = useState('');
@@ -25,7 +25,7 @@ const ResetarSenha = () => {
         try {
             const response = await AuthService.resetarSenha(token, { senha });
             setMensagem(response.data.mensagem);
-            setTimeout(() => navigate('/'), 2000); // Redireciona para o login
+            setTimeout(() => navigate('/'), 2000);
         } catch (error) {
             setErro(error.response?.data?.mensagem || 'Erro ao redefinir a senha.');
         } finally {

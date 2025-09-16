@@ -33,22 +33,9 @@ const DetalhesVenda = () => {
             });
     }, [id]);
 
-    // useEffect(() => {
-    //     FuncionarioDataService.getAll()
-    //         .then(response => {
-    //             setFuncionario(response.data)
-    //         })
-    //         .catch(e => {
-    //             console.error("Erro ao buscar funcionário", e)
-    //         })
-    //         .finally(() => {
-    //             setLoading(false)
-    //         })
-    // }, [])
 
     useEffect(() => {
         setLoading(true);
-        // Carrega todos os dados em paralelo para melhor performance
         Promise.all([
             FuncionarioDataService.getAll(),
             EnderecoDataService.getAll(),
@@ -111,9 +98,7 @@ const DetalhesVenda = () => {
         currency: 'BRL'
     });
 
-    // Variáveis auxiliares para facilitar o acesso aos dados
     const { automovel, cliente } = detalhes;
-    // const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro modelo
 
     const funcionarioNome = funcionario?.find(f => f.id === detalhes?.funcionarioId);
     const enderecoInfo = endereco?.find(e => e.clienteId === cliente?.id)
@@ -124,7 +109,6 @@ const DetalhesVenda = () => {
         <>
             <Header />
             <div className="container mt-4 mb-5">
-                {/* Título da Página e Botão Voltar */}
                 <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
                     <div>
                         <h1 className="fw-bold mb-0 text-primary">

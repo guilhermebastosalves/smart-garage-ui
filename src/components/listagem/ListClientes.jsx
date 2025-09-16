@@ -36,7 +36,7 @@ const ListClientes = () => {
         setCurrentPage(1);
     }, [searchTerm]);
 
-    // Lógica de Paginação
+
     const recordsPerPage = 10;
     const lastIndex = currentPage * recordsPerPage;
     const firstIndex = lastIndex - recordsPerPage;
@@ -48,7 +48,6 @@ const ListClientes = () => {
     const nextPage = () => { if (currentPage < npage) setCurrentPage(currentPage + 1); };
 
     const handleEdit = (clienteId) => {
-        // Navega para a página de edição (que você pode criar a partir do seu form Cliente.jsx)
         navigate(`/editar-cliente/${clienteId}`);
     };
 
@@ -92,11 +91,6 @@ const ListClientes = () => {
                                     {records.map(cliente => (
                                         <tr key={cliente.id}>
                                             <td className="align-middle">{cliente.nome}</td>
-                                            {/* <td className="text-center">
-                                                <Badge bg={cliente.tipo === 'Pessoa Física' ? 'info' : 'secondary'}>
-                                                    {cliente.tipo}
-                                                </Badge>
-                                            </td> */}
                                             <td className="text-center">
                                                 {cliente.tipo === 'Pessoa Física' ? (
                                                     <span className="chip-tipo">

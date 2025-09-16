@@ -21,12 +21,11 @@ const Manutencao = () => {
     const [marca, setMarca] = useState([]);
     const [todasManutencoes, setTodasManutencoes] = useState([]);
 
-    // 2. Adicione os states para controlar o modal de exclusão
+
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [itemParaDeletar, setItemParaDeletar] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
-    // 3. Crie as funções para controlar o modal e a exclusão
     const handleAbrirModalConfirmacao = (troca) => {
         setItemParaDeletar(troca);
         setShowConfirmModal(true);
@@ -43,36 +42,25 @@ const Manutencao = () => {
         setDeleteLoading(true);
         try {
             await ManutencaoDataService.remove(itemParaDeletar.id);
-
-            // Atualiza a UI removendo o item da lista para feedback instantâneo
-            // setManutencaoAtiva(prev => prev.filter(t => t.id !== itemParaDeletar.id));
-            // setManutencaoInativa(prev => prev.filter(t => t.id !== itemParaDeletar.id));
-            // setManutencaoRecente(prev => prev.filter(t => t.id !== itemParaDeletar.id));
             setTodasManutencoes(prev => prev.filter(t => t.id !== itemParaDeletar.id));
-
             handleFecharModalConfirmacao();
         } catch (error) {
             console.error("Erro ao deletar manutenção:", error);
-            // Opcional: Adicionar um alerta de erro para o usuário aqui
         } finally {
             setDeleteLoading(false);
         }
     };
 
 
-    //FINALIAR MANUTENCAO
     const [showFinalizarModal, setShowFinalizarModal] = useState(false);
     const [manutencaoSelecionada, setManutencaoSelecionada] = useState(null);
 
-    // Funções para o novo modal
     const handleAbrirModalFinalizar = (manutencao) => {
         setManutencaoSelecionada(manutencao);
         setShowFinalizarModal(true);
     };
 
     const handleFinalizacaoSucesso = (idManutencaoFinalizada) => {
-        // Remove a manutenção da lista de ativos para feedback instantâneo
-        // setManutencaoAtiva(prev => prev.filter(m => m.id !== idManutencaoFinalizada));
         fetchData();
     };
 
@@ -100,43 +88,26 @@ const Manutencao = () => {
             AutomovelDataService.getAll(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll(),
-            // VendaDataServive.getByData()
         ]).then(([manutencoes, automoveis, modelos, marcas]) => {
             setTodasManutencoes(manutencoes.data);
             setAutomovel(automoveis.data);
             setModelo(modelos.data);
             setMarca(marcas.data);
-            // setVendaRecente(vendasRecentes.data)
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
+            setLoading(false);
         }).finally(() => {
-            setLoading(false); // Esconde o loading quando tudo terminar
+            setLoading(false);
         });
     }, []);
 
-    // 2. CHAME A FUNÇÃO DE BUSCA QUANDO O COMPONENTE MONTAR
     useEffect(() => {
         fetchData();
-    }, [fetchData]); // Depende da função fetchData
+    }, [fetchData]);
 
-
-
-    // 2. UNIFICAÇÃO DA FONTE DE DADOS
-    // const listaAtual = useMemo(() => {
-    //     switch (opcao) {
-    //         case 'inativas':
-    //             return manutencaoInativa;
-    //         case 'data_envio':
-    //             return manutencaoRecente;
-    //         case 'ativas':
-    //         default:
-    //             return manutencaoAtiva;
-    //     }
-    // }, [opcao, manutencaoAtiva, manutencaoInativa, manutencaoRecente]);
 
     const listaAtual = useMemo(() => {
-        // 1. Define a data de início do filtro de período
+
         let dataInicioFiltro = null;
 
         if (periodo !== 'todos') {
@@ -155,24 +126,20 @@ const Manutencao = () => {
 
         }
 
-        // 2. Aplica os filtros em sequência
         return todasManutencoes
             .filter(item => {
-                // Primeiro, filtra por período (se não for "todos")
-                if (!dataInicioFiltro) return true; // Se for "todos", passa todos
+                if (!dataInicioFiltro) return true;
                 return new Date(item.data_envio) >= dataInicioFiltro;
             })
             .filter(item => {
-                // Depois, filtra por status (opção)
                 if (opcao === 'ativas') return item.ativo === true;
                 if (opcao === 'inativas') return item.ativo === false;
-                return true; // Para "Mais Recentes", não filtra por status
+                return true;
             })
             .sort((a, b) => new Date(b.data_envio) - new Date(a.data_envio));
 
-    }, [opcao, periodo, todasManutencoes]); // Roda sempre que um filtro ou os dados mudam
+    }, [opcao, periodo, todasManutencoes]);
 
-    // 3. RESETA A PÁGINA QUANDO O FILTRO MUDA
     useEffect(() => {
         setCurrentPage(1);
     }, [opcao, periodo]);
@@ -187,7 +154,6 @@ const Manutencao = () => {
     const npage = Math.ceil(listaAtual.length / recordsPerPage);
     const numbers = [...Array(npage + 1).keys()].slice(1);
 
-    // Funções de controle da paginação (agora funcionam para qualquer lista)
     const changeCPage = (n) => setCurrentPage(n);
     const prePage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1); };
     const nextPage = () => { if (currentPage < npage) setCurrentPage(currentPage + 1); };
@@ -212,7 +178,7 @@ const Manutencao = () => {
                     </div>
                     {user.role === "gerente" &&
                         <button className='btn btn-primary btn-lg' onClick={() => { navigate('/manutencao') }}>
-                            <i className="bi bi-plus-circle-fill me-2"></i> {/* Ícone opcional */}
+                            <i className="bi bi-plus-circle-fill me-2"></i>
                             Nova Manutenção
                         </button>}
                 </div>
@@ -226,7 +192,6 @@ const Manutencao = () => {
                             <select name="opcao" id="opcao" className="form-select w-auto" onChange={handleInputChangeOpcao}>
                                 <option value="ativas">Ativas</option>
                                 <option value="inativas">Finalizadas</option>
-                                {/* <option value="data_envio">Mais Recentes</option> */}
                             </select>
 
                             <select name="periodo" id="periodo" className="form-select w-auto" onChange={handleInputChangePeriodo} value={periodo}>
@@ -251,7 +216,6 @@ const Manutencao = () => {
                                     <tr>
                                         <th scope="col">ID</th>
                                         <th scope="col">Data Envio</th>
-                                        {/* <th scope="col">Previsão de Retorno</th> */}
                                         <th scope="col">
                                             {opcao === 'ativas' ? 'Previsão de Retorno' : 'Data Retorno'}
                                         </th>
@@ -271,13 +235,10 @@ const Manutencao = () => {
                                             <tr key={d.id} className="align-middle">
                                                 <th scope="row">{d.id}</th>
                                                 <td>{new Date(d.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                                                {/* <td>{d.previsao_retorno ? new Date(d.previsao_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</td> */}
                                                 <td>
                                                     {d.ativo ?
-                                                        // Se estiver ativa, mostra a previsão
                                                         (d.previsao_retorno ? new Date(d.previsao_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '')
                                                         :
-                                                        // Se estiver finalizada, mostra a data de retorno real
                                                         (d.data_retorno ? new Date(d.data_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A')
                                                     }
                                                 </td>
@@ -303,7 +264,7 @@ const Manutencao = () => {
                                                         <button
                                                             className='btn btn-outline-warning btn-sm me-2'
                                                             onClick={() => { editarManutencao(d.id) }}
-                                                            title="Editar Manutenção" // Dica para o usuário
+                                                            title="Editar Manutenção"
                                                         >
                                                             <i className="bi bi-pencil-fill"></i>
                                                         </button>}

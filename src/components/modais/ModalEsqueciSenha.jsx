@@ -21,7 +21,6 @@ function ModalEsqueciSenha({ show, onHide }) {
         }
     };
 
-    // Limpa o estado ao fechar
     const handleClose = () => {
         setMensagem('');
         setUsuario('');

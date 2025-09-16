@@ -4,7 +4,7 @@ import Login from './components/Login'
 import Home from './components/Home'
 import Venda from './components/cadastro/Venda'
 import Gasto from './components/cadastro/Gasto'
-import Manutencao from './components/cadastro/Manutencao';
+import Manutencao from './components/cadastro/Manutencao'
 import Troca from './components/cadastro/Troca'
 import Relatorios from './components/Relatorios'
 import Estoque from './components/Estoque'
@@ -16,10 +16,10 @@ import DetalhesTroca from './components/detalhes/DetalhesTroca'
 import DetalhesVenda from './components/detalhes/DetalhesVenda'
 import DetalhesGasto from './components/detalhes/DetalhesGasto'
 import DetalhesManutencao from './components/detalhes/DetalhesManutencao'
-import Compra from './components/cadastro/Compra';
+import Compra from './components/cadastro/Compra'
 import Consignacao from './components/cadastro/Consignacao'
-import EditarAutomovel from './components/editar/EditarAutomovel';
-import EditarConsignacao from './components/editar/EditarConsignacao';
+import EditarAutomovel from './components/editar/EditarAutomovel'
+import EditarConsignacao from './components/editar/EditarConsignacao'
 import EditarCompra from './components/editar/EditarCompra'
 import EditarTroca from './components/editar/EditarTroca'
 import EditarVenda from './components/editar/EditarVenda'
@@ -28,39 +28,33 @@ import EditarCliente from './components/editar/EditarCliente'
 import EditarManutencao from './components/editar/EditarManutencao'
 import Historico from './components/cadastro/Historico'
 import Cliente from './components/cadastro/Cliente'
-import ListCompras from './components/listagem/ListCompras';
-import ListConsignacao from './components/listagem/ListConsignacao';
-import ListTrocas from './components/listagem/ListTrocas';
-import ListVendas from './components/listagem/ListVendas';
-import ListGastos from "./components/listagem/ListGastos";
-import ListManutencoes from "./components/listagem/ListManutencoes";
+import ListCompras from './components/listagem/ListCompras'
+import ListConsignacao from './components/listagem/ListConsignacao'
+import ListTrocas from './components/listagem/ListTrocas'
+import ListVendas from './components/listagem/ListVendas'
+import ListGastos from "./components/listagem/ListGastos"
+import ListManutencoes from "./components/listagem/ListManutencoes"
 import ListClientes from './components/listagem/ListClientes'
-import ProtectedRoute from './components/RotaProtegida'; // Importe a rota protegida
-import AcessoNegado from './components/AcessoNegado';
-import ListVendedores from './components/listagem/ListVendedores';
+import ProtectedRoute from './components/RotaProtegida'
+import AcessoNegado from './components/AcessoNegado'
+import ListVendedores from './components/listagem/ListVendedores'
 import RegistroVendedor from './components/cadastro/Vendedor'
-import ResetarSenha from './components/ResetarSenha';
+import ResetarSenha from './components/ResetarSenha'
 
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Importe o CSS
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 
   const location = useLocation();
 
   useEffect(() => {
-    // Esta função será executada toda vez que a URL (location) mudar
 
-    // Remove a classe que os modais do Bootstrap adicionam
     document.body.classList.remove('modal-open');
-
-    // Garante que o estilo de overflow seja restaurado para o padrão
     document.body.style.overflow = 'auto';
+    document.body.style.paddingRight = '';
 
-    // NOVO: Remove o padding de compensação da barra de rolagem
-    document.body.style.paddingRight = ''; // Define como string vazia para remover o estilo inline
-
-  }, [location]); // A "lista de dependências" garante que o efeito rode a cada navegação
+  }, [location]);
 
 
   return (
@@ -116,19 +110,6 @@ function App() {
 
         </Routes>
 
-
-        {/* <ToastContainer
-          position="top-right"
-          autoClose={5000} // Fecha após 5 segundos
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        /> */}
       </div >
     </>
   )

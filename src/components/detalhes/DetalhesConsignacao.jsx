@@ -99,9 +99,7 @@ const DetalhesConsignacao = () => {
         currency: 'BRL'
     });
 
-    // Variáveis auxiliares para facilitar o acesso aos dados
     const { automovel, cliente } = detalhes;
-    // const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro 
 
     const funcionarioNome = funcionario?.find(f => f.id === detalhes?.funcionarioId);
     const enderecoInfo = endereco?.find(e => e.clienteId === cliente?.id)

@@ -72,15 +72,12 @@ const DetalhesManutencao = () => {
         currency: 'BRL'
     });
 
-    // Variáveis auxiliares para facilitar o acesso aos dados
     const { automovel, cliente } = detalhes;
-    // const modeloDoAutomovel = automovel?.modelos?.[0]; // Pega o primeiro modelo
 
     return (
         <>
             <Header />
             <div className="container mt-4 mb-5">
-                {/* Título da Página e Botão Voltar */}
                 <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
                     <div>
                         <h1 className="fw-bold mb-0 text-primary">

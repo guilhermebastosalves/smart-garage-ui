@@ -61,25 +61,20 @@ const Compra = () => {
     const [automovel, setAutomovel] = useState(initialAutomovelState);
 
 
-    // States para as opções dos selects
     const [marcasOptions, setMarcasOptions] = useState([]);
     const [modelosOptions, setModelosOptions] = useState([]);
     const [isModelosLoading, setIsModelosLoading] = useState(false);
 
-    // Busca as marcas ao carregar a página
     useEffect(() => {
         MarcaDataService.getAll().then(response => {
             setMarcasOptions(response.data.map(m => ({ value: m.id, label: m.nome })));
         });
-        // ... (busque clientes, etc. aqui também)
     }, []);
 
-    // 2. EFEITO EM CASCATA: Busca os modelos quando uma marca é selecionada
     useEffect(() => {
-        // Se nenhuma marca estiver selecionada, limpa as opções de modelo
         if (!automovel.marcaId) {
             setModelosOptions([]);
-            setAutomovel(prev => ({ ...prev, modeloId: '' })); // Limpa o modelo selecionado
+            setAutomovel(prev => ({ ...prev, modeloId: '' }));
             return;
         }
 
@@ -95,7 +90,7 @@ const Compra = () => {
             .catch(e => console.error("Erro ao buscar modelos:", e))
             .finally(() => setIsModelosLoading(false));
 
-    }, [automovel.marcaId]); // Roda toda vez que o marcaId mudar
+    }, [automovel.marcaId]);
 
 
 
@@ -117,7 +112,6 @@ const Compra = () => {
     useEffect(() => {
         setCompra(prev => ({
             ...prev,
-            // automovelId: automovelId || "",
             clienteId: clienteId || ""
         }));
     }, [clienteId]);
@@ -131,7 +125,7 @@ const Compra = () => {
         setCompra({ ...compra, clienteId: selectedOption ? selectedOption.value : "" });
     };
 
-    // --- Event Handlers ---
+    // Event Handlers 
     const handleInputChangeAutomovel = event => {
         const { name, value } = event.target;
         setAutomovel({ ...automovel, [name]: value });
@@ -149,7 +143,6 @@ const Compra = () => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
 
-        // Limpa erros anteriores
         setFileError('');
 
         if (!file) {
@@ -157,7 +150,6 @@ const Compra = () => {
             return;
         }
 
-        // 1. Validação do Tipo/Extensão
         const tiposPermitidos = ['image/jpeg', 'image/png'];
         if (!tiposPermitidos.includes(file.type)) {
             setFileError('Formato de arquivo inválido. Por favor, envie apenas imagens JPG ou PNG.');
@@ -166,23 +158,20 @@ const Compra = () => {
             return;
         }
 
-        // 2. Validação do Tamanho (5 MB)
         const tamanhoMaximo = 5 * 1024 * 1024; // 5MB em bytes
         if (file.size > tamanhoMaximo) {
             setFileError('Arquivo muito grande. O tamanho máximo permitido é de 5 MB.');
-            e.target.value = null; // Limpa o input
+            e.target.value = null;
             setAutomovel({ ...automovel, file: null });
             return;
         }
 
-        // Se passou em todas as validações, armazena o arquivo
         setAutomovel({ ...automovel, file });
     };
 
     useEffect(() => {
         setLoading(true);
         const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-        // Use Promise.all para esperar todas as chamadas essenciais terminarem
         Promise.all([
             ClienteDataService.getAll(),
             FisicaDataService.getAll(),
@@ -193,17 +182,15 @@ const Compra = () => {
             setJuridica(juridica.data)
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
+            setLoading(false);
         }).finally(() => {
-            setLoading(false); // Esconde o loading quando tudo terminar
+            setLoading(false);
             clearTimeout(timeout);
         });
     }, []);
 
-    // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Mensagens de sucesso e erro
     const [mensagemErro, setMensagemErro] = useState('');
     const [erro, setErro] = useState(false);
 
@@ -221,9 +208,6 @@ const Compra = () => {
         const pessoaJuridica = juridica.find(pessoa => pessoa.clienteId === d.id);
 
         return {
-            // value: d.id,
-            // label: `Nome: ${d.nome || ""}\n${pessoaJuridica ? pessoaJuridica?.razao_social + "\n" : ""}${pessoaFisica ? "CPF: " + pessoaFisica?.cpf + "\n" : ""}${pessoaJuridica ? "CNPJ: " + pessoaJuridica?.cnpj : ""}`
-
             value: d.id,
 
             label: {
@@ -231,7 +215,6 @@ const Compra = () => {
                 razaoSocial: pessoaJuridica?.razao_social,
                 cpf: pessoaFisica?.cpf,
                 cnpj: pessoaJuridica?.cnpj,
-                // Adicionamos um 'tipo' para facilitar a lógica na formatação
                 tipo: pessoaJuridica ? 'juridica' : 'fisica'
             }
         }
@@ -241,25 +224,18 @@ const Compra = () => {
 
     const formatOptionLabelFornecedor = ({ value, label }) => {
 
-        // Define o ícone e o título principal com base no tipo de fornecedor
         const isPessoaJuridica = label.tipo === 'juridica';
         const IconePrincipal = isPessoaJuridica ? FaBuilding : FaUserTie;
 
-        // --- LÓGICA CORRIGIDA ---
-        // CORREÇÃO 1: Se for PJ, tenta usar a Razão Social. Se for nula, usa o Nome como fallback.
         const titulo = isPessoaJuridica ? (label.razaoSocial || label.nome) : label.nome;
 
         return (
             <div className="d-flex align-items-center">
-                {/* Ícone principal à esquerda (Empresa ou Pessoa) */}
                 <IconePrincipal size="2.5em" color="#0d6efd" className="me-3" />
 
-                {/* Div para o conteúdo de texto */}
                 <div>
-                    {/* Linha Principal: Razão Social ou Nome */}
                     <div className="fw-bold fs-6">{titulo}</div>
 
-                    {/* Linha Secundária: Nome Fantasia (se for PJ) ou Documento */}
                     <div className="small text-muted d-flex align-items-center mt-1">
                         {isPessoaJuridica ? (
                             <>
@@ -326,7 +302,7 @@ const Compra = () => {
     const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
-            padding: 15,
+            padding: 10,
             fontSize: '1rem',
             fontWeight: 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
@@ -336,7 +312,6 @@ const Compra = () => {
         control: (provided) => ({
             ...provided,
             fontSize: '1rem',
-            // Adiciona a borda vermelha se o campo tiver erro
             borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
             '&:hover': {
                 borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
@@ -361,14 +336,13 @@ const Compra = () => {
 
     const saveCompra = async (e) => {
 
-        // Prevents the default page refresh
         e.preventDefault();
         setErro(false);
         setSucesso(false);
         setVazio([]);
         setTamanho([]);
         setTipo([]);
-        setIsSubmitting(true); // Desabilita o botão
+        setIsSubmitting(true);
 
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFields();
@@ -377,7 +351,6 @@ const Compra = () => {
         setTamanho(tamanhoErros);
         setTipo(tipoErros);
 
-        // Só continua se não houver erros
         if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
             setIsSubmitting(false);
             return;
@@ -385,7 +358,6 @@ const Compra = () => {
 
         try {
 
-            // --- ETAPA 1: Verificação de duplicidade ---
             const verificacao = await AutomovelDataService.duplicidade({
                 placa: automovel.placa,
                 renavam: automovel.renavam
@@ -393,14 +365,11 @@ const Compra = () => {
 
             if (verificacao.data.erro) {
 
-                setErro(verificacao.data.erro); // erro vindo do back
+                setErro(verificacao.data.erro);
                 setMensagemErro(verificacao.data.mensagemErro);
-                // return; // não continua
                 throw new Error(verificacao.data.mensagemErro);
             }
 
-
-            // --- ETAPA 4: Criação do Automóvel ---
             const formData = new FormData();
 
             formData.append("ano_fabricacao", automovel.ano_fabricacao);
@@ -414,13 +383,12 @@ const Compra = () => {
             formData.append("valor", automovel.valor);
             formData.append("marcaId", automovel.marcaId);
             formData.append("modeloId", automovel.modeloId);
-            formData.append("file", automovel.file); // importante: nome "file" igual ao backend
+            formData.append("file", automovel.file);
 
             const automovelResp = await AutomovelDataService.create(formData, {
                 headers: { "Content-type": "multipart/form-data" }
             })
                 .catch(e => {
-                    // console.error("Erro ao cadastrar automovel:", e);
                     console.error("Erro ao cadastrar automovel:", e.response?.data || e.message);
                 });
 
@@ -441,19 +409,16 @@ const Compra = () => {
 
             setCompra(compraResp.data);
 
-            // --- SUCESSO! ---
             setSucesso(true);
             setMensagemSucesso("Operação de compra realizada com sucesso!");
 
             sessionStorage.removeItem("NegocioAtual");
 
-            // --- ETAPA 6: Redirecionamento ---
             if (automovel.origem === "Compra") {
                 setTimeout(() => {
                     navigate('/listagem/compras');
                 }, 1500);
             }
-
 
             if (automovel.origem === "Consignacao") {
                 setTimeout(() => {
@@ -467,20 +432,16 @@ const Compra = () => {
                 }, 1500);
             }
         } catch (error) {
-            // Se qualquer 'await' falhar, o código vem para cá
             console.error("Erro no processo de salvamento:", error);
             setErro(true);
-            // Tenta pegar a mensagem de erro da resposta da API, ou usa uma mensagem padrão
             const mensagem = error.response?.data?.mensagemErro || error.message || "Ocorreu um erro inesperado.";
             setMensagemErro(mensagem);
         } finally {
-            // Este bloco será executado sempre no final, tanto em caso de sucesso quanto de erro
-            setIsSubmitting(false); // Reabilita o botão aqui!
+            setIsSubmitting(false);
         }
 
     }
 
-    // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
 
@@ -490,13 +451,11 @@ const Compra = () => {
             <Header />
             <div className="container">
 
-                {/* Cabeçalho da Página */}
                 <div className="mb-4 mt-3">
                     <h1 className="fw-bold">Registro de Compra</h1>
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova compra.</p>
                 </div>
 
-                {/* Alertas */}
                 {erro && (
                     <div className="alert alert-danger d-flex align-items-center" role="alert">
                         <i className="bi bi-exclamation-triangle-fill me-2"></i>
@@ -510,20 +469,19 @@ const Compra = () => {
                     </div>
                 )}
 
-                {/* Formulário com Seções */}
+
                 <form onSubmit={saveCompra} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
 
                     <div className="form-card card mb-4">
                         <div className="card-header d-flex align-items-center">
-                            <FaCar className="me-2" /> {/* Ícone para a seção */}
+                            <FaCar className="me-2" />
                             Informações Principais do Autpmóvel
                         </div>
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-4">
                                     <label htmlFor="marca" className="form-label">Marca</label>
-                                    {/* <input type="text" className={`form-control ${hasError("marca") && "is-invalid"}`} id="marca" name="marca" onChange={handleInputChangeMarca} /> */}
                                     <Select
                                         placeholder="Selecione uma marca..."
                                         options={marcasOptions}
@@ -536,14 +494,13 @@ const Compra = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="modelo" className="form-label">Modelo</label>
-                                    {/* <input type="text" className={`form-control ${hasError("modelo") && "is-invalid"}`} id="modelo" name="modelo" onChange={handleInputChangeModelo} /> */}
                                     <Select
                                         placeholder="Selecione um modelo..."
                                         options={modelosOptions}
                                         value={modelosOptions.find(option => option.value === automovel.modeloId) || null}
                                         onChange={(option) => handleSelectChange(option, 'modeloId')}
-                                        isDisabled={!automovel.marcaId} // Desabilita se nenhuma marca for selecionada
-                                        isLoading={isModelosLoading}   // Mostra um spinner enquanto carrega
+                                        isDisabled={!automovel.marcaId}
+                                        isLoading={isModelosLoading}
                                         isClearable isSearchable
                                         styles={getCustomStyles("modelo")}
                                     />
@@ -622,8 +579,8 @@ const Compra = () => {
                                         className={`form-control ${fileError ? 'is-invalid' : ''}`}
                                         id="foto"
                                         name="file"
-                                        accept="image/png, image/jpeg" // Sugere os tipos corretos para o usuário
-                                        onChange={handleFileChange} // Usa a nova função de validação
+                                        accept="image/png, image/jpeg"
+                                        onChange={handleFileChange}
                                     />
                                     {fileError && <div className="invalid-feedback d-block">{fileError}</div>}
                                 </div>
@@ -633,7 +590,7 @@ const Compra = () => {
 
                     <div className="card mb-4 form-card">
                         <div className="card-header d-flex align-items-center">
-                            <FaFileSignature className="me-2" /> {/* Ícone para a seção */}
+                            <FaFileSignature className="me-2" />
                             Detalhes da Compra
                         </div>
                         <div className="card-body">
@@ -657,8 +614,7 @@ const Compra = () => {
                                         name="data"
                                         selected={compra.data}
                                         onChange={(date) => setCompra({ ...compra, data: date })}
-                                        // onChange={handleInputChangeCompra}
-                                        dateFormat="dd/MM/yyyy" // Formato da data
+                                        dateFormat="dd/MM/yyyy"
                                     />
                                     {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
                                     {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
@@ -685,7 +641,6 @@ const Compra = () => {
                         </div>
                     </div>
 
-                    {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end pb-3">
                         <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
                             Voltar

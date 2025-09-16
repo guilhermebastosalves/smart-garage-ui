@@ -28,7 +28,6 @@ const Estoque = () => {
 
     useEffect(() => {
         setLoading(true);
-        // Carrega todos os dados em paralelo para melhor performance
         Promise.all([
             AutomovelDataService.getByAtivo(),
             AutomovelDataService.getByInativo(),
@@ -48,9 +47,8 @@ const Estoque = () => {
 
     const [search, setSearch] = useState("");
 
-    // 1. UNIFICAÇÃO DA LÓGICA DE FILTRAGEM
     const automoveisFiltrados = useMemo(() => {
-        // Primeiro, seleciona a lista base (ativos ou inativos)
+
         const listaBase = opcao === 'ativos' ? automovel : automovelInativo;
 
         if (!search) return listaBase;
@@ -68,25 +66,20 @@ const Estoque = () => {
         });
     }, [search, opcao, automovel, automovelInativo, modelo, marca]);
 
-    // 2. RESETA A PÁGINA QUANDO O FILTRO MUDA
-    // Isso corrige o bug de buscar em uma página que não existe mais
     useEffect(() => {
         setCurrentPage(1);
     }, [automoveisFiltrados, opcao]);
 
 
-    // Lógica de Paginação
     const [currentPage, setCurrentPage] = useState(1);
     const recordsPerPage = 6;
     const lastIndex = currentPage * recordsPerPage;
     const firstIndex = lastIndex - recordsPerPage;
 
-    // As variáveis de paginação agora dependem da lista filtrada unificada
     const records = automoveisFiltrados.slice(firstIndex, lastIndex);
     const npage = Math.ceil(automoveisFiltrados.length / recordsPerPage);
     const numbers = [...Array(npage + 1).keys()].slice(1);
 
-    // As funções de paginação agora funcionam para ambas as listas
     const changeCPage = (n) => setCurrentPage(n);
     const prePage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1) };
     const nextPage = () => { if (currentPage < npage) setCurrentPage(currentPage + 1) };
@@ -181,7 +174,6 @@ const Estoque = () => {
         <>
             <Header />
             <div className="container py-5">
-                {/* Cabeçalho da Página */}
                 <div className="d-flex justify-content-between align-items-center">
                     <div>
                         <h1 className="fw-bold mb-0">Estoque de Automóveis</h1>
@@ -205,12 +197,10 @@ const Estoque = () => {
                 </div>
 
 
-                {/* Grid de Conteúdo */}
                 <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                     {renderContent()}
                 </div>
 
-                {/* Paginação */}
                 {!loading && automoveisFiltrados.length > 0 && npage > 1 && (
                     <nav className="d-flex justify-content-center mt-5">
                         <ul className="pagination">

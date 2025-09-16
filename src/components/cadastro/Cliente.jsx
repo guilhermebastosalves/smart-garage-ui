@@ -47,7 +47,7 @@ const Cliente = () => {
         setEndereco(initialEnderecoState);
         setCidade(initialCidadeState);
         setEstado(initialEstadoState);
-        // Também limpa as mensagens de erro/validação
+
         setVazio([]);
         setTamanho([]);
         setTipo([]);
@@ -216,11 +216,9 @@ const Cliente = () => {
     ];
 
 
-    // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
 
 
-    // Mensagens de sucesso e erro
     const [mensagemErro, setMensagemErro] = useState('');
     const [erro, setErro] = useState(false);
 
@@ -243,7 +241,6 @@ const Cliente = () => {
         if (!cliente.telefone) vazioErros.push("telefone");
 
         if (!fisica.cpf) vazioErros.push("cpf");
-        // if (!fisica.rg) vazioErros.push("rg"); // TIRAR
 
         if (!endereco.cep) vazioErros.push("cep");
         if (!endereco.logradouro) vazioErros.push("logradouro");
@@ -259,7 +256,6 @@ const Cliente = () => {
         if (cliente.telefone && (isNaN(cliente.telefone))) tamanhoErros.push("telefone");
 
         if (fisica.cpf && (fisica.cpf != '' && (fisica.cpf.length !== 11) || isNaN(fisica.cpf))) tamanhoErros.push("cpf");
-        // if (fisica.rg && (fisica.rg != '' && (fisica.rg.length !== 9) || isNaN(fisica.rg))) tamanhoErros.push("rg");
         if (fisica.rg && (fisica.rg != '' && (fisica.rg.length < 9 || fisica.rg.length > 13) || isNaN(fisica.rg))) tamanhoErros.push("rg");
 
         if (endereco.cep && (endereco.cep != '' && (endereco.cep.length !== 8) || isNaN(endereco.cep))) tamanhoErros.push("cep");
@@ -279,7 +275,6 @@ const Cliente = () => {
 
         // Vazio
         if (!cliente.nome) vazioErros.push("nome");
-        // if (!cliente.data_cadastro) vazioErros.push("data");
         if (!cliente.email) vazioErros.push("email");
         if (!cliente.telefone) vazioErros.push("telefone");
 
@@ -322,14 +317,13 @@ const Cliente = () => {
 
     const saveCliente = async (e) => {
 
-        // Prevents the default page refresh
         e.preventDefault();
         setErro(false);
         setSucesso(false);
         setVazio([]);
         setTamanho([]);
         setTipo([]);
-        setIsSubmitting(true); // Desabilita o botão
+        setIsSubmitting(true);
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFieldsPessoaFisica();
 
@@ -337,7 +331,6 @@ const Cliente = () => {
         setTamanho(tamanhoErros);
         setTipo(tipoErros);
 
-        // Só continua se não houver erros
         if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
             setIsSubmitting(false);
             return;
@@ -345,21 +338,19 @@ const Cliente = () => {
 
 
         try {
-            // --- ETAPA 1: Verificação de duplicidade ---
+
             const verificacao = await FisicaDataService.duplicidade({
                 rg: fisica.rg,
                 cpf: fisica.cpf
             })
 
             if (verificacao.data.erro) {
-                setErro(verificacao.data.erro); // erro vindo do back
+                setErro(verificacao.data.erro);
                 setMensagemErro(verificacao.data.mensagemErro);
                 throw new Error(verificacao.data.mensagemErro);
             }
 
             var dataCliente = {
-                // ativo: cliente.ativo,
-                // data_cadastro: cliente.data_cadastro,
                 data_cadastro: new Date(),
                 nome: cliente.nome,
                 email: cliente.email,
@@ -371,7 +362,7 @@ const Cliente = () => {
             })
 
             if (verificacaoemail.data.erro) {
-                setErro(verificacaoemail.data.erro); // erro vindo do back
+                setErro(verificacaoemail.data.erro);
                 setMensagemErro(verificacaoemail.data.mensagemErro);
                 throw new Error(verificacaoemail.data.mensagemErro);
             }
@@ -459,21 +450,17 @@ const Cliente = () => {
 
             }, 1500);
         } catch (error) {
-            // Se qualquer 'await' falhar, o código vem para cá
             console.error("Erro no processo de salvamento:", error);
             setErro(true);
-            // Tenta pegar a mensagem de erro da resposta da API, ou usa uma mensagem padrão
             const mensagem = error.response?.data?.mensagemErro || error.message || "Ocorreu um erro inesperado.";
             setMensagemErro(mensagem);
         } finally {
-            // Este bloco será executado sempre no final, tanto em caso de sucesso quanto de erro
-            setIsSubmitting(false); // Reabilita o botão aqui!
+            setIsSubmitting(false);
         }
     }
 
     const saveClienteJuridica = async (e) => {
 
-        // Prevents the default page refresh
         e.preventDefault();
         setIsSubmitting(true);
 
@@ -483,7 +470,6 @@ const Cliente = () => {
         setTamanho(tamanhoErros);
         setTipo(tipoErros);
 
-        // Só continua se não houver erros
         if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
             setIsSubmitting(false);
             return;
@@ -497,15 +483,12 @@ const Cliente = () => {
             })
 
             if (verificacao.data.erro) {
-                setErro(verificacao.data.erro); // erro vindo do back
+                setErro(verificacao.data.erro);
                 setMensagemErro(verificacao.data.mensagemErro);
-                // return; // não continua
                 throw new Error(verificacao.data.mensagemErro);
             }
 
             var dataCliente = {
-                // ativo: cliente.ativo,
-                // data_cadastro: cliente.data_cadastro,
                 data_cadastro: new Date(),
                 nome: cliente.nome,
                 email: cliente.email,
@@ -517,7 +500,7 @@ const Cliente = () => {
             })
 
             if (verificacaoemail.data.erro) {
-                setErro(verificacaoemail.data.erro); // erro vindo do back
+                setErro(verificacaoemail.data.erro);
                 setMensagemErro(verificacaoemail.data.mensagemErro);
                 throw new Error(verificacaoemail.data.mensagemErro);
             }
@@ -587,11 +570,6 @@ const Cliente = () => {
             setSucesso(true);
             setMensagemSucesso("Cliente cadastrado com sucesso!");
 
-            // sessionStorage.removeItem("Venda");
-            // sessionStorage.removeItem("Consignacao");
-            // sessionStorage.removeItem("Compra");
-            // sessionStorage.removeItem("Troca");
-
             sessionStorage.removeItem("NegocioAtual");
 
 
@@ -614,33 +592,29 @@ const Cliente = () => {
 
             }, 1500);
         } catch (error) {
-            // Se qualquer 'await' falhar, o código vem para cá
             console.error("Erro no processo de salvamento:", error);
             setErro(true);
-            // Tenta pegar a mensagem de erro da resposta da API, ou usa uma mensagem padrão
             const mensagem = error.response?.data?.mensagemErro || error.message || "Ocorreu um erro inesperado.";
             setMensagemErro(mensagem);
         } finally {
-            // Este bloco será executado sempre no final, tanto em caso de sucesso quanto de erro
-            setIsSubmitting(false); // Reabilita o botão aqui!
+            setIsSubmitting(false);
         }
 
     }
 
-    // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
     return (
         <>
             <Header />
-            {/* Cabeçalho da Página */}
+
             <div className={`mb-4 mt-3 container`}>
                 <h1 className="fw-bold">Cadastro de Cliente</h1>
                 <p className="text-muted">Preencha os dados abaixo para registrar um novo cliente no sistema.</p>
             </div>
             <div className="container">
 
-                {/* Alertas */}
+
                 {erro && (
                     <div className="alert alert-danger d-flex align-items-center mt-3" role="alert">
                         <i className="bi bi-exclamation-triangle-fill me-2"></i>
@@ -881,7 +855,7 @@ const Cliente = () => {
                             </div>
                         </fieldset>
 
-                        {/* Botão de Submissão */}
+
                         <div className="d-flex justify-content-end pb-3 ">
                             <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
                                 Voltar
@@ -894,7 +868,6 @@ const Cliente = () => {
                                     </>
                                 ) : (
                                     <>
-                                        {/* <i className="bi bi-save me-2"></i> */}
                                         Salvar
                                     </>
                                 )}

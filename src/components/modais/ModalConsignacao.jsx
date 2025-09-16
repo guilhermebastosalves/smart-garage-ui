@@ -12,31 +12,24 @@ function ModalCadastro({ show, onHide, consignacao }) {
 
     const handleRedirect = (path, state) => {
         sessionStorage.setItem("NegocioAtual", JSON.stringify(consignacao));
-        onHide(); // Fecha o modal
+        onHide();
         navigate(path, { state });
     };
 
     useEffect(() => {
         if (show) {
-            // Aplica o bloqueio de rolagem apenas quando o modal está aberto
             document.body.style.overflow = 'hidden';
         }
 
-        // A função de "limpeza" do useEffect será executada quando o modal for fechado
-        // ou quando o componente for desmontado.
         return () => {
-            document.body.style.overflow = 'auto'; // ou 'unset'
+            document.body.style.overflow = 'auto';
         };
 
-    }, [show]); // ESSA É A PARTE MAIS IMPORTANTE!
-    // O efeito será re-executado toda vez que o valor de 'show' mudar.
+    }, [show]);
 
-    // Se o modal não deve ser mostrado, não renderiza nada.
     if (!show) {
         return null;
     }
-
-
 
     const buscaCliente = async (identificacao) => {
 
@@ -46,12 +39,12 @@ function ModalCadastro({ show, onHide, consignacao }) {
                 FisicaDataService.getByCpf(identificacao)
                     .catch(error => {
                         console.warn(`CPF não encontrado ou erro na busca: ${error.message}`);
-                        return null; // Retorna null em caso de erro
+                        return null;
                     }),
                 JuridicaDataService.getByCnpj(identificacao)
                     .catch(error => {
                         console.warn(`CNPJ não encontrado ou erro na busca: ${error.message}`);
-                        return null; // Retorna null em caso de erro
+                        return null;
                     })
             ]);
 
@@ -75,21 +68,16 @@ function ModalCadastro({ show, onHide, consignacao }) {
                 });
 
             } else {
-                // Se nenhum foi encontrado, ativa o modo de cadastro.
                 setCadastro(true);
-                // Opcional: alertar o usuário.
-                // alert('Proprietário não encontrado. Verifique o CPF/CNPJ ou cadastre um novo cliente.');
             }
         } catch (e) {
             console.log("Erro na busca do cliente:", e);
         }
     }
 
-    // Função para lidar com o envio do formulário
     const handleSubmit = (event) => {
-        event.preventDefault(); // Previne que a página recarregue
-
-        if (identificacao.trim()) { // Verifica se o ID não está vazio
+        event.preventDefault();
+        if (identificacao.trim()) {
             buscaCliente(identificacao);
         } else {
             alert('Por favor, informe um CPF ou CNPJ.');
@@ -112,7 +100,6 @@ function ModalCadastro({ show, onHide, consignacao }) {
                     </p>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group>
-                            {/* MELHORIA: Input com ícone para clareza */}
                             <InputGroup>
                                 <InputGroup.Text>
                                     <FaSearch />

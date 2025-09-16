@@ -27,11 +27,9 @@ const EditarGasto = () => {
 
 
     const [formData, setFormData] = useState({
-        // Campos do Automóvel
         valor: "", data: "", descricao: "",
 
 
-        // IDs das associações
         automovelId: null,
 
     });
@@ -39,8 +37,7 @@ const EditarGasto = () => {
 
     useEffect(() => {
         setLoading(true);
-        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-        // Use Promise.all para esperar todas as chamadas essenciais terminarem
+        const timeout = setTimeout(() => setLoading(false), 8000);
         Promise.all([
             GastoDataService.getById(id),
             AutomovelDataService.getAll(),
@@ -50,23 +47,20 @@ const EditarGasto = () => {
             const gasto = gastoId.data;
             setFormData(prev => ({ ...prev, ...gasto }));
 
-            // Ajusta a data da compra antes de colocá-la no estado
             const dataVendaAjustada = ajustarDataParaFusoLocal(gasto.data);
-            // Define o estado do formulário com a data já corrigida
             setFormData({
                 ...gasto,
                 data: dataVendaAjustada
             });
 
-            // setCompra(compras.data);
             setAutomovel(automoveis.data);
             setModelo(modelos.data);
             setMarca(marcas.data);
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
+            setLoading(false);
         }).finally(() => {
-            setLoading(false); // Esconde o loading quando tudo terminar
+            setLoading(false);
             clearTimeout(timeout);
         });
     }, []);
@@ -76,17 +70,14 @@ const EditarGasto = () => {
 
         const dataUtc = new Date(dataString);
 
-        // getTimezoneOffset() retorna a diferença em minutos entre UTC e o local (ex: 180 para GMT-3)
         const timezoneOffsetEmMs = dataUtc.getTimezoneOffset() * 60 * 1000;
 
-        // Cria uma nova data somando o tempo UTC com o offset, efetivamente "cancelando" a conversão.
         const dataCorrigida = new Date(dataUtc.valueOf() + timezoneOffsetEmMs);
 
         return dataCorrigida;
     };
 
 
-    // --- Event Handlers ---
     const handleAutomovelChange = (selectedOption) => {
         setFormData({ ...formData, automovelId: selectedOption ? selectedOption.value : "" });
     };
@@ -98,10 +89,8 @@ const EditarGasto = () => {
     };
 
 
-    // NOVO ESTADO PARA O BOTÃO
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Mensagens de sucesso e erro
     const [mensagemErro, setMensagemErro] = useState('');
     const [erro, setErro] = useState(false);
 
@@ -136,9 +125,6 @@ const EditarGasto = () => {
         const nomeModelo = modelo?.find(modelo => modelo.id === d.modeloId);
 
         return {
-            // value: d.id,
-            // label: `Modelo: ${nomeModelo ? nomeModelo?.nome + " |" : ""} Marca: ${nomeMarca ? nomeMarca?.nome + " |" : ""} | Renavam: ${d.renavam} | Ano: ${d.ano_modelo}`
-
             value: d.id,
 
             label: {
@@ -153,17 +139,13 @@ const EditarGasto = () => {
 
     const formatOptionLabel = ({ value, label }) => (
         <div className="d-flex align-items-center">
-            {/* Ícone principal à esquerda */}
             <FaCar size="2.5em" color="#0d6efd" className="me-3" />
 
-            {/* Div para o conteúdo de texto */}
             <div>
-                {/* Linha Principal: Marca e Modelo */}
                 <div className="fw-bold fs-6">
                     {label.marca || "Marca não encontrada"} {label.modelo || ""}
                 </div>
 
-                {/* Linha Secundária: Renavam e Ano com ícones */}
                 <div className="small text-muted d-flex align-items-center mt-1">
                     <FaRegIdCard className="me-1" />
                     <span>Renavam: {label.renavam}</span>
@@ -179,7 +161,7 @@ const EditarGasto = () => {
     const getCustomStyles = (fieldName) => ({
         option: (provided, state) => ({
             ...provided,
-            padding: 15,
+            padding: 10,
             fontSize: '1rem',
             fontWeight: 'normal',
             backgroundColor: state.isFocused ? '#f0f0f0' : 'white',
@@ -189,7 +171,6 @@ const EditarGasto = () => {
         control: (provided) => ({
             ...provided,
             fontSize: '1rem',
-            // Adiciona a borda vermelha se o campo tiver erro
             borderColor: hasError(fieldName) ? '#dc3545' : provided.borderColor,
             '&:hover': {
                 borderColor: hasError(fieldName) ? '#dc3545' : provided['&:hover']?.borderColor,
@@ -210,12 +191,11 @@ const EditarGasto = () => {
 
     const editarGasto = async (e) => {
 
-        // Prevents the default page refresh
         e.preventDefault();
         setErro(false);
         setSucesso(false);
         setVazio([]);
-        setIsSubmitting(true); // Desabilita o botão
+        setIsSubmitting(true);
 
 
         const { vazioErros, tamanhoErros, tipoErros } = validateFields();
@@ -224,7 +204,6 @@ const EditarGasto = () => {
         setTamanho(tamanhoErros);
         setTipo(tipoErros);
 
-        // Só continua se não houver erros
         if (vazioErros.length > 0 || tamanhoErros.length > 0 || tipoErros.length > 0) {
             setIsSubmitting(false);
             return;
@@ -251,13 +230,11 @@ const EditarGasto = () => {
 
         } catch (error) {
             console.error("Erro ao atualizar gasto:", error);
-            // Lógica para tratar erros...
         } finally {
             setIsSubmitting(false);
         }
     }
 
-    // Função auxiliar para checar se um campo tem erro e aplicar a classe
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
     const CustomDateInput = React.forwardRef(({ value, onClick, className }, ref) => (
@@ -298,12 +275,11 @@ const EditarGasto = () => {
                     </div>
                 }
 
-                {/* Formulário com Seções */}
                 <form onSubmit={editarGasto} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
                     <div className="card mb-4 form-card">
                         <div className="card-header d-flex align-items-center">
-                            <FaFileSignature className="me-2" /> {/* Ícone para a seção */}
+                            <FaFileSignature className="me-2" />
                             Detalhes do Gasto
                         </div>
                         <div className="card-body">
@@ -364,7 +340,6 @@ const EditarGasto = () => {
                         </div>
                     </div>
 
-                    {/* Botão de Submissão */}
                     <div className="d-flex justify-content-end">
                         <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>
                             Voltar

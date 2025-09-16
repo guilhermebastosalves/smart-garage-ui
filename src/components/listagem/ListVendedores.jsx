@@ -11,7 +11,6 @@ const ListVendedores = () => {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState('');
 
-    // Lógica do Modal de Confirmação
     const [showModal, setShowModal] = useState(false);
     const [modalConfig, setModalConfig] = useState({});
 
@@ -45,7 +44,7 @@ const ListVendedores = () => {
     const performStatusChange = async (vendedorId, novoStatus) => {
         try {
             await VendedorDataService.updateStatus(vendedorId, { ativo: novoStatus });
-            fetchData(); // Recarrega a lista para mostrar o status atualizado
+            fetchData();
         } catch (error) {
             setErro('Falha ao alterar o status do vendedor.');
         } finally {
@@ -96,9 +95,6 @@ const ListVendedores = () => {
                                                 </Badge>
                                             </td>
                                             <td className="text-center">
-                                                {/* <Button variant="outline-secondary" size="sm" className="me-2" title="Editar">
-                                                    <i className="bi bi-pencil-fill"></i>
-                                                </Button> */}
                                                 <Button variant={v.funcionario.ativo ? 'outline-danger' : 'outline-success'} size="sm" onClick={() => handleStatusChange(v)} title={v.funcionario.ativo ? 'Inativar' : 'Reativar'}>
                                                     <i className={v.funcionario.ativo ? 'bi bi-lock-fill' : 'bi bi-unlock-fill'}></i>
                                                 </Button>

@@ -33,24 +33,19 @@ const Consignacoes = () => {
     };
 
     const handleEncerramentoSucesso = (idConsignacaoEncerrada) => {
-        // Remove a consignação da lista de ativos na tela, dando feedback instantâneo
-        // setConsignacaoAtivo(prev => prev.filter(c => c.id !== idConsignacaoEncerrada));
         fetchData();
     };
 
-    // Função para abrir o modal de confirmação da exclusão
     const handleAbrirModalConfirmacao = (consignacao) => {
         setItemParaDeletar(consignacao);
         setShowConfirmModal(true);
     };
 
-    // Função para fechar o modal de exclusão
     const handleFecharModalConfirmacao = () => {
         setItemParaDeletar(null);
         setShowConfirmModal(false);
     };
 
-    // Função que executa a exclusão
     const handleDeletarConsignacao = async () => {
         if (!itemParaDeletar) return;
 
@@ -58,15 +53,9 @@ const Consignacoes = () => {
         try {
             await ConsignacaoDataService.remove(itemParaDeletar?.id);
             fetchData();
-
-            // Atualiza a UI removendo o item da lista
-            // setConsignacaoAtivo(prev => prev.filter(c => c.id !== itemParaDeletar?.id));
-            // setConsignacaoDataInicio(prev => prev.filter(c => c.id !== itemParaDeletar?.id));
-
             handleFecharModalConfirmacao();
         } catch (error) {
             console.error("Erro ao deletar consignação:", error);
-            // Opcional: Adicionar um alerta de erro para o usuário
         } finally {
             setDeleteLoading(false);
         }
@@ -92,8 +81,6 @@ const Consignacoes = () => {
 
     const [loading, setLoading] = useState(true);
 
-    // 1. EXTRAIA A LÓGICA DE BUSCA PARA UMA FUNÇÃO REUTILIZÁVEL
-    // Usamos useCallback para evitar que a função seja recriada a cada renderização
     const fetchData = useCallback(() => {
         setLoading(true);
         Promise.all([
@@ -108,34 +95,20 @@ const Consignacoes = () => {
             setMarca(marcas.data);
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
+            setLoading(false);
         }).finally(() => {
             setLoading(false);
         });
-    }, []); // O array vazio [] garante que a função só seja criada uma vez
+    }, []);
 
 
-    // 2. CHAME A FUNÇÃO DE BUSCA QUANDO O COMPONENTE MONTAR
     useEffect(() => {
         fetchData();
-    }, [fetchData]); // Depende da função fetchData
+    }, [fetchData]);
 
-
-    // 2. UNIFICAÇÃO DA FONTE DE DADOS
-    // const listaAtual = useMemo(() => {
-    //     switch (opcao) {
-    //         case 'inativos':
-    //             return consignacaoInativo;
-    //         case 'data_inicio':
-    //             return consignacaoDataInicio;
-    //         case 'ativos':
-    //         default:
-    //             return consignacaoAtivo;
-    //     }
-    // }, [opcao, consignacaoAtivo, consignacaoInativo, consignacaoDataInicio]);
 
     const listaAtual = useMemo(() => {
-        // 1. Define a data de início do filtro de período
+
         let dataInicioFiltro = null;
 
         if (periodo !== 'todos') {
@@ -154,24 +127,20 @@ const Consignacoes = () => {
 
         }
 
-        // 2. Aplica os filtros em sequência
         return todasConsignacoes
             .filter(item => {
-                // Primeiro, filtra por período (se não for "todos")
-                if (!dataInicioFiltro) return true; // Se for "todos", passa todos
+                if (!dataInicioFiltro) return true;
                 return new Date(item.data_inicio) >= dataInicioFiltro;
             })
             .filter(item => {
-                // Depois, filtra por status (opção)
                 if (opcao === 'ativas') return item.ativo === true;
                 if (opcao === 'inativas') return item.ativo === false;
-                return true; // Para "Mais Recentes", não filtra por status
+                return true;
             })
             .sort((a, b) => new Date(b.data_inicio) - new Date(a.data_inicio));
 
     }, [opcao, periodo, todasConsignacoes]);
 
-    // 3. RESETA A PÁGINA QUANDO O FILTRO MUDA
     useEffect(() => {
         setCurrentPage(1);
     }, [opcao, periodo]);
@@ -186,7 +155,6 @@ const Consignacoes = () => {
     const npage = Math.ceil(listaAtual.length / recordsPerPage);
     const numbers = [...Array(npage + 1).keys()].slice(1);
 
-    // Funções de controle da paginação (agora funcionam para qualquer lista)
     const changeCPage = (n) => setCurrentPage(n);
     const prePage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1); };
     const nextPage = () => { if (currentPage < npage) setCurrentPage(currentPage + 1); };
@@ -209,7 +177,7 @@ const Consignacoes = () => {
                         <p className="text-muted">Listagem e gerenciamento de consignações ativas.</p>
                     </div>
                     <button className='btn btn-primary btn-lg' onClick={() => setShowModal(true)}>
-                        <i className="bi bi-plus-circle-fill me-2"></i> {/* Ícone opcional */}
+                        <i className="bi bi-plus-circle-fill me-2"></i>
                         Nova Consignação
                     </button>
                 </div>
@@ -217,13 +185,10 @@ const Consignacoes = () => {
                 <div className="card shadow-sm mb-4">
                     <div className="card-header bg-light d-flex justify-content-between align-items-center">
                         <h5 className="mb-0">Consignações Ativas</h5>
-                        {/* Filtro/Dropdown vai aqui */}
-
                         <div className="d-flex align-items-center gap-2">
                             <select name="opcao" id="opcao" className="form-select w-auto" onChange={handleInputChangeOpcao}>
                                 <option value="ativas">Ativas</option>
                                 <option value="inativas">Finalizadas</option>
-                                {/* <option value="data_inicio">Mais Recentes</option> */}
                             </select>
 
                             <select name="periodo" id="periodo" className="form-select w-auto" onChange={handleInputChangePeriodo} value={periodo}>
@@ -276,7 +241,7 @@ const Consignacoes = () => {
                                                     <button className='btn btn-outline-info btn-sm me-2' onClick={() => verDetalhes(d.id)} title="Ver Detalhes"><i className="bi bi-eye-fill"></i></button>
                                                     {user.role === "gerente" &&
                                                         <button className='btn btn-outline-warning btn-sm me-2' onClick={() => editarConsignacao(d.id)} title="Editar"><i className="bi bi-pencil-fill"></i></button>}
-                                                    {d.ativo && ( // Mostra o botão de encerrar apenas se estiver ativa
+                                                    {d.ativo && (
                                                         <button className='btn btn-outline-success btn-sm me-2' onClick={() => handleAbrirModalEncerramento(d)} title="Encerrar"><i className="bi bi-check-circle-fill"></i></button>
                                                     )}
                                                     {user.role === "gerente" &&

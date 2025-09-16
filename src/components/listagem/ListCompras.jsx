@@ -21,13 +21,11 @@ const Compras = () => {
     const [marca, setMarca] = useState([]);
     const [todasCompras, setTodasCompras] = useState([]);
 
-    // States para controlar o modal de exclusão
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [itemParaDeletar, setItemParaDeletar] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
 
-    // Funções para controlar o modal e a exclusão
     const handleAbrirModalConfirmacao = (compra) => {
         setItemParaDeletar(compra);
         setShowConfirmModal(true);
@@ -45,13 +43,11 @@ const Compras = () => {
         try {
             await CompraDataService.remove(itemParaDeletar.id);
 
-            // Atualiza a UI removendo o item da lista para feedback instantâneo
             setTodasCompras(prev => prev.filter(c => c.id !== itemParaDeletar.id));
 
             handleFecharModalConfirmacao();
         } catch (error) {
             console.error("Erro ao deletar compra:", error);
-            // Opcional: Adicionar um alerta de erro para o usuário aqui
         } finally {
             setDeleteLoading(false);
         }
@@ -68,8 +64,7 @@ const Compras = () => {
 
     useEffect(() => {
         setLoading(true);
-        const timeout = setTimeout(() => setLoading(false), 8000); // 8 segundos de segurança
-        // Use Promise.all para esperar todas as chamadas essenciais terminarem
+        const timeout = setTimeout(() => setLoading(false), 8000);
         Promise.all([
             CompraDataService.getAll(),
             AutomovelDataService.getAll(),
@@ -82,16 +77,16 @@ const Compras = () => {
             setMarca(marcas.data);
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
+            setLoading(false);
         }).finally(() => {
-            setLoading(false); // Esconde o loading quando tudo terminar
+            setLoading(false);
             clearTimeout(timeout);
         });
     }, []);
 
 
     const listaAtual = useMemo(() => {
-        // 1. Define a data de início do filtro de período
+
         let dataFiltro = null;
 
         if (periodo !== 'todos') {
@@ -110,16 +105,14 @@ const Compras = () => {
 
         }
 
-        // 2. Aplica os filtros em sequência
         return todasCompras
             .filter(item => {
-                // Primeiro, filtra por período (se não for "todos")
-                if (!dataFiltro) return true; // Se for "todos", passa todos
+                if (!dataFiltro) return true;
                 return new Date(item.data) >= dataFiltro;
             })
             .sort((a, b) => new Date(b.data) - new Date(a.data));
 
-    }, [periodo, todasCompras]); // Roda sempre que um filtro ou os dados mudam
+    }, [periodo, todasCompras]);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -135,7 +128,6 @@ const Compras = () => {
     const npage = Math.ceil(listaAtual.length / recordsPerPage);
     const numbers = [...Array(npage + 1).keys()].slice(1);
 
-    // Funções de controle da paginação (agora funcionam para qualquer lista)
     const changeCPage = (n) => setCurrentPage(n);
     const prePage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1); };
     const nextPage = () => { if (currentPage < npage) setCurrentPage(currentPage + 1); };
@@ -168,12 +160,6 @@ const Compras = () => {
                 <div className="card shadow-sm">
                     <div className="card-header bg-light d-flex justify-content-between align-items-center">
                         <h5 className="mb-0">Compras</h5>
-                        {/* Filtro/Dropdown vai aqui */}
-                        {/* <select name="opcao" id="opcao" className="form-select w-auto" onChange={handleInputChangeOpcao}>
-                            <option value="">Padrão</option>
-                            <option value="data">Mais Recentes</option>
-                        </select> */}
-
                         <select name="periodo" id="periodo" className="form-select w-auto" onChange={handleInputChangePeriodo} value={periodo}>
                             <option value="todos">Todo o Período</option>
                             <option value="ultimo_mes">Último Mês</option>
@@ -231,7 +217,7 @@ const Compras = () => {
                                                     <button
                                                         className='btn btn-outline-warning btn-sm me-2'
                                                         onClick={() => { editarCompra(d.id) }}
-                                                        title="Editar Compra" // Dica para o usuário
+                                                        title="Editar Compra"
                                                     >
                                                         <i className="bi bi-pencil-fill"></i>
                                                     </button>

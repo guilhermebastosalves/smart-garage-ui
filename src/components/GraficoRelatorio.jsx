@@ -2,39 +2,11 @@ import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { format } from 'date-fns';
 
-// Registra todos os elementos que vamos usar
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
-// --- Funções de Processamento de Dados ---
-
-// Processador para Vendas e Consignações (o que já tínhamos)
-// const processarDadosPorDia = (dados, tipo) => {
-//     let dateKey = tipo === 'Consignacao' ? 'data_inicio' : 'data';
-//     const dadosAgrupados = dados.reduce((acc, item) => {
-//         const dataDoItem = item[dateKey];
-//         if (!dataDoItem) return acc;
-//         const dataFormatada = new Date(dataDoItem).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
-//         if (!acc[dataFormatada]) acc[dataFormatada] = 0;
-//         acc[dataFormatada] += parseFloat(item.valor || 0);
-//         return acc;
-//     }, {});
-//     const labelsOrdenados = Object.keys(dadosAgrupados).sort((a, b) => new Date(a.split('/').reverse().join('-')) - new Date(b.split('/').reverse().join('-')));
-//     return {
-//         labels: labelsOrdenados,
-//         datasets: [{
-//             label: `Valor de ${tipo} por Dia`,
-//             data: labelsOrdenados.map(data => dadosAgrupados[data]),
-//             backgroundColor: 'rgba(13, 110, 253, 0.6)',
-//         }]
-//     };
-// };
-
-
-// Esta nova função substitui a antiga 'processarDadosPorDia'
 const processarDadosTemporais = (dados, tipo, periodo) => {
     const dateKey = tipo === 'Consignacao' ? 'data_inicio' : 'data';
 
-    // 1. Define o formato da data para agrupar e para exibir, baseado no período
     let formatKey, formatLabel;
     switch (periodo) {
         case 'ultimos_3_meses':
@@ -52,7 +24,6 @@ const processarDadosTemporais = (dados, tipo, periodo) => {
             break;
     }
 
-    // Agrupa os dados usando a chave de formato dinâmico
     const dadosAgrupados = dados.reduce((acc, item) => {
         const dataDoItem = item[dateKey];
         if (!dataDoItem) return acc;
@@ -63,15 +34,14 @@ const processarDadosTemporais = (dados, tipo, periodo) => {
         return acc;
     }, {});
 
-    // Ordena as chaves (seja dia, semana ou mês) cronologicamente
     const labelsOrdenados = Object.keys(dadosAgrupados).sort();
 
     return {
         labels: labelsOrdenados.map(chave => {
-            // Para semanas, precisamos reconstruir a data para obter o rótulo correto
+
             if (periodo === 'ultimos_3_meses') {
                 const [ano, semana] = chave.split('-');
-                // Isso cria uma data aproximada para a semana, apenas para o rótulo
+
                 const dataDaSemana = new Date(ano, 0, 1 + (semana - 1) * 7);
                 return formatLabel(dataDaSemana);
             }
@@ -85,15 +55,10 @@ const processarDadosTemporais = (dados, tipo, periodo) => {
     };
 };
 
-// NOVO: Processador para Gastos/Manutenções por Categoria
 const processarDadosPorCategoria = (dados, tipo) => {
     const dadosAgrupados = dados.reduce((acc, item) => {
 
-        // ANTES:
-        // const categoria = item.categoria || 'Sem Categoria';
-
-        // DEPOIS:
-        const categoria = getCategoriaFromDescricao(item.descricao); // Usa nossa função inteligente!
+        const categoria = getCategoriaFromDescricao(item.descricao);
 
         if (!acc[categoria]) acc[categoria] = 0;
         acc[categoria] += parseFloat(item.valor || 0);
@@ -109,7 +74,6 @@ const processarDadosPorCategoria = (dados, tipo) => {
     };
 };
 
-// NOVO: Processador para Trocas por Resultado
 const processarTrocasPorResultado = (dados) => {
     const resultados = dados.reduce((acc, item) => {
         const valor = parseFloat(item.valor || 0);
@@ -131,9 +95,8 @@ const processarTrocasPorResultado = (dados) => {
 const getCategoriaFromDescricao = (descricao) => {
     if (!descricao) return 'Não especificado';
 
-    const desc = descricao.toLowerCase(); // Converte para minúsculas para a busca não diferenciar maiúsculas/minúsculas
+    const desc = descricao.toLowerCase();
 
-    // Adicione aqui as palavras-chave e categorias do seu negócio
     if (desc.includes('óleo') || desc.includes('filtro')) return 'Troca de Óleo e Filtros';
     if (desc.includes('pneu') || desc.includes('roda') || desc.includes('alinhamento') || desc.includes('balanceamento')) return 'Pneus e Rodas';
     if (desc.includes('imposto') || desc.includes('ipva') || desc.includes('documento') || desc.includes('licenciamento')) return 'Documentação e Impostos';
@@ -141,15 +104,13 @@ const getCategoriaFromDescricao = (descricao) => {
     if (desc.includes('bateria') || desc.includes('elétrica')) return 'Parte Elétrica';
     if (desc.includes('freio') || desc.includes('pastilha')) return 'Sistema de Freios';
     if (desc.includes('marketing') || desc.includes('anúncio') || desc.includes('plataforma')) return 'Marketing e Vendas';
-    // if (desc.includes('salário') || desc.includes('comissão')) return 'Recursos Humanos';
 
-    // Se nenhuma palavra-chave for encontrada, retorna uma categoria padrão
     return 'Outros';
 };
 
 const processarComprasPorMarca = (dados, todasAsMarcas) => {
     const dadosAgrupados = dados.reduce((acc, compra) => {
-        // Encontra o nome da marca usando o marcaId do automóvel da compra
+
         const marcaDoAutomovel = todasAsMarcas.find(m => m.id === compra.automovel?.marcaId);
         const marcaNome = marcaDoAutomovel?.nome || 'Marca Desconhecida';
 
@@ -157,7 +118,6 @@ const processarComprasPorMarca = (dados, todasAsMarcas) => {
             acc[marcaNome] = 0;
         }
 
-        // Soma o valor da compra para aquela marca
         acc[marcaNome] += parseFloat(compra.valor || 0);
         return acc;
     }, {});
@@ -173,45 +133,39 @@ const processarComprasPorMarca = (dados, todasAsMarcas) => {
 };
 
 
-// --- Componente Principal do Gráfico ---
 
 const GraficoRelatorio = ({ dados, tipo, marcas, periodo }) => {
     if (!dados || dados.length === 0) {
         return <p className="text-center text-muted">Não há dados suficientes para gerar um gráfico.</p>;
     }
 
-    // --- OPÇÕES GLOBAIS PARA OS GRÁFICOS ---
-    // Vamos criar um objeto de opções base para evitar repetição
     const commonOptions = {
         responsive: true,
-        maintainAspectRatio: false, // Fundamental para o CSS funcionar
+        maintainAspectRatio: false,
         plugins: {
             legend: {
                 position: 'top',
                 labels: {
-                    // ESTA É A NOVA OPÇÃO PARA O ESPAÇAMENTO
-                    padding: 20 // Aumenta a distância entre a legenda e o gráfico. Ajuste o valor como desejar.
+                    padding: 20
                 }
             },
             title: {
                 display: true,
-                // O texto do título será definido dinamicamente abaixo
             }
         }
     };
 
-    // Decide qual tipo de gráfico e quais dados usar
     switch (tipo) {
         case 'Venda':
         case 'Consignacao':
             const dadosGraficoBarra = processarDadosTemporais(dados, tipo, periodo);
             const barOptions = {
-                ...commonOptions, // Usa as opções comuns
+                ...commonOptions,
                 plugins: {
                     ...commonOptions.plugins,
                     title: {
                         ...commonOptions.plugins.title,
-                        text: `Evolução de ${tipo}s no Período` // Define o título específico
+                        text: `Evolução de ${tipo}s no Período`
                     }
                 }
             };
@@ -219,11 +173,10 @@ const GraficoRelatorio = ({ dados, tipo, marcas, periodo }) => {
 
         case 'Gasto':
         case 'Manutencao':
-        case 'Troca': // O gráfico de Troca também é Pizza
-            // Define os dados (pode ser de Categoria ou de Resultado)
+        case 'Troca':
             const dadosGraficoPizza = tipo === 'Troca' ? processarTrocasPorResultado(dados) : processarDadosPorCategoria(dados, tipo);
             const pieOptions = {
-                ...commonOptions, // Usa as opções comuns
+                ...commonOptions,
                 plugins: {
                     ...commonOptions.plugins,
                     title: {
@@ -254,8 +207,6 @@ const GraficoRelatorio = ({ dados, tipo, marcas, periodo }) => {
                     }
                 }}
             />;
-
-        // Adicione um case para 'Compra' se desejar um gráfico específico para ele
 
         default:
             return <p className="text-center text-muted">Visualização não disponível para este tipo de relatório.</p>;
