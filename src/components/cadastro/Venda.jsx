@@ -456,7 +456,7 @@ const Venda = () => {
                                     {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="fornecedor" class="form-label">Fornecedor</label>
+                                    <label for="fornecedor" class="form-label">Comprador</label>
                                     <Select formatOptionLabel={formatOptionLabelFornecedor} styles={getCustomStyles("clienteId")}
                                         isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="clienteId" name="clienteId" placeholder="Selecione o fornecedor" options={optionsFornecedor} value={optionsFornecedor.find(option => option.value === venda.clienteId) || null} isClearable={true} filterOption={(option, inputValue) => {
                                             const label = option.label;

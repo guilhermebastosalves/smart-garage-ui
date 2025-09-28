@@ -120,7 +120,7 @@ const Compras = () => {
 
 
     const [currentPage, setCurrentPage] = useState(1);
-    const recordsPerPage = 15;
+    const recordsPerPage = 10;
     const lastIndex = currentPage * recordsPerPage;
     const firstIndex = lastIndex - recordsPerPage;
 

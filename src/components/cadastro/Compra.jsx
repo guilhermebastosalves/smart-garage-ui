@@ -476,7 +476,7 @@ const Compra = () => {
                     <div className="form-card card mb-4">
                         <div className="card-header d-flex align-items-center">
                             <FaCar className="me-2" />
-                            Informações Principais do Autpmóvel
+                            Informações Principais do Automóvel
                         </div>
                         <div className="card-body">
                             <div className="row g-3">

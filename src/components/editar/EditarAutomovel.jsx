@@ -152,7 +152,7 @@ const EditarAutomovel = () => {
         if (formData.cor && (!isNaN(formData.cor))) tipoErros.push("cor");
         if (formData.ano_fabricacao && formData.ano_modelo && formData.ano_fabricacao > formData.ano_modelo) tipoErros.push("ano_modelo_fabricacao");
         const anoAtual = new Date().getFullYear();
-        if (automovel.ano_modelo && (!/^\d{4}$/.test(automovel.ano_modelo) || Number(automovel.ano_modelo) > anoAtual + 1)) { tipoErros.push("ano_modelo_futuro"); }
+        if (formData.ano_modelo && (!/^\d{4}$/.test(formData.ano_modelo) || Number(formData.ano_modelo) > anoAtual + 1)) { tipoErros.push("ano_modelo_futuro"); }
 
 
         return { vazioErros, tamanhoErros, tipoErros };
