@@ -88,7 +88,7 @@ const Gasto = () => {
         if (!gasto.data) vazioErros.push("data");
         if (!gasto.automovelId) vazioErros.push("automovelId");
 
-        if (renavam === "" || renavam === null) vazioErros.push("renavam")
+        //if (renavam === "" || renavam === null) vazioErros.push("renavam")
 
         // Tamanho
 
