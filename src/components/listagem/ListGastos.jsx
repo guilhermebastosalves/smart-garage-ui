@@ -175,11 +175,11 @@ const Gastos = () => {
                             <table className="table mt-4 table-hover">
                                 <thead>
                                     <tr>
-                                        <th scope="col">ID</th>
-                                        <th scope="col">Data</th>
-                                        <th scope="col">Automóvel</th>
-                                        <th scope="col">Valor</th>
-                                        <th scope="col" className="text-center" style={{ width: '180px' }}>Ações
+                                        <th scope="col" className='text-end pe-5' style={{ width: '10%' }}>ID</th>
+                                        <th scope="col" className='ps-5' style={{ width: '25%' }}>Data</th>
+                                        <th scope="col" className='' style={{ width: '35%' }}>Automóvel</th>
+                                        <th scope="col" className='text-center ps-5' style={{ width: '10%' }}>Valor</th>
+                                        <th scope="col" className="text-center" style={{ width: '20%' }}>Ações
                                         </th>
                                     </tr>
                                 </thead>
@@ -191,17 +191,17 @@ const Gastos = () => {
 
                                         return (
                                             <tr key={d.id} className="align-middle">
-                                                <th scope="row">{d.id}</th>
-                                                <td>{new Date(d.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                                                <th scope="row" className='text-end pe-5'>{d.id}</th>
+                                                <td className='ps-5'>{new Date(d.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                                                 <td>
                                                     <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
                                                     <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
                                                 </td>
-                                                <td className="text-dark fw-bold">{d.valor && `${parseFloat(d.valor).toLocaleString('pt-BR', {
+                                                <td className="text-dark fw-bold text-end">{d.valor && `${parseFloat(d.valor).toLocaleString('pt-BR', {
                                                     style: 'currency',
                                                     currency: 'BRL'
                                                 })}`}</td>
-                                                <td className="text-center">
+                                                <td className="text-center ps-3">
                                                     <button
                                                         className='btn btn-outline-info btn-sm me-2'
                                                         onClick={() => { verDetalhes(d.id) }}
@@ -219,14 +219,14 @@ const Gastos = () => {
                                                             <i className="bi bi-pencil-fill"></i>
                                                         </button>}
 
-                                                    {user.role === "gerente" &&
+                                                    {/* {user.role === "gerente" &&
                                                         <button
                                                             className='btn btn-outline-danger btn-sm'
                                                             onClick={() => handleAbrirModalConfirmacao(d)}
                                                             title="Excluir Gasto"
                                                         >
                                                             <i className="bi bi-trash-fill"></i>
-                                                        </button>}
+                                                        </button>} */}
                                                 </td>
                                             </tr>
 

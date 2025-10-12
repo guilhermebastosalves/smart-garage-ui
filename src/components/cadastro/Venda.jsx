@@ -354,7 +354,10 @@ const Venda = () => {
                 const id = buscaConsignacao.data.id;
 
                 const updateConsignacao = await ConsignacaoDataService.update(id,
-                    { ativo: false }
+                    {
+                        ativo: false,
+                        data_fim: venda.data
+                    }
                 )
                     .catch(e => {
                         console.error("Erro ao atualizar consignação:", e);

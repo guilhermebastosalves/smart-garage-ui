@@ -6,6 +6,7 @@ import FuncionarioDataService from '../../services/funcionarioDataService';
 import EnderecoDataService from '../../services/enderecoDataService';
 import CidadeDataService from '../../services/cidadeDataService';
 import EstadoDataService from '../../services/estadoDataService';
+import { Card, Badge, ListGroup } from 'react-bootstrap';
 
 const DetalhesConsignacao = () => {
     const { id } = useParams();
@@ -86,7 +87,7 @@ const DetalhesConsignacao = () => {
                 <Header />
                 <div className="alert alert-warning container mt-5" role="alert">
                     <h4 className="alert-heading">Consignação Não Encontrada</h4>
-                    <p>Nenhuma informação detalhada foi encontrada para a consignação com ID #{id}.</p>
+                    <p>Nenhuma informação detalhada foi encontrada.</p>
                     <hr />
                     <button className="btn btn-primary" onClick={() => navigate(-1)}>Voltar</button>
                 </div>
@@ -110,12 +111,12 @@ const DetalhesConsignacao = () => {
         <>
             <Header />
             <div className="container mt-4 mb-5">
-                {/* Título da Página e Botão Voltar */}
                 <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
                     <div>
                         <h1 className="fw-bold mb-0 text-primary">
                             <i className="bi bi-file-earmark-text me-3"></i>
-                            Detalhes da Consignação</h1>
+                            Detalhes da Consignação
+                        </h1>
                         <p className="text-muted fs-6 mt-1">Visão completa das informações da consignação.</p>
                     </div>
                     <button className="btn btn-outline-secondary d-flex align-items-center" onClick={() => navigate(-1)}>
@@ -124,131 +125,82 @@ const DetalhesConsignacao = () => {
                     </button>
                 </div>
 
-                <div className="row g-3">
+                <div className="d-flex flex-column gap-4">
 
-                    <div className="accordion" id="accordionConsignacao">
-                        <div className="accordion-item">
-                            <h2 className="accordion-header">
-                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ConsignacaoInfo">
-                                    <i className="bi bi-info-circle-fill text-primary me-2"></i>
-                                    Informações da Consignação
-                                </button>
-                            </h2>
-                            <div id="ConsignacaoInfo" className="accordion-collapse collapse" data-bs-parent="#accordionConsignacao">
-                                <div className="accordion-body">
-                                    <ul className="list-group list-group-flush">
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-2"><strong>Funcionário responsável:</strong> {funcionarioNome?.nome ? funcionarioNome?.nome : "N/A"}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <span className='me-1'><strong>Data de Início:</strong> {new Date(detalhes.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</span>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Data de Término:</strong> {detalhes.data_termino ? new Date(detalhes.data_termino).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'Não Finalizada'}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Valor Acordado:</strong> <span className="text fs-6">{formatter.format(detalhes.valor)}</span></p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1">
-                                                <strong>Status:</strong>
-                                                {detalhes.ativo ? (
-                                                    <span className="badge bg-primary ms-2 p-2">
-                                                        <i className="bi bi-check-circle-fill me-1"></i> Ativa
-                                                    </span>
-                                                ) : (
-                                                    <span className="badge bg-secondary ms-2 p-2">
-                                                        <i className="bi bi-x-circle-fill me-1"></i> Inativa
-                                                    </span>
-                                                )}
-                                            </p>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                    <div className="row g-4">
+                        <div className="col-lg-6">
+                            <Card className="shadow-sm h-100">
+                                <Card.Body>
+                                    <h5 className="card-title d-flex align-items-center border-bottom pb-2 mb-3">
+                                        <i className="bi bi-car-front-fill text-primary me-2"></i>
+                                        Detalhes do Automóvel
+                                    </h5>
+                                    <ListGroup variant="flush">
+                                        <ListGroup.Item><strong>Marca:</strong> {automovel?.marca?.nome || 'N/A'}</ListGroup.Item>
+                                        <ListGroup.Item><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</ListGroup.Item>
+                                        <ListGroup.Item><strong>Ano/Modelo:</strong> {`${automovel?.ano_fabricacao || 'N/A'} / ${automovel?.ano_modelo || 'N/A'}`}</ListGroup.Item>
+                                        <ListGroup.Item><strong>Placa:</strong> {automovel?.placa || 'N/A'}</ListGroup.Item>
+                                        <ListGroup.Item><strong>Cor:</strong> {automovel?.cor || 'N/A'}</ListGroup.Item>
+                                        <ListGroup.Item><strong>Renavam:</strong> {automovel?.renavam || 'N/A'}</ListGroup.Item>
+                                    </ListGroup>
+                                </Card.Body>
+                            </Card>
                         </div>
-                    </div>
 
-                    <div className="accordion" id="accordionDetalhesAuto">
-                        <div className="accordion-item">
-                            <h2 className="accordion-header">
-                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#AutoInfo">
-                                    <i className="bi bi-car-front-fill text-primary me-2"></i>
-                                    Detalhes do Automóvel
-                                </button>
-                            </h2>
-                            <div id="AutoInfo" className="accordion-collapse collapse" data-bs-parent="#accordionDetalhesAuto">
-                                <div className="accordion-body">
-                                    <ul className="list-group list-group-flush">
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Marca:</strong> {automovel?.marca?.nome || 'N/A'}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Ano/Modelo:</strong> {`${automovel?.ano_fabricacao || 'N/A'}/${automovel?.ano_modelo || 'N/A'}`}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Placa:</strong> {automovel?.placa || 'N/A'}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Cor:</strong> {automovel?.cor || 'N/A'}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-0"><strong>Renavam:</strong> {automovel?.renavam || 'N/A'}</p>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="accordion" id="accordionDetalhes">
-                        <div className="accordion-item">
-                            <h2 className="accordion-header">
-                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#clienteInfo">
-                                    <i className="bi bi-person-fill me-2 text-primary"></i>
-                                    Informações do Consignante
-                                </button>
-                            </h2>
-                            <div id="clienteInfo" className="accordion-collapse collapse" data-bs-parent="#accordionDetalhes">
-                                <div className="accordion-body">
+                        <div className="col-lg-6">
+                            <Card className="shadow-sm h-100">
+                                <Card.Body>
+                                    <h5 className="card-title d-flex align-items-center border-bottom pb-2 mb-3">
+                                        <i className="bi bi-person-fill text-primary me-2"></i>
+                                        Informações do Consignante
+                                    </h5>
                                     {cliente && (
-                                        <div className="col-12">
-                                            <ul className="list-group list-group-flush">
-                                                <li className="list-group-item d-flex justify-content-between"><p className="mb-2"><strong>Nome Completo:</strong> {cliente.nome || 'N/A'}</p></li>
-                                                {cliente?.fisica?.cpf &&
-                                                    <li className="list-group-item d-flex justify-content-between">
-                                                        {cliente?.fisica?.cpf && <p className="mb-2"><strong>CPF:</strong> {cliente?.fisica?.cpf}</p>}
-                                                    </li>}
-                                                {cliente?.juridica?.cnpj &&
-                                                    < li className="list-group-item d-flex justify-content-between">
-                                                        {cliente?.juridica?.cnpj && <p className="mb-2"><strong>CNPJ:</strong> {cliente?.juridica.cnpj}</p>}
-                                                    </li>}
-                                                {cliente?.juridica?.razao_social &&
-                                                    <li className="list-group-item d-flex justify-content-between">
-                                                        {cliente?.juridica?.razao_social && <p className="mb-2"><strong>Razão Social:</strong> {cliente?.juridica.razao_social}</p>}
-                                                    </li>}
-                                                <li className="list-group-item d-flex justify-content-between">
-                                                    <p className="mb-2"><strong>Telefone:</strong> {cliente.telefone || 'N/A'}</p>
-                                                </li>
-                                                <li className="list-group-item d-flex justify-content-between">
-                                                    <p className="mb-2"><strong>Email:</strong> {cliente.email || 'N/A'}</p>
-                                                </li>
-                                                <li className="list-group-item d-flex justify-content-between">
-                                                    <p className="mb-0"><strong>Endereço:</strong> {
-                                                        enderecoInfo
-                                                            ? `${enderecoInfo.logradouro}, ${enderecoInfo.bairro}, ${enderecoInfo.numero} - ${cidadeInfo?.nome || ''} (${estadoInfo?.uf || ''})`
-                                                            : 'N/A'
-                                                    }</p>
-                                                </li>
-                                            </ul>
-                                        </div>
+                                        <ListGroup variant="flush">
+                                            <ListGroup.Item><strong>Nome:</strong> {cliente.nome || 'N/A'}</ListGroup.Item>
+                                            {cliente.fisica?.cpf && <ListGroup.Item><strong>CPF:</strong> {cliente.fisica.cpf}</ListGroup.Item>}
+                                            {cliente.juridica?.cnpj && <ListGroup.Item><strong>CNPJ:</strong> {cliente.juridica.cnpj}</ListGroup.Item>}
+                                            {cliente.juridica?.razao_social && <ListGroup.Item><strong>Razão Social:</strong> {cliente.juridica.razao_social}</ListGroup.Item>}
+                                            <ListGroup.Item><strong>Telefone:</strong> {cliente.telefone || 'N/A'}</ListGroup.Item>
+                                            <ListGroup.Item><strong>Email:</strong> {cliente.email || 'N/A'}</ListGroup.Item>
+                                            <ListGroup.Item><strong>Endereço:</strong> {
+                                                enderecoInfo
+                                                    ? `${enderecoInfo.logradouro}, ${enderecoInfo.numero}, ${enderecoInfo.bairro} - ${cidadeInfo?.nome || ''} (${estadoInfo?.uf || ''})`
+                                                    : 'N/A'
+                                            }</ListGroup.Item>
+                                        </ListGroup>
                                     )}
-                                </div>
-                            </div>
+                                </Card.Body>
+                            </Card>
                         </div>
+                    </div>
+
+                    <div>
+                        <Card className="shadow-sm">
+                            <Card.Body>
+                                <h5 className="card-title d-flex align-items-center border-bottom pb-2 mb-3">
+                                    <i className="bi bi-info-circle-fill text-primary me-2"></i>
+                                    Informações da Operação
+                                </h5>
+                                <ListGroup variant="flush">
+                                    <ListGroup.Item><strong>Funcionário responsável:</strong> {funcionarioNome?.nome || "N/A"}</ListGroup.Item>
+                                    <ListGroup.Item><strong>Data de Início:</strong> {new Date(detalhes.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</ListGroup.Item>
+                                    <ListGroup.Item><strong>Data de Término:</strong> {detalhes.data_fim ? new Date(detalhes.data_fim).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'Não Finalizada'}</ListGroup.Item>
+                                    <ListGroup.Item><strong>Valor Acordado:</strong> <span>{formatter.format(detalhes.valor)}</span></ListGroup.Item>
+                                    <ListGroup.Item>
+                                        <strong>Status:</strong>
+                                        {detalhes.ativo ? (
+                                            <Badge bg="primary" className="ms-2 p-2 fs-6">
+                                                <i className="bi bi-check-circle-fill me-1"></i> Ativa
+                                            </Badge>
+                                        ) : (
+                                            <Badge bg="secondary" className="ms-2 p-2 fs-6">
+                                                <i className="bi bi-x-circle-fill me-1"></i> Inativa
+                                            </Badge>
+                                        )}
+                                    </ListGroup.Item>
+                                </ListGroup>
+                            </Card.Body>
+                        </Card>
                     </div>
 
                 </div>

@@ -725,16 +725,16 @@ const Cliente = () => {
                                 </div>
 
                                 <div class="col-md-4 ">
-                                    <label for="bairro" class="form-label">Bairro</label>
-                                    <input type="text" className={`form-control ${hasError("bairro") && "is-invalid"}`} id="bairro" name="bairro" aria-describedby="bairroHelp" value={endereco.bairro} onChange={handleInputChangeEndereco} />
-                                    {vazio.includes("bairro") && <div className="invalid-feedback">Informe o bairro.</div>}
-                                </div>
-
-                                <div class="col-md-4 ">
                                     <label for="numero" class="form-label">Número</label>
                                     <input type="text" className={`form-control ${hasError("numero") && "is-invalid"}`} id="numero" name="numero" aria-describedby="numerodeHelp" value={endereco.numero} onChange={handleInputChangeEndereco} />
                                     {vazio.includes("numero") && <div className="invalid-feedback">Informe o número.</div>}
                                     {tipo.includes("numero") && <div className="invalid-feedback">Número inválido.</div>}
+                                </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="bairro" class="form-label">Bairro</label>
+                                    <input type="text" className={`form-control ${hasError("bairro") && "is-invalid"}`} id="bairro" name="bairro" aria-describedby="bairroHelp" value={endereco.bairro} onChange={handleInputChangeEndereco} />
+                                    {vazio.includes("bairro") && <div className="invalid-feedback">Informe o bairro.</div>}
                                 </div>
 
                             </div>
@@ -840,18 +840,19 @@ const Cliente = () => {
                                 </div>
 
                                 <div class="col-md-4 ">
-                                    <label for="bairro" class="form-label">Bairro</label>
-                                    <input type="text" className={`form-control ${hasError("bairro") && "is-invalid"}`} id="bairro" name="bairro" aria-describedby="bairroHelp" value={endereco.bairro} onChange={handleInputChangeEndereco} />
-                                    {vazio.includes("bairro") && <div className="invalid-feedback">Informe o bairro.</div>}
-                                </div>
-
-                                <div class="col-md-4 ">
                                     <label for="numero" class="form-label">Número</label>
                                     <input type="text" className={`form-control ${hasError("numero") && "is-invalid"}`} id="numero" name="numero" aria-describedby="numerodeHelp" value={endereco.numero} onChange={handleInputChangeEndereco} />
 
                                     {vazio.includes("numero") && <div className="invalid-feedback">Informe o número.</div>}
                                     {tipo.includes("numero") && <div className="invalid-feedback">Número inválido.</div>}
                                 </div>
+
+                                <div class="col-md-4 ">
+                                    <label for="bairro" class="form-label">Bairro</label>
+                                    <input type="text" className={`form-control ${hasError("bairro") && "is-invalid"}`} id="bairro" name="bairro" aria-describedby="bairroHelp" value={endereco.bairro} onChange={handleInputChangeEndereco} />
+                                    {vazio.includes("bairro") && <div className="invalid-feedback">Informe o bairro.</div>}
+                                </div>
+
                             </div>
                         </fieldset>
 

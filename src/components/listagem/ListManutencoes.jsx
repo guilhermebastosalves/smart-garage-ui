@@ -214,14 +214,14 @@ const Manutencao = () => {
                             <table className="table mt-4 table-hover">
                                 <thead>
                                     <tr>
-                                        <th scope="col">ID</th>
-                                        <th scope="col">Data Envio</th>
-                                        <th scope="col">
+                                        <th scope="col" className='text-end pe-5' style={{ width: '5%' }}>ID</th>
+                                        <th scope="col" className='' style={{ width: '15%' }}>Data Envio</th>
+                                        <th scope="col" className='' style={{ width: '15%' }}>
                                             {opcao === 'ativas' ? 'Previsão de Retorno' : 'Data Retorno'}
                                         </th>
-                                        <th scope="col">Automóvel</th>
-                                        <th scope="col">Valor</th>
-                                        <th scope="col" className="text-center" style={{ width: '180px' }}>Ações
+                                        <th scope="col" className='ps-5' style={{ width: '30%' }}>Automóvel</th>
+                                        <th scope="col" className='text-center ps-5' style={{ width: '10%' }}>Valor</th>
+                                        <th scope="col" className="text-center" style={{ width: '20%' }}>Ações
                                         </th>
                                     </tr>
                                 </thead>
@@ -233,7 +233,7 @@ const Manutencao = () => {
 
                                         return (
                                             <tr key={d.id} className="align-middle">
-                                                <th scope="row">{d.id}</th>
+                                                <th scope="row" className='text-end pe-5'>{d.id}</th>
                                                 <td>{new Date(d.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                                                 <td>
                                                     {d.ativo ?
@@ -243,11 +243,11 @@ const Manutencao = () => {
                                                     }
                                                 </td>
 
-                                                <td>
+                                                <td className='ps-5'>
                                                     <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${noModelo?.nome ?? ''}`}</div>
                                                     <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
                                                 </td>
-                                                <td className="text-dark fw-bold">{d.valor && `${parseFloat(d.valor).toLocaleString('pt-BR', {
+                                                <td className="text-dark fw-bold text-end">{d.valor && `${parseFloat(d.valor).toLocaleString('pt-BR', {
                                                     style: 'currency',
                                                     currency: 'BRL'
                                                 })}`}</td>
@@ -280,14 +280,14 @@ const Manutencao = () => {
                                                     )}
 
 
-                                                    {user.role === "gerente" &&
+                                                    {/* {user.role === "gerente" &&
                                                         <button
                                                             className='btn btn-outline-danger btn-sm'
                                                             onClick={() => handleAbrirModalConfirmacao(d)}
                                                             title="Excluir Manutenção"
                                                         >
                                                             <i className="bi bi-trash-fill"></i>
-                                                        </button>}
+                                                        </button>} */}
                                                 </td>
                                             </tr>
                                         );

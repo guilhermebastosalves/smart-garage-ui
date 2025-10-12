@@ -668,8 +668,10 @@ const Troca = () => {
                                         <option value="">Selecione...</option>
                                         <option value="Diesel">Diesel</option>
                                         <option value="Etanol">Etanol</option>
+                                        <option value="Elétrico">Elétrico</option>
                                         <option value="Flex">Flex</option>
                                         <option value="Gasolina">Gasolina</option>
+                                        <option value="Híbrido">Híbrido</option>
                                     </select>
                                     {vazio.includes("combustivel") && <div className="invalid-feedback ms-1">Informe o combustível.</div>}
                                 </div>

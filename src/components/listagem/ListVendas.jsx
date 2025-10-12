@@ -50,11 +50,16 @@ const Vendas = () => {
     const navigate = useNavigate();
 
     const [periodo, setPeriodo] = useState('todos');
+    const [origem, setOrigem] = useState('todas');
 
     const handleInputChangePeriodo = event => {
         const { value } = event.target;
         setPeriodo(value);
     }
+
+    const handleInputChangeOrigem = event => {
+        setOrigem(event.target.value);
+    };
 
     const [loading, setLoading] = useState(true);
 
@@ -101,17 +106,22 @@ const Vendas = () => {
         }
 
         return todasVendas
+            .filter(venda => {
+                if (origem === 'todas') return true;
+                const auto = automovel.find(a => a.id === venda.automovelId);
+                return auto && auto.origem === origem;
+            })
             .filter(item => {
                 if (!dataFiltro) return true;
                 return new Date(item.data) >= dataFiltro;
             })
             .sort((a, b) => new Date(b.data) - new Date(a.data));
 
-    }, [periodo, todasVendas]);
+    }, [periodo, todasVendas, origem, automovel]);
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [periodo]);
+    }, [periodo, origem]);
 
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -149,12 +159,20 @@ const Vendas = () => {
                 <div className="card shadow-sm">
                     <div className="card-header bg-light d-flex justify-content-between align-items-center">
                         <h5 className="mb-0">Vendas</h5>
-                        <select name="periodo" id="periodo" className="form-select w-auto" onChange={handleInputChangePeriodo} value={periodo}>
-                            <option value="todos">Todo o Período</option>
-                            <option value="ultimo_mes">Último Mês</option>
-                            <option value="ultimos_3_meses">Últimos 3 Meses</option>
-                            <option value="ultimo_semestre">Último Semestre</option>
-                        </select>
+                        <div className="d-flex align-items-center gap-2">
+                            <select name="origem" id="origem" className="form-select w-auto" onChange={handleInputChangeOrigem} value={origem}>
+                                <option value="todas">Origem: Todas</option>
+                                <option value="Compra">Origem: Compra</option>
+                                <option value="Consignacao">Origem: Consignação</option>
+                                <option value="Troca">Origem: Troca</option>
+                            </select>
+                            <select name="periodo" id="periodo" className="form-select w-auto" onChange={handleInputChangePeriodo} value={periodo}>
+                                <option value="todos">Todo o Período</option>
+                                <option value="ultimo_mes">Último Mês</option>
+                                <option value="ultimos_3_meses">Últimos 3 Meses</option>
+                                <option value="ultimo_semestre">Último Semestre</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div className="card-body">
@@ -168,11 +186,11 @@ const Vendas = () => {
                             <table className="table mt-4 table-hover">
                                 <thead>
                                     <tr>
-                                        <th scope="col">ID</th>
-                                        <th scope="col">Data</th>
-                                        <th scope="col">Automóvel</th>
-                                        <th scope="col">Valor</th>
-                                        <th scope="col" className="text-center" style={{ width: '180px' }}>Ações
+                                        <th scope="col" className='text-end pe-5' style={{ width: '10%' }}>ID</th>
+                                        <th scope="col" className='ps-5' style={{ width: '25%' }}>Data</th>
+                                        <th scope="col" className='' style={{ width: '35%' }}>Automóvel</th>
+                                        <th scope="col" className='text-center' style={{ width: '10%' }}>Valor</th>
+                                        <th scope="col" className="text-center" style={{ width: '20%' }}>Ações
                                         </th>
                                     </tr>
                                 </thead>
@@ -184,17 +202,17 @@ const Vendas = () => {
 
                                         return (
                                             <tr key={d.id} className="align-middle">
-                                                <th scope="row">{d.id}</th>
-                                                <td>{new Date(d.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                                                <th scope="row" className='text-end pe-5'>{d.id}</th>
+                                                <td className='ps-5'>{new Date(d.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                                                 <td>
                                                     <div className="fw-bold">{`${nomeMarca?.nome ?? ''} ${nomeModelo?.nome ?? ''}`}</div>
                                                     <small className="text-muted">{`Placa: ${auto?.placa}`}</small>
                                                 </td>
-                                                <td className="text-dark fw-bold">{d.valor && `${parseFloat(d.valor).toLocaleString('pt-BR', {
+                                                <td className="text-dark fw-bold text-end">{d.valor && `${parseFloat(d.valor).toLocaleString('pt-BR', {
                                                     style: 'currency',
                                                     currency: 'BRL'
                                                 })}`}</td>
-                                                <td className='text-center'>
+                                                <td className='text-center ps-3'>
                                                     <button
                                                         className='btn btn-outline-info btn-sm me-2'
                                                         onClick={() => { verDetalhes(d.id) }}
@@ -212,14 +230,14 @@ const Vendas = () => {
                                                             <i className="bi bi-pencil-fill"></i>
                                                         </button>}
 
-                                                    {user.role === "gerente" &&
+                                                    {/* {user.role === "gerente" &&
                                                         <button
                                                             className='btn btn-outline-danger btn-sm'
                                                             onClick={() => handleAbrirModalConfirmacao(d)}
                                                             title="Cancelar Venda"
                                                         >
                                                             <i className="bi bi-trash-fill"></i>
-                                                        </button>}
+                                                        </button>} */}
                                                 </td>
                                             </tr>
 

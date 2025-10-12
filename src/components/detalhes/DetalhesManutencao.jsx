@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../Header';
 import ManutencaoDataService from '../../services/manutencaoDataService';
+import { Card, Badge, ListGroup } from 'react-bootstrap';
 
 const DetalhesManutencao = () => {
     const { id } = useParams();
@@ -59,7 +60,7 @@ const DetalhesManutencao = () => {
                 <Header />
                 <div className="alert alert-warning container mt-5" role="alert">
                     <h4 className="alert-heading">Manutencao Não Encontrada</h4>
-                    <p>Nenhuma informação detalhada foi encontrada para a manutenção com ID #{id}.</p>
+                    <p>Nenhuma informação detalhada foi encontrada.</p>
                     <hr />
                     <button className="btn btn-primary" onClick={() => navigate(-1)}>Voltar</button>
                 </div>
@@ -72,7 +73,7 @@ const DetalhesManutencao = () => {
         currency: 'BRL'
     });
 
-    const { automovel, cliente } = detalhes;
+    const { automovel } = detalhes;
 
     return (
         <>
@@ -91,74 +92,48 @@ const DetalhesManutencao = () => {
                     </button>
                 </div>
 
-                <div className="row g-4">
+                <div className="d-flex flex-column gap-4">
 
+                    <div className="row g-4">
+                        <div>
+                            <Card className="shadow-sm h-100">
+                                <Card.Body>
+                                    <h5 className="card-title d-flex align-items-center border-bottom pb-2 mb-3">
+                                        <i className="bi bi-car-front-fill text-primary me-2"></i>
+                                        Detalhes do Automóvel
+                                    </h5>
+                                    <ListGroup variant="flush">
+                                        <ListGroup.Item><strong>Marca:</strong> {automovel?.marca?.nome || 'N/A'}</ListGroup.Item>
+                                        <ListGroup.Item><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</ListGroup.Item>
+                                        <ListGroup.Item><strong>Ano/Modelo:</strong> {`${automovel?.ano_fabricacao || 'N/A'} / ${automovel?.ano_modelo || 'N/A'}`}</ListGroup.Item>
+                                        <ListGroup.Item><strong>Placa:</strong> {automovel?.placa || 'N/A'}</ListGroup.Item>
+                                        <ListGroup.Item><strong>Cor:</strong> {automovel?.cor || 'N/A'}</ListGroup.Item>
+                                        <ListGroup.Item><strong>Renavam:</strong> {automovel?.renavam || 'N/A'}</ListGroup.Item>
+                                    </ListGroup>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    </div>
 
-                    <div className="accordion" id="accordionManu">
-                        <div className="accordion-item">
-                            <h2 className="accordion-header">
-                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#manuInfo">
+                    <div>
+                        <Card className="shadow-sm">
+                            <Card.Body>
+                                <h5 className="card-title d-flex align-items-center border-bottom pb-2 mb-3">
                                     <i className="bi bi-info-circle-fill text-primary me-2"></i>
                                     Informações da Manutenção
-                                </button>
-                            </h2>
-                            <div id="manuInfo" className="accordion-collapse collapse" data-bs-parent="#accordionManu">
-                                <div className="accordion-body">
-                                    <ul className="list-group list-group-flush">
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-2"><strong>Data de Envio:</strong> {detalhes?.data_envio ? new Date(detalhes?.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-2"><strong>Data de Retorno:</strong> {detalhes?.data_retorno ? new Date(detalhes?.data_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-2"><strong>Valor:</strong> <span className="text fs-6">{formatter.format(detalhes.valor)}</span></p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-2"><strong>Descrição:</strong> <span className="text fs-6 descricao-gasto">{detalhes.descricao}</span></p>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                                </h5>
+                                <ListGroup variant="flush">
+                                    <ListGroup.Item><strong>Data de Envio:</strong> {detalhes?.data_envio ? new Date(detalhes.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : ''}</ListGroup.Item>
+                                    <ListGroup.Item><strong>Data de Retorno:</strong> {detalhes?.data_retorno ? new Date(detalhes.data_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : ''}</ListGroup.Item>
+                                    <ListGroup.Item><strong>Valor:</strong> <span>{formatter.format(detalhes.valor)}</span></ListGroup.Item>
+                                    <ListGroup.Item><strong>Descrição:</strong>{detalhes.descricao}</ListGroup.Item>
+                                </ListGroup>
+                            </Card.Body>
+                        </Card>
                     </div>
 
-                    <div className="accordion" id="accordionDetalhesAuto">
-                        <div className="accordion-item">
-                            <h2 className="accordion-header">
-                                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#AutoInfo">
-                                    <i className="bi bi-car-front-fill text-primary me-2"></i>
-                                    Detalhes do Automóvel
-                                </button>
-                            </h2>
-                            <div id="AutoInfo" className="accordion-collapse collapse" data-bs-parent="#accordionDetalhesAuto">
-                                <div className="accordion-body">
-                                    <ul className="list-group list-group-flush">
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Marca:</strong> {automovel?.marca?.nome || 'N/A'}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Modelo:</strong> {automovel?.modelo?.nome || 'N/A'}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Ano/Modelo:</strong> {`${automovel?.ano_fabricacao || 'N/A'}/${automovel?.ano_modelo || 'N/A'}`}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Placa:</strong> {automovel?.placa || 'N/A'}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-1"><strong>Cor:</strong> {automovel?.cor || 'N/A'}</p>
-                                        </li>
-                                        <li className="list-group-item d-flex justify-content-between">
-                                            <p className="mb-0"><strong>Renavam:</strong> {automovel?.renavam || 'N/A'}</p>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 };

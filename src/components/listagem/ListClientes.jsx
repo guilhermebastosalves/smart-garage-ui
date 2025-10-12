@@ -81,7 +81,7 @@ const ListClientes = () => {
                                 <thead>
                                     <tr>
                                         <th>Nome</th>
-                                        <th>Tipo</th>
+                                        <th className=''>Tipo</th>
                                         <th>Documento</th>
                                         <th>Contato (Telefone)</th>
                                         <th className="text-center">Ações</th>
@@ -91,7 +91,7 @@ const ListClientes = () => {
                                     {records.map(cliente => (
                                         <tr key={cliente.id}>
                                             <td className="align-middle">{cliente.nome}</td>
-                                            <td className="text-center">
+                                            <td className="">
                                                 {cliente.tipo === 'Pessoa Física' ? (
                                                     <span className="chip-tipo">
                                                         <i className="bi bi-person-badge"></i>
