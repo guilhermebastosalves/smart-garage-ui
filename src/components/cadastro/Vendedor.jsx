@@ -39,7 +39,10 @@ const RegistroVendedor = () => {
             <div className="container mt-4">
                 <Card className="form-card mx-auto mb-3" style={{ maxWidth: '600px' }}>
                     <Card.Header>
-                        <h3 className="mb-0">Cadastrar Novo Vendedor</h3>
+                        <h3 className="mb-3">Cadastrar Novo Vendedor</h3>
+                        <p className="text-muted small mb-0">
+                            Campos com <span className="text-danger">*</span> são de preenchimento obrigatório.
+                        </p>
                     </Card.Header>
                     <Card.Body>
 
@@ -59,23 +62,23 @@ const RegistroVendedor = () => {
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
-                                <Form.Label htmlFor="nome">Nome Completo</Form.Label>
+                                <Form.Label htmlFor="nome">Nome Completo <span className="text-danger">*</span></Form.Label>
                                 <Form.Control id="nome" name="nome" type="text" onChange={handleInputChange} />
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label htmlFor="email">E-mail</Form.Label>
+                                <Form.Label htmlFor="email">E-mail <span className="text-danger">*</span></Form.Label>
                                 <Form.Control id="email" name="email" type="email" onChange={handleInputChange} />
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label htmlFor="telefone">Telefone</Form.Label>
+                                <Form.Label htmlFor="telefone">Telefone <span className="text-danger">*</span></Form.Label>
                                 <Form.Control id="telefone" name="telefone" onChange={handleInputChange} />
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label htmlFor="usuario">Nome de Usuário (para login)</Form.Label>
+                                <Form.Label htmlFor="usuario">Nome de Usuário (para login) <span className="text-danger">*</span></Form.Label>
                                 <Form.Control id="usuario" name="usuario" type="text" onChange={handleInputChange} />
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label htmlFor="senha">Senha</Form.Label>
+                                <Form.Label htmlFor="senha">Senha <span className="text-danger">*</span></Form.Label>
                                 <Form.Control id="senha" name="senha" type="password" onChange={handleInputChange} />
                             </Form.Group>
                             <div className="d-grid">

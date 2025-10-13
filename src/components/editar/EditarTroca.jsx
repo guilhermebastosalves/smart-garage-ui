@@ -357,6 +357,10 @@ const EditarTroca = () => {
                     <p className="text-muted">Preencha os dados abaixo para editar a troca desejada.</p>
                 </div>
 
+                <p className="text-muted small">
+                    Campos com <span className="text-danger">*</span> são de preenchimento obrigatório.
+                </p>
+
                 {erro &&
                     <div className="alert alert-danger d-flex align-items-center" role="alert">
                         <i className="bi bi-exclamation-triangle-fill me-2"></i>
@@ -380,7 +384,7 @@ const EditarTroca = () => {
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-3">
-                                    <label for="valor" class="form-label">Valor Aquisicão (R$)</label>
+                                    <label for="valor" class="form-label">Valor Aquisicão (R$) <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("valor_aquisicao") && "is-invalid"}`} id="valora_aquisicao" name="valor_aquisicao" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor_aquisicao ?? ""} />
                                     {vazio.includes("valor_aquisicao") && <div className="invalid-feedback">Informe o valor de aquisição.</div>}
                                     {tipo.includes("valor_aquisicao") && <div className="invalid-feedback">Valor aquisição inválido.</div>}
@@ -400,7 +404,7 @@ const EditarTroca = () => {
                                 </div>
 
                                 <div className="col-md-3">
-                                    <label for="data" class="form-label">Data</label><br />
+                                    <label for="data" class="form-label">Data <span className="text-danger">*</span></label><br />
                                     <DatePicker
                                         calendarClassName="custom-datepicker-container"
                                         customInput={
@@ -423,7 +427,7 @@ const EditarTroca = () => {
 
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="fornecedor" class="form-label">Proprietario</label>
+                                    <label for="fornecedor" class="form-label">Proprietario <span className="text-danger">*</span></label>
                                     <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="clienteId" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleProprietarioChange} value={optionsFornecedor.find(option => option.value === formData.clienteId) || null} isClearable={true}
                                         styles={getCustomStyles("clienteId")}
                                         filterOption={(option, inputValue) => {
@@ -440,7 +444,7 @@ const EditarTroca = () => {
                                     {vazio.includes("clienteId") && <div className="form-text text-danger ms-1">Informe o cliente.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="automovel" class="form-label">Automóvel</label>
+                                    <label for="automovel" class="form-label">Automóvel <span className="text-danger">*</span></label>
                                     <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}
                                         styles={getCustomStyles("automovelId")}
                                         filterOption={(option, inputValue) => {
@@ -456,7 +460,7 @@ const EditarTroca = () => {
                                     {vazio.includes("automovelId") && <div className="form-text text-danger ms-1">Informe o automóvel.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="automovel" class="form-label">Automóvel Fornecido</label>
+                                    <label for="automovel" class="form-label">Automóvel Fornecido <span className="text-danger">*</span></label>
                                     <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovel_fornecido" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelFornecidoChange} value={optionsAutomovel.find(option => option.value === formData.automovel_fornecido) || null} isClearable={true}
                                         styles={getCustomStyles("automovel_fornecido")}
                                         filterOption={(option, inputValue) => {

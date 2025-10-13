@@ -277,6 +277,10 @@ const Gasto = () => {
                     <p className="text-muted">Preencha os dados abaixo para registrar um novo gasto.</p>
                 </div>
 
+                <p className="text-muted small mb-4">
+                    Campos com <span className="text-danger">*</span> são de preenchimento obrigatório.
+                </p>
+
 
                 {sucesso && (
                     <div className="alert alert-success d-flex align-items-center" role="alert">
@@ -324,13 +328,13 @@ const Gasto = () => {
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-4">
-                                    <label for="valor" class="form-label">Valor (R$)</label>
+                                    <label for="valor" class="form-label">Valor do Gasto (R$) <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeGasto} />
                                     {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="data" class="form-label">Data</label><br />
+                                    <label for="data" class="form-label">Data <span className="text-danger">*</span></label><br />
                                     <DatePicker
                                         style={{ width: "100%;" }}
                                         className={`form-control ${hasError("data") && "is-invalid"}`}
@@ -347,7 +351,7 @@ const Gasto = () => {
                                     {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="automovel" class="form-label">Automóvel</label>
+                                    <label for="automovel" class="form-label">Automóvel <span className="text-danger">*</span></label>
                                     <Select formatOptionLabel={formatOptionLabel}
                                         styles={getCustomStyles("automovelId")} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setGasto({ ...gasto, automovelId: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === gasto.automovelId) || null} isClearable={true}
                                         filterOption={(option, inputValue) => {

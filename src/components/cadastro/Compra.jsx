@@ -456,6 +456,10 @@ const Compra = () => {
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova compra.</p>
                 </div>
 
+                <p className="text-muted small">
+                    Campos com <span className="text-danger">*</span> são de preenchimento obrigatório.
+                </p>
+
                 {erro && (
                     <div className="alert alert-danger d-flex align-items-center" role="alert">
                         <i className="bi bi-exclamation-triangle-fill me-2"></i>
@@ -472,6 +476,58 @@ const Compra = () => {
 
                 <form onSubmit={saveCompra} encType="multipart/form-data" className={sucesso ? "d-none" : ""}>
 
+                    <div className="card mb-4 form-card">
+                        <div className="card-header d-flex align-items-center">
+                            <FaFileSignature className="me-2" />
+                            Detalhes da Compra
+                        </div>
+                        <div className="card-body">
+                            <div className="row g-3">
+                                <div class="col-md-4">
+                                    <label for="valor" class="form-label">Valor da Compra (R$) <span className="text-danger">*</span></label>
+                                    <input type="text" className={`form-control ${hasError("valorCompra") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeCompra} />
+                                    {vazio.includes("valorCompra") && <div className="invalid-feedback ms-1">Informe o valor da compra.</div>
+                                    }
+                                    {tipo.includes("valorCompra") && <div className="invalid-feedback ms-1">Valor de compra inválido.</div>
+                                    }
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="data" class="form-label">Data <span className="text-danger">*</span></label><br />
+                                    <DatePicker
+                                        calendarClassName="custom-datepicker-container"
+                                        className={`form-control date-picker ${hasError("data") && "is-invalid"}`}
+                                        type="text"
+                                        aria-describedby="dataHelp"
+                                        id="data"
+                                        name="data"
+                                        selected={compra.data}
+                                        onChange={(date) => setCompra({ ...compra, data: date })}
+                                        dateFormat="dd/MM/yyyy"
+                                    />
+                                    {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
+                                    {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
+
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="fornecedor" className="form-label">Fornecedor <span className="text-danger">*</span></label>
+                                    <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === compra.clienteId) || null} isClearable={true} styles={getCustomStyles("clienteId")}
+                                        filterOption={(option, inputValue) => {
+                                            const label = option.label;
+                                            const texto = [
+                                                label.nome,
+                                                label.razaoSocial,
+                                                label.cpf,
+                                                label.cnpj
+                                            ].filter(Boolean).join(" ").toLowerCase();
+                                            return texto.includes(inputValue.toLowerCase());
+                                        }}>
+                                    </Select>
+                                    {vazio.includes("clienteId") && <div className="form-text text-danger ms-1">Informe a comprador.</div>}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div className="form-card card mb-4">
                         <div className="card-header d-flex align-items-center">
@@ -481,7 +537,7 @@ const Compra = () => {
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-4">
-                                    <label htmlFor="marca" className="form-label">Marca</label>
+                                    <label htmlFor="marca" className="form-label">Marca <span className="text-danger">*</span></label>
                                     <Select
                                         placeholder="Selecione uma marca..."
                                         options={marcasOptions}
@@ -493,7 +549,7 @@ const Compra = () => {
                                     {vazio.includes("marca") && <div className="form-text text-danger ms-1">Informe a marca.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label htmlFor="modelo" className="form-label">Modelo</label>
+                                    <label htmlFor="modelo" className="form-label">Modelo <span className="text-danger">*</span></label>
                                     <Select
                                         placeholder="Selecione um modelo..."
                                         options={modelosOptions}
@@ -508,45 +564,45 @@ const Compra = () => {
 
                                 </div>
                                 <div className="col-md-4">
-                                    <label htmlFor="cor" className="form-label">Cor</label>
+                                    <label htmlFor="cor" className="form-label">Cor <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("cor") && "is-invalid"}`} id="cor" name="cor" onChange={handleInputChangeAutomovel} />
                                     {vazio.includes("cor") && <div className="invalid-feedback ms-1">Informe a cor.</div>}
                                     {tipo.includes("cor") && <div className="invalid-feedback ms-1">Cor inválida.</div>}
                                 </div>
                                 <div className="col-md-2">
-                                    <label htmlFor="anofabricacao" className="form-label">Ano Fabricação</label>
+                                    <label htmlFor="anofabricacao" className="form-label">Ano Fabricação <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("ano_fabricacao") && "is-invalid"} ${hasError("ano_modelo_fabricacao") && "is-invalid"}`} id="anofabricacao" name="ano_fabricacao" onChange={handleInputChangeAutomovel} />
                                     {vazio.includes("ano_fabricacao") && <div className="invalid-feedback ms-1">Informe o ano de fabricação.</div>}
                                     {tipo.includes("ano_fabricacao") && <div className="invalid-feedback ms-1">Ano de fabricação inválido.</div>}
                                     {tipo.includes("ano_modelo_fabricacao") && <div className="invalid-feedback ms-1">Ano de fabricação posterior a ano modelo.</div>}
                                 </div>
                                 <div className="col-md-2">
-                                    <label htmlFor="anomodelo" className="form-label">Ano Modelo</label>
+                                    <label htmlFor="anomodelo" className="form-label">Ano Modelo <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"} ${hasError("ano_modelo_futuro") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} />
                                     {vazio.includes("ano_modelo") && <div className="invalid-feedback ms-1">Informe o ano modelo.</div>}
                                     {tipo.includes("ano_modelo") && <div className="invalid-feedback ms-1">Ano modelo inválido.</div>}
                                     {tipo.includes("ano_modelo_futuro") && (<div className="invalid-feedback ms-1">Ano modelo inválido (não pode ser maior que {new Date().getFullYear() + 1}).</div>)}
                                 </div>
                                 <div className="col-md-4">
-                                    <label htmlFor="placa" className="form-label">Placa</label>
+                                    <label htmlFor="placa" className="form-label">Placa <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("placa") && "is-invalid"}`} id="placa" name="placa" onChange={handleInputChangeAutomovel} />
                                     {vazio.includes("placa") && <div className="invalid-feedback ms-1">Informe a placa.</div>}
                                     {tamanho.includes("placa") && <div className="invalid-feedback ms-1">Placa inválida (deve ter 7 caracteres).</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label htmlFor="renavam" className="form-label">Renavam</label>
+                                    <label htmlFor="renavam" className="form-label">Renavam <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("renavam") && "is-invalid"}`} id="renavam" name="renavam" onChange={handleInputChangeAutomovel} />
                                     {vazio.includes("renavam") && <div className="invalid-feedback ms-1">Informe o Renavam.</div>}
                                     {tamanho.includes("renavam") && <div className="invalid-feedback ms-1">Renavam inválido (deve ter 11 dígitos numéricos).</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label htmlFor="km" className="form-label">Quilometragem</label>
+                                    <label htmlFor="km" className="form-label">Quilometragem <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("km") && "is-invalid"}`} id="km" name="km" onChange={handleInputChangeAutomovel} />
                                     {vazio.includes("km") && <div className="invalid-feedback ms-1">Informe a quilometragem.</div>}
                                     {tipo.includes("km") && <div className="invalid-feedback ms-1">Quilometragem inválida.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label htmlFor="combustivel" className="form-label">Combustível</label>
+                                    <label htmlFor="combustivel" className="form-label">Combustível <span className="text-danger">*</span></label>
                                     <select className={`form-select ${hasError("combustivel") && "is-invalid"}`} id="combustivel" name="combustivel" onChange={handleInputChangeAutomovel}>
                                         <option value="">Selecione...</option>
                                         <option value="Diesel">Diesel</option>
@@ -559,7 +615,7 @@ const Compra = () => {
                                     {vazio.includes("combustivel") && <div className="invalid-feedback ms-1">Informe o combustível.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label htmlFor="origem" className="form-label">Origem do Automóvel</label>
+                                    <label htmlFor="origem" className="form-label">Origem do Automóvel <span className="text-danger">*</span></label>
                                     <select className={`form-select ${hasError("origem") && "is-invalid"}`} id="origem" name="origem" value={automovel.origem} onChange={handleInputChangeAutomovel}>
                                         <option value="">Selecione...</option>
                                         <option value="Compra">Compra</option>
@@ -569,7 +625,7 @@ const Compra = () => {
                                     {vazio.includes("origem") && <div className="invalid-feedback ms-1">Informe a origem.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label htmlFor="valor" className="form-label">Valor (R$)</label>
+                                    <label htmlFor="valor" className="form-label">Valor de Venda (R$) <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} />
                                     {vazio.includes("valor") && <div className="invalid-feedback ms-1">Informe o valor de venda.</div>}
                                     {tipo.includes("valor") && <div className="invalid-feedback ms-1">Valor de venda inválido.</div>}
@@ -590,58 +646,6 @@ const Compra = () => {
                         </div>
                     </div>
 
-                    <div className="card mb-4 form-card">
-                        <div className="card-header d-flex align-items-center">
-                            <FaFileSignature className="me-2" />
-                            Detalhes da Compra
-                        </div>
-                        <div className="card-body">
-                            <div className="row g-3">
-                                <div class="col-md-4">
-                                    <label for="valor" class="form-label">Valor da Compra (R$)</label>
-                                    <input type="text" className={`form-control ${hasError("valorCompra") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeCompra} />
-                                    {vazio.includes("valorCompra") && <div className="invalid-feedback ms-1">Informe o valor da compra.</div>
-                                    }
-                                    {tipo.includes("valorCompra") && <div className="invalid-feedback ms-1">Valor de compra inválido.</div>
-                                    }
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="data" class="form-label">Data</label><br />
-                                    <DatePicker
-                                        calendarClassName="custom-datepicker-container"
-                                        className={`form-control date-picker ${hasError("data") && "is-invalid"}`}
-                                        type="text"
-                                        aria-describedby="dataHelp"
-                                        id="data"
-                                        name="data"
-                                        selected={compra.data}
-                                        onChange={(date) => setCompra({ ...compra, data: date })}
-                                        dateFormat="dd/MM/yyyy"
-                                    />
-                                    {vazio.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Informe a data.</div>}
-                                    {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
-
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="fornecedor" className="form-label">Fornecedor</label>
-                                    <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === compra.clienteId) || null} isClearable={true} styles={getCustomStyles("clienteId")}
-                                        filterOption={(option, inputValue) => {
-                                            const label = option.label;
-                                            const texto = [
-                                                label.nome,
-                                                label.razaoSocial,
-                                                label.cpf,
-                                                label.cnpj
-                                            ].filter(Boolean).join(" ").toLowerCase();
-                                            return texto.includes(inputValue.toLowerCase());
-                                        }}>
-                                    </Select>
-                                    {vazio.includes("clienteId") && <div className="form-text text-danger ms-1">Informe a comprador.</div>}
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <div className="d-flex justify-content-end pb-3">
                         <button type="button" className="btn btn-outline-secondary d-flex align-items-center btn-lg px-4 me-3" onClick={() => navigate(-1)}>

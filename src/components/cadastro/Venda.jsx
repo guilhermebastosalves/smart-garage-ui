@@ -401,6 +401,10 @@ const Venda = () => {
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova venda no sistema.</p>
                 </div>
 
+                <p className="text-muted small">
+                    Campos com <span className="text-danger">*</span> são de preenchimento obrigatório.
+                </p>
+
                 {erro && (
                     <div className="alert alert-danger d-flex align-items-center" role="alert">
                         <i className="bi bi-exclamation-triangle-fill me-2"></i>
@@ -424,26 +428,26 @@ const Venda = () => {
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-4">
-                                    <label for="valor" class="form-label">Valor (R$)</label>
+                                    <label for="valor" class="form-label">Valor da Venda (R$) <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={(e) => setVenda({ ...venda, valor: e.target.value })} value={venda.valor} />
                                     {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="forma_pagamento" class="form-label">Forma de Pagamento</label>
+                                    <label for="forma_pagamento" class="form-label">Forma de Pagamento <span className="text-danger">*</span></label>
                                     <Select className={`${hasError("forma_pagamento") && "is-invalid"}`} id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === venda.forma_pagamento)} onChange={(option) => setVenda({ ...venda, forma_pagamento: option.value })} options={optionsFormaPagamento} isClearable={true}
                                         styles={getCustomStyles("forma_pagamento")}>
                                     </Select>
                                     {vazio.includes("forma_pagamento") && <div id="formapagamentohelp" class="form-text text-danger ms-1">Informe a forma de pagamento.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="comissao" class="form-label">Comissão</label>
+                                    <label for="comissao" class="form-label">Comissão (R$) <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" onChange={handleInputChangeVenda} value={venda?.comissao} />
                                     {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
                                     {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="data" class="form-label">Data</label><br />
+                                    <label for="data" class="form-label">Data <span className="text-danger">*</span></label><br />
                                     <DatePicker
                                         calendarClassName="custom-datepicker-container"
                                         className={`form-control ${hasError("data") && "is-invalid"}`}
@@ -459,7 +463,7 @@ const Venda = () => {
                                     {tipo.includes("data") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="fornecedor" class="form-label">Comprador</label>
+                                    <label for="fornecedor" class="form-label">Comprador <span className="text-danger">*</span></label>
                                     <Select formatOptionLabel={formatOptionLabelFornecedor} styles={getCustomStyles("clienteId")}
                                         isSearchable={true} className={`${hasError("clienteId") && "is-invalid"}`} id="clienteId" name="clienteId" placeholder="Selecione o fornecedor" options={optionsFornecedor} value={optionsFornecedor.find(option => option.value === venda.clienteId) || null} isClearable={true} filterOption={(option, inputValue) => {
                                             const label = option.label;
@@ -475,7 +479,7 @@ const Venda = () => {
                                     {vazio.includes("clienteId") && <div className="form-text text-danger ms-1">Informe o comprador.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="automovel_fornecido" class="form-label">Automóvel Fornecido</label>
+                                    <label for="automovel_fornecido" class="form-label">Automóvel Fornecido <span className="text-danger">*</span></label>
                                     <Select formatOptionLabel={formatOptionLabel} styles={getCustomStyles("automovelId")} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovelId" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} value={optionsAutomovel.find(option => option.value === venda.automovelId) || null} isClearable={true}
                                         filterOption={(option, inputValue) => {
                                             const label = option.label;

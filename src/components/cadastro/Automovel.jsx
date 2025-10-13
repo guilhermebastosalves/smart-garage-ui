@@ -269,6 +269,10 @@ const Automovel = () => {
                     <p className="text-muted">Preencha os dados abaixo para registrar um novo automóvel no sistema.</p>
                 </div>
 
+                <p className="text-muted small">
+                    Campos com <span className="text-danger">*</span> são de preenchimento obrigatório.
+                </p>
+
 
                 {erro && (
                     <div className="alert alert-danger d-flex align-items-center" role="alert">
@@ -290,28 +294,28 @@ const Automovel = () => {
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações Principais</legend>
                         <div className="row g-3">
                             <div className="col-md-4">
-                                <label htmlFor="marca" className="form-label">Marca</label>
+                                <label htmlFor="marca" className="form-label">Marca <span className="text-danger">*</span></label>
                                 <input type="text" className={`form-control ${hasError("marca") && "is-invalid"}`} id="marca" name="marca" onChange={handleInputChangeMarca} />
                                 {vazio.includes("marca") && <div className="invalid-feedback">Informe a marca.</div>}
                             </div>
                             <div className="col-md-4">
-                                <label htmlFor="modelo" className="form-label">Modelo</label>
+                                <label htmlFor="modelo" className="form-label">Modelo <span className="text-danger">*</span></label>
                                 <input type="text" className={`form-control ${hasError("modelo") && "is-invalid"}`} id="modelo" name="modelo" onChange={handleInputChangeModelo} />
                                 {vazio.includes("modelo") && <div className="invalid-feedback">Informe o modelo.</div>}
                             </div>
                             <div className="col-md-4">
-                                <label htmlFor="cor" className="form-label">Cor</label>
+                                <label htmlFor="cor" className="form-label">Cor <span className="text-danger">*</span></label>
                                 <input type="text" className={`form-control ${hasError("cor") && "is-invalid"}`} id="cor" name="cor" onChange={handleInputChangeAutomovel} />
                                 {vazio.includes("cor") && <div className="invalid-feedback">Informe a cor.</div>}
                             </div>
                             <div className="col-md-3">
-                                <label htmlFor="anofabricacao" className="form-label">Ano Fabricação</label>
+                                <label htmlFor="anofabricacao" className="form-label">Ano Fabricação <span className="text-danger">*</span></label>
                                 <input type="text" className={`form-control ${hasError("ano_fabricacao") && "is-invalid"}`} id="anofabricacao" name="ano_fabricacao" onChange={handleInputChangeAutomovel} />
                                 {vazio.includes("ano_fabricacao") && <div className="invalid-feedback">Informe o ano.</div>}
                                 {tipo.includes("ano_fabricacao") && <div className="invalid-feedback">Ano inválido.</div>}
                             </div>
                             <div className="col-md-3">
-                                <label htmlFor="anomodelo" className="form-label">Ano Modelo</label>
+                                <label htmlFor="anomodelo" className="form-label">Ano Modelo <span className="text-danger">*</span></label>
                                 <input type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} />
                                 {vazio.includes("ano_modelo") && <div className="invalid-feedback">Informe o ano.</div>}
                                 {tipo.includes("ano_modelo") && <div className="invalid-feedback">Ano inválido.</div>}
@@ -339,19 +343,19 @@ const Automovel = () => {
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Documentação e Valores</legend>
                         <div className="row g-3">
                             <div className="col-md-4">
-                                <label htmlFor="placa" className="form-label">Placa</label>
+                                <label htmlFor="placa" className="form-label">Placa <span className="text-danger">*</span></label>
                                 <input type="text" className={`form-control ${hasError("placa") && "is-invalid"}`} id="placa" name="placa" onChange={handleInputChangeAutomovel} />
                                 {vazio.includes("placa") && <div className="invalid-feedback">Informe a placa.</div>}
                                 {tamanho.includes("placa") && <div className="invalid-feedback">Placa inválida (deve ter 7 caracteres).</div>}
                             </div>
                             <div className="col-md-4">
-                                <label htmlFor="renavam" className="form-label">Renavam</label>
+                                <label htmlFor="renavam" className="form-label">Renavam <span className="text-danger">*</span></label>
                                 <input type="text" className={`form-control ${hasError("renavam") && "is-invalid"}`} id="renavam" name="renavam" onChange={handleInputChangeAutomovel} />
                                 {vazio.includes("renavam") && <div className="invalid-feedback">Informe o Renavam.</div>}
                                 {tamanho.includes("renavam") && <div className="invalid-feedback">Renavam inválido (deve ter 11 dígitos numéricos).</div>}
                             </div>
                             <div className="col-md-4">
-                                <label htmlFor="valor" className="form-label">Valor (R$)</label>
+                                <label htmlFor="valor" className="form-label">Valor (R$) <span className="text-danger">*</span></label>
                                 <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} />
                                 {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
                                 {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
@@ -363,13 +367,13 @@ const Automovel = () => {
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Detalhes Adicionais</legend>
                         <div className="row g-3">
                             <div className="col-md-4">
-                                <label htmlFor="km" className="form-label">Quilometragem</label>
+                                <label htmlFor="km" className="form-label">Quilometragem <span className="text-danger">*</span></label>
                                 <input type="text" className={`form-control ${hasError("km") && "is-invalid"}`} id="km" name="km" onChange={handleInputChangeAutomovel} />
                                 {vazio.includes("km") && <div className="invalid-feedback">Informe a quilometragem.</div>}
                                 {tipo.includes("km") && <div className="invalid-feedback">Valor inválido.</div>}
                             </div>
                             <div className="col-md-4">
-                                <label htmlFor="combustivel" className="form-label">Combustível</label>
+                                <label htmlFor="combustivel" className="form-label">Combustível <span className="text-danger">*</span></label>
                                 <select className={`form-select ${hasError("combustivel") && "is-invalid"}`} id="combustivel" name="combustivel" onChange={handleInputChangeAutomovel}>
                                     <option value="">Selecione...</option>
                                     <option value="Diesel">Diesel</option>
@@ -382,7 +386,7 @@ const Automovel = () => {
                                 {vazio.includes("combustivel") && <div className="invalid-feedback">Informe o combustível.</div>}
                             </div>
                             <div className="col-md-4">
-                                <label htmlFor="origem" className="form-label">Origem do Automóvel</label>
+                                <label htmlFor="origem" className="form-label">Origem do Automóvel <span className="text-danger">*</span></label>
                                 <select className={`form-select ${hasError("origem") && "is-invalid"}`} id="origem" name="origem" value={automovel.origem} onChange={handleInputChangeAutomovel}>
                                     <option value="">Selecione...</option>
                                     <option value="Compra">Compra</option>

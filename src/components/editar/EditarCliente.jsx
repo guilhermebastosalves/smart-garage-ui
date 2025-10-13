@@ -209,6 +209,10 @@ const EditarCliente = () => {
                     <p className="text-muted">Altere os dados abaixo para atualizar o cliente.</p>
                 </div>
 
+                <p className="text-muted small">
+                    Campos com <span className="text-danger">*</span> são de preenchimento obrigatório.
+                </p>
+
                 {sucesso &&
                     <div className="alert alert-success d-flex align-items-center" role="alert">
                         <i className="bi bi-check-circle-fill me-2"></i>
@@ -232,17 +236,17 @@ const EditarCliente = () => {
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Informações do Cliente</legend>
                         <div className="row g-3">
                             <Col md={4}>
-                                <Form.Group><Form.Label>Nome</Form.Label><Form.Control className={`form-control ${hasError("nome") && "is-invalid"}`} name="nome" value={cliente.nome} onChange={handleInputChange(setCliente)} />
+                                <Form.Group><Form.Label>Nome <span className="text-danger">*</span></Form.Label><Form.Control className={`form-control ${hasError("nome") && "is-invalid"}`} name="nome" value={cliente.nome} onChange={handleInputChange(setCliente)} />
                                     {vazio.includes("nome") && <div className="invalid-feedback">Informe o nome.</div>}
                                 </Form.Group>
                             </Col>
                             <Col md={4}>
-                                <Form.Group><Form.Label>Email</Form.Label><Form.Control className={`form-control ${hasError("email") && "is-invalid"}`} name="email" type="email" value={cliente.email} onChange={handleInputChange(setCliente)} />
+                                <Form.Group><Form.Label>Email <span className="text-danger">*</span></Form.Label><Form.Control className={`form-control ${hasError("email") && "is-invalid"}`} name="email" type="email" value={cliente.email} onChange={handleInputChange(setCliente)} />
                                     {vazio.includes("email") && <div className="invalid-feedback">Informe o email.</div>}
                                 </Form.Group>
                             </Col>
                             <Col md={4}>
-                                <Form.Group><Form.Label>Telefone</Form.Label><Form.Control className={`form-control ${hasError("telefone") && "is-invalid"}`} name="telefone" value={cliente.telefone} onChange={handleInputChange(setCliente)} />
+                                <Form.Group><Form.Label>Telefone <span className="text-danger">*</span></Form.Label><Form.Control className={`form-control ${hasError("telefone") && "is-invalid"}`} name="telefone" value={cliente.telefone} onChange={handleInputChange(setCliente)} />
                                     {vazio.includes("telefone") && <div className="invalid-feedback">Informe o telefone.</div>}
                                     {tamanho.includes("telefone") && <div className="invalid-feedback">Telefone inválido.</div>}
                                 </Form.Group>
@@ -255,7 +259,7 @@ const EditarCliente = () => {
                             <legend className="h5 fw-bold mb-3 border-bottom pb-2">Documentos (Pessoa Física)</legend>
                             <div className="row g-3">
                                 <Col md={6}>
-                                    <Form.Group><Form.Label>CPF</Form.Label><Form.Control className={`form-control ${hasError("cpf") && "is-invalid"}`} name="cpf" value={fisica.cpf} onChange={handleInputChange(setFisica)} />
+                                    <Form.Group><Form.Label>CPF <span className="text-danger">*</span></Form.Label><Form.Control className={`form-control ${hasError("cpf") && "is-invalid"}`} name="cpf" value={fisica.cpf} onChange={handleInputChange(setFisica)} />
                                         {vazio.includes("cpf") && <div className="invalid-feedback">Informe o CPF.</div>}
                                         {tamanho.includes("cpf") && <div className="invalid-feedback">CPF inválido (deve ter 11 caracteres numéricos).</div>}
                                     </Form.Group>
@@ -273,7 +277,7 @@ const EditarCliente = () => {
                             <legend className="h5 fw-bold mb-3 border-bottom pb-2">Documentos (Pessoa Jurídica)</legend>
                             <div className="row g-3">
                                 <Col md={4}>
-                                    <Form.Group><Form.Label>CNPJ</Form.Label><Form.Control className={`form-control ${hasError("cnpj") && "is-invalid"}`} name="cnpj" value={juridica.cnpj} onChange={handleInputChange(setJuridica)} />
+                                    <Form.Group><Form.Label>CNPJ <span className="text-danger">*</span></Form.Label><Form.Control className={`form-control ${hasError("cnpj") && "is-invalid"}`} name="cnpj" value={juridica.cnpj} onChange={handleInputChange(setJuridica)} />
                                         {vazio.includes("cnpj") && <div className="invalid-feedback">Informe o CNPJ.</div>}
                                         {tamanho.includes("cnpj") && <div className="invalid-feedback">CNPJ inválido (deve ter 14 caracteres numéricos).</div>}
                                     </Form.Group>
@@ -282,7 +286,7 @@ const EditarCliente = () => {
                                     <Form.Group><Form.Label>Razão Social</Form.Label><Form.Control className={`form-control ${hasError("razao_social") && "is-invalid"}`} name="razao_social" value={juridica.razao_social} onChange={handleInputChange(setJuridica)} /></Form.Group>
                                 </Col>
                                 <Col md={4}>
-                                    <Form.Group><Form.Label>Nome do Responsável</Form.Label><Form.Control className={`form-control ${hasError("nome_responsavel") && "is-invalid"}`} name="nome_responsavel" value={juridica.nome_responsavel} onChange={handleInputChange(setJuridica)} />
+                                    <Form.Group><Form.Label>Nome do Responsável <span className="text-danger">*</span></Form.Label><Form.Control className={`form-control ${hasError("nome_responsavel") && "is-invalid"}`} name="nome_responsavel" value={juridica.nome_responsavel} onChange={handleInputChange(setJuridica)} />
                                         {vazio.includes("nome_responsavel") && <div className="invalid-feedback">Informe o nome do responsável.</div>}
                                     </Form.Group>
                                 </Col>
@@ -294,19 +298,19 @@ const EditarCliente = () => {
                         <legend className="h5 fw-bold mb-3 border-bottom pb-2">Endereço</legend>
                         <div className="row g-3">
                             <Col md={4}>
-                                <Form.Group><Form.Label>CEP</Form.Label><Form.Control className={`form-control ${hasError("cep") && "is-invalid"}`} name="cep" value={endereco.cep} onChange={handleInputChange(setEndereco)} />
+                                <Form.Group><Form.Label>CEP <span className="text-danger">*</span></Form.Label><Form.Control className={`form-control ${hasError("cep") && "is-invalid"}`} name="cep" value={endereco.cep} onChange={handleInputChange(setEndereco)} />
                                     {vazio.includes("cep") && <div className="invalid-feedback">Informe o CEP.</div>}
                                     {tamanho.includes("cep") && <div className="invalid-feedback">CEP inválido (deve ter 8 caracteres numéricos).</div>}
                                 </Form.Group>
                             </Col>
                             <Col md={4}>
-                                <Form.Group><Form.Label>Cidade</Form.Label><Form.Control className={`form-control ${hasError("cidade") && "is-invalid"}`} name="nome" value={cidade.nome} onChange={handleInputChangeCidade} />
+                                <Form.Group><Form.Label>Cidade <span className="text-danger">*</span></Form.Label><Form.Control className={`form-control ${hasError("cidade") && "is-invalid"}`} name="nome" value={cidade.nome} onChange={handleInputChangeCidade} />
                                     {vazio.includes("cidade") && <div className="invalid-feedback">Informe a cidade.</div>}
                                 </Form.Group>
                             </Col>
                             <Col md={4}>
                                 <Form.Group >
-                                    <Form.Label>Estado</Form.Label>
+                                    <Form.Label>Estado <span className="text-danger">*</span></Form.Label>
                                     <Select
                                         className={`${hasError("estado") && "is-invalid"}`}
                                         isSearchable={true}
@@ -320,19 +324,19 @@ const EditarCliente = () => {
                                 </Form.Group>
                             </Col>
                             <Col md={4}>
-                                <Form.Group><Form.Label>Logradouro</Form.Label><Form.Control className={`form-control ${hasError("logradouro") && "is-invalid"}`} name="logradouro" value={endereco.logradouro} onChange={handleInputChange(setEndereco)} />
+                                <Form.Group><Form.Label>Logradouro <span className="text-danger">*</span></Form.Label><Form.Control className={`form-control ${hasError("logradouro") && "is-invalid"}`} name="logradouro" value={endereco.logradouro} onChange={handleInputChange(setEndereco)} />
                                     {vazio.includes("logradouro") && <div className="invalid-feedback">Informe o logradouro.</div>}
                                 </Form.Group>
                             </Col>
                             <Col md={4}>
-                                <Form.Group><Form.Label>Bairro</Form.Label><Form.Control className={`form-control ${hasError("bairro") && "is-invalid"}`} name="bairro" value={endereco.bairro} onChange={handleInputChange(setEndereco)} />
-                                    {vazio.includes("bairro") && <div className="invalid-feedback">Informe o bairro.</div>}
+                                <Form.Group><Form.Label>Número <span className="text-danger">*</span></Form.Label><Form.Control className={`form-control ${hasError("numero") && "is-invalid"}`} name="numero" value={endereco.numero} onChange={handleInputChange(setEndereco)} />
+                                    {vazio.includes("numero") && <div className="invalid-feedback">Informe o número.</div>}
+                                    {tipo.includes("numero") && <div className="invalid-feedback">Número inválido.</div>}
                                 </Form.Group>
                             </Col>
                             <Col md={4}>
-                                <Form.Group><Form.Label>Numero</Form.Label><Form.Control className={`form-control ${hasError("numero") && "is-invalid"}`} name="numero" value={endereco.numero} onChange={handleInputChange(setEndereco)} />
-                                    {vazio.includes("numero") && <div className="invalid-feedback">Informe o número.</div>}
-                                    {tipo.includes("numero") && <div className="invalid-feedback">Número inválido.</div>}
+                                <Form.Group><Form.Label>Bairro <span className="text-danger">*</span></Form.Label><Form.Control className={`form-control ${hasError("bairro") && "is-invalid"}`} name="bairro" value={endereco.bairro} onChange={handleInputChange(setEndereco)} />
+                                    {vazio.includes("bairro") && <div className="invalid-feedback">Informe o bairro.</div>}
                                 </Form.Group>
                             </Col>
                         </div>

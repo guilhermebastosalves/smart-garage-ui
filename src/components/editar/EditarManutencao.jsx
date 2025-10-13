@@ -269,6 +269,10 @@ const EditarManutencao = () => {
                     <p className="text-muted">Preencha os dados abaixo para editar a manutenção desejada.</p>
                 </div>
 
+                <p className="text-muted small">
+                    Campos com <span className="text-danger">*</span> são de preenchimento obrigatório.
+                </p>
+
                 {erro &&
                     <div className="alert alert-danger d-flex align-items-center" role="alert">
                         <i className="bi bi-exclamation-triangle-fill me-2"></i>
@@ -292,14 +296,14 @@ const EditarManutencao = () => {
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-4">
-                                    <label for="valor" class="form-label">Valor (R$)</label>
+                                    <label for="valor" class="form-label">Valor da Manutenção (R$) <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor ?? ""} />
                                     {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
                                 </div>
 
                                 <div className="col-md-4">
-                                    <label for="data" class="form-label">Data de envio</label><br />
+                                    <label for="data" class="form-label">Data de envio <span className="text-danger">*</span></label><br />
                                     <DatePicker
                                         calendarClassName="custom-datepicker-container"
                                         customInput={
@@ -345,7 +349,7 @@ const EditarManutencao = () => {
 
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="automovel" class="form-label">Automóvel</label>
+                                    <label for="automovel" class="form-label">Automóvel <span className="text-danger">*</span></label>
                                     <Select styles={getCustomStyles("automovelId")} formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovelId") && "is-invalid"}`} id="automovel" name="automovelId" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}
                                         filterOption={(option, inputValue) => {
                                             const label = option.label;

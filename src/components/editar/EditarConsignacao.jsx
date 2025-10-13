@@ -326,6 +326,10 @@ const EditarConsignacao = () => {
                     <p className="text-muted">Preencha os dados abaixo para editar a consignação desejada.</p>
                 </div>
 
+                <p className="text-muted small">
+                    Campos com <span className="text-danger">*</span> são de preenchimento obrigatório.
+                </p>
+
                 {erro &&
                     <div className="alert alert-danger d-flex align-items-center" role="alert">
                         <i className="bi bi-exclamation-triangle-fill me-2"></i>
@@ -349,13 +353,13 @@ const EditarConsignacao = () => {
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-2">
-                                    <label for="valor" class="form-label">Valor (R$)</label>
+                                    <label for="valor" class="form-label">Valor da Consignação (R$) <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor ?? ""} />
                                     {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
                                     {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor acordado.</div>}
                                 </div>
                                 <div className="col-md-2">
-                                    <label for="data" class="form-label">Data Inicio</label><br />
+                                    <label for="data" class="form-label">Data Inicio <span className="text-danger">*</span></label><br />
                                     <DatePicker
                                         calendarClassName="custom-datepicker-container"
                                         customInput={
@@ -379,7 +383,7 @@ const EditarConsignacao = () => {
 
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="fornecedor" class="form-label">Proprietario</label>
+                                    <label for="fornecedor" class="form-label">Proprietario <span className="text-danger">*</span></label>
                                     <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} class="form-select" id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleProprietarioChange} value={optionsFornecedor.find(option => option.value === formData.clienteId) || null} isClearable={true}
                                         styles={getCustomStyles("clienteId")}
                                         filterOption={(option, inputValue) => {
@@ -396,7 +400,7 @@ const EditarConsignacao = () => {
                                     {vazio.includes("clienteId") && <div className="form-text text-danger ms-1">Informe o cliente.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="automovel" class="form-label">Automóvel</label>
+                                    <label for="automovel" class="form-label">Automóvel <span className="text-danger">*</span></label>
                                     <Select formatOptionLabel={formatOptionLabel} isSearchable={true} class="form-select" id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={handleAutomovelChange} value={optionsAutomovel.find(option => option.value === formData.automovelId) || null} isClearable={true}
                                         styles={getCustomStyles("automovelId")}
                                         filterOption={(option, inputValue) => {

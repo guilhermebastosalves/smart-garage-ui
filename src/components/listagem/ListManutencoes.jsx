@@ -251,7 +251,7 @@ const Manutencao = () => {
                                                     style: 'currency',
                                                     currency: 'BRL'
                                                 })}`}</td>
-                                                <td className='text-center'>
+                                                <td className='text-center ps-3'>
                                                     <button
                                                         className='btn btn-outline-info btn-sm me-2'
                                                         onClick={() => { verDetalhes(d.id) }}

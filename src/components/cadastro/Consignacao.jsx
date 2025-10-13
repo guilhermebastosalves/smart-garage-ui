@@ -484,7 +484,7 @@ const Consignacao = () => {
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-4">
-                                    <label for="valor" class="form-label">Valor Acordado (R$) <span className="text-danger">*</span></label>
+                                    <label for="valor" class="form-label">Valor de Consignação (R$) <span className="text-danger">*</span></label>
                                     <input type="text" class={`form-control ${hasError("valorConsig") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeConsignacao} />
                                     {vazio.includes("valorConsig") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor acordado.</div>}
                                     {tipo.includes("valorConsig") && <div id="valorHelp" class="form-text text-danger ms-1">Valor da consignação inválido.</div>}
@@ -631,7 +631,7 @@ const Consignacao = () => {
                                 </div>
 
                                 <div className="col-md-4">
-                                    <label htmlFor="valor" className={`form-label ${hasError("valor") && "is-invalid"}`}>Valor (R$) <span className="text-danger">*</span></label>
+                                    <label htmlFor="valor" className={`form-label ${hasError("valor") && "is-invalid"}`}>Valor de Venda (R$) <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} />
                                     {vazio.includes("valor") && <div className="invalid-feedback ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div className="invalid-feedback ms-1">Valor inválido.</div>}

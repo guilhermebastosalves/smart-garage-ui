@@ -295,6 +295,10 @@ const Manutencao = () => {
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova manutenção.</p>
                 </div>
 
+                <p className="text-muted small mb-4">
+                    Campos com <span className="text-danger">*</span> são de preenchimento obrigatório.
+                </p>
+
                 {sucesso && (
                     <div className="alert alert-success d-flex align-items-center" role="alert">
                         <i className="bi bi-check-circle-fill me-2"></i>
@@ -338,14 +342,14 @@ const Manutencao = () => {
                         <div className="card-body">
                             <div className="row g-3">
                                 <div className="col-md-4">
-                                    <label for="valor" class="form-label">Valor (R$)</label>
+                                    <label for="valor" class="form-label">Valor da Manutenção (R$) <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeManutencao} />
                                     {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
                                 </div>
 
                                 <div className="col-md-4">
-                                    <label for="data" class="form-label">Data Envio</label><br />
+                                    <label for="data" class="form-label">Data Envio <span className="text-danger">*</span></label><br />
 
                                     <DatePicker
 
@@ -383,7 +387,7 @@ const Manutencao = () => {
                                     {tipo.includes("previsao_retorno") && <div id="dataHelp" class="form-text text-danger ms-1">Data inválida.</div>}
                                 </div>
                                 <div className="col-md-4">
-                                    <label for="automovel" class="form-label">Automóvel</label>
+                                    <label for="automovel" class="form-label">Automóvel <span className="text-danger">*</span></label>
                                     <Select formatOptionLabel={formatOptionLabel} isSearchable={true} className={`${hasError("automovel") && "is-invalid"}`} id="automovel" name="automovel" placeholder="Selecione o automovel" options={optionsAutomovel} onChange={(option) => setManutencao({ ...manutencao, automovelId: option ? option.value : "" })} value={optionsAutomovel.find(option => option.value === manutencao.automovelId) || null} isClearable={true}
                                         styles={getCustomStyles("automovelId")}
                                         filterOption={(option, inputValue) => {
