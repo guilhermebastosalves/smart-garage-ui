@@ -40,6 +40,7 @@ import AcessoNegado from './components/AcessoNegado'
 import ListVendedores from './components/listagem/ListVendedores'
 import RegistroVendedor from './components/cadastro/Vendedor'
 import ResetarSenha from './components/ResetarSenha'
+import GerenciarComissoes from './components/GerenciarComissoes'
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -106,6 +107,7 @@ function App() {
             <Route path='/editar-venda/:id' element={<EditarVenda />}></Route>
             <Route path='/listagem/vendedores' element={<ListVendedores />}></Route>
             <Route path='/vendedor' element={<RegistroVendedor />}></Route>
+            <Route path="/gerenciar/comissoes" element={<GerenciarComissoes />}></Route>/
           </Route>
 
         </Routes>

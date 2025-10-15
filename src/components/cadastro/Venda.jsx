@@ -15,6 +15,7 @@ import ConsignacaoDataService from "../../services/consignacaoDataService";
 import { FaBuilding, FaUserTie, FaIdCard } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileContract, FaFileSignature } from "react-icons/fa";
 import { useAuth } from '../../context/AuthContext';
+import ComissaoDataService from '../../services/comissaoDataService';
 
 
 const Venda = () => {
@@ -286,20 +287,57 @@ const Venda = () => {
     });
 
 
+    // useEffect(() => {
+
+    //     let comissao = "";
+
+    //     if (venda?.valor !== "") {
+    //         comissao = venda?.valor < 50000 ? 300 : venda?.valor > 100000 ? 1500 : 500;
+    //     }
+
+    //     setVenda(prev => ({
+    //         ...prev,
+    //         comissao: comissao
+    //     }));
+
+    // }, [venda?.valor]);
+
+    const [regrasComissao, setRegrasComissao] = useState([]);
+
     useEffect(() => {
+        ComissaoDataService.getAll()
+            .then(response => {
+                setRegrasComissao(response.data);
+            })
+            .catch(e => console.error("Erro ao buscar regras de comissão:", e));
+    }, []);
 
-        let comissao = "";
+    useEffect(() => {
+        const valorVenda = parseFloat(venda.valor);
+        if (isNaN(valorVenda) || regrasComissao.length === 0) {
+            setVenda(prev => ({ ...prev, comissao: '' }));
+            return;
+        }
 
-        if (venda?.valor !== "") {
-            comissao = venda?.valor < 50000 ? 300 : venda?.valor > 100000 ? 1500 : 500;
+        let comissaoCalculada = '';
+        // Encontra a regra correta
+        for (const regra of regrasComissao) {
+            const min = parseFloat(regra.valor_minimo);
+            const max = regra.valor_maximo ? parseFloat(regra.valor_maximo) : Infinity;
+
+            if (valorVenda >= min && valorVenda < max) {
+                comissaoCalculada = regra.valor_comissao;
+                break;
+            }
         }
 
         setVenda(prev => ({
             ...prev,
-            comissao: comissao
+            comissao: comissaoCalculada
         }));
 
-    }, [venda?.valor]);
+    }, [venda.valor, regrasComissao]);
+
 
     const hasError = (field) => vazio.includes(field) || tamanho.includes(field) || tipo.includes(field);
 
@@ -328,7 +366,7 @@ const Venda = () => {
 
             const formData = new FormData();
 
-            formData.append("comissao", automovel?.valor < 50000 ? 300 : automovel?.valor > 100000 ? 700 : 500);
+            formData.append("comissao", venda.comissao);
             formData.append("valor", venda.valor);
             formData.append("data", venda.data);
             formData.append("forma_pagamento", venda.forma_pagamento);
@@ -442,7 +480,7 @@ const Venda = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label for="comissao" class="form-label">Comissão (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" onChange={handleInputChangeVenda} value={venda?.comissao} />
+                                    <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={venda?.comissao} readOnly />
                                     {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
                                     {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
                                 </div>

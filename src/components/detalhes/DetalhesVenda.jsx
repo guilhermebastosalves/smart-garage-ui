@@ -183,6 +183,7 @@ const DetalhesVenda = () => {
                                     <ListGroup.Item><strong>Funcionário responsável:</strong> {funcionarioNome?.nome || "N/A"}</ListGroup.Item>
                                     <ListGroup.Item><strong>Data:</strong> {new Date(detalhes.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</ListGroup.Item>
                                     <ListGroup.Item><strong>Valor:</strong> <span>{formatter.format(detalhes.valor)}</span></ListGroup.Item>
+                                    <ListGroup.Item><strong>Comissão:</strong> <span>{formatter.format(detalhes.comissao)}</span></ListGroup.Item>
                                 </ListGroup>
                             </Card.Body>
                         </Card>

@@ -14,6 +14,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import { useAuth } from '../../context/AuthContext';
+import ComissaoDataService from '../../services/comissaoDataService';
 
 
 const Troca = () => {
@@ -125,17 +126,58 @@ const Troca = () => {
         }));
     }, [clienteId]);
 
+
+
+    // useEffect(() => {
+    //     let comissao = "";
+    //     if (troca?.valor_aquisicao !== "") {
+    //         comissao = troca?.valor_aquisicao < 50000 ? 300 : troca?.valor_aquisicao > 100000 ? 1500 : 500;
+    //     }
+    //     setTroca(prev => ({
+    //         ...prev,
+    //         comissao: comissao
+    //     }));
+    //     // }
+    // }, [troca?.valor_aquisicao]);
+
+    const [regrasComissao, setRegrasComissao] = useState([]);
+
     useEffect(() => {
-        let comissao = "";
-        if (troca?.valor_aquisicao !== "") {
-            comissao = troca?.valor_aquisicao < 50000 ? 300 : troca?.valor_aquisicao > 100000 ? 1500 : 500;
+        ComissaoDataService.getAll()
+            .then(response => {
+                setRegrasComissao(response.data);
+            })
+            .catch(e => console.error("Erro ao buscar regras de comissão:", e));
+    }, []);
+
+    useEffect(() => {
+        const valorAquisicao = parseFloat(troca.valor_aquisicao);
+
+        if (isNaN(valorAquisicao) || regrasComissao.length === 0) {
+            setTroca(prev => ({ ...prev, comissao: '' }));
+            return;
         }
+
+        let comissaoCalculada = '';
+
+        for (const regra of regrasComissao) {
+            const min = parseFloat(regra.valor_minimo);
+            const max = regra.valor_maximo ? parseFloat(regra.valor_maximo) : Infinity;
+
+            if (valorAquisicao >= min && valorAquisicao <= max) {
+                comissaoCalculada = regra.valor_comissao;
+                break;
+            }
+        }
+
         setTroca(prev => ({
             ...prev,
-            comissao: comissao
+            comissao: comissaoCalculada
         }));
-        // }
-    }, [troca?.valor_aquisicao]);
+
+    }, [troca.valor_aquisicao, regrasComissao]);
+
+
 
     const handleInputChangeTroca = event => {
         const { name, value } = event.target;
@@ -655,7 +697,7 @@ const Troca = () => {
                                 </div>
                                 <div className="col-md-3">
                                     <label for="comissao" class="form-label">Comissão (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={troca.comissao} />
+                                    <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={troca.comissao} readOnly />
                                     {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
                                     {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
                                 </div>

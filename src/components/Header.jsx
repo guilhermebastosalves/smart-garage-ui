@@ -61,29 +61,36 @@ const Header = () => {
                                         </li>
                                     )}
                                     <li>
-                                        <Link to="/listagem/gastos" className={`nav-link ${location.pathname === '/listagem/gastos' ? 'active' : 'link-body-emphasis'}`}> <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#people-circle"></use></svg>
+                                        <Link to="/listagem/gastos" className={`nav-link ${location.pathname === '/listagem/gastos' ? 'active' : 'link-body-emphasis'}`}> <svg className="me-2" width="16" height="16" aria-hidden="true"></svg>
                                             <i className="bi bi-safe2-fill me-2"></i>Gastos
                                         </Link>
                                     </li>
                                     {user.role === "gerente" && (
                                         <li>
-                                            <Link to="/listagem/compras" className={`nav-link ${location.pathname === '/listagem/compras' ? 'active' : 'link-body-emphasis'}`}> <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#people-circle"></use></svg>
+                                            <Link to="/listagem/compras" className={`nav-link ${location.pathname === '/listagem/compras' ? 'active' : 'link-body-emphasis'}`}> <svg className="me-2" width="16" height="16" aria-hidden="true"></svg>
                                                 <i className="bi bi-cart-fill me-2"></i>Compras
                                             </Link>
                                         </li>
                                     )}
                                     {user.role === 'gerente' && (
                                         <li>
-                                            <Link to="/listagem/vendedores" className={`nav-link ${location.pathname === ('/listagem/vendedores') ? 'active' : 'link-body-emphasis'}`}><svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#people-circle"></use></svg>
+                                            <Link to="/listagem/vendedores" className={`nav-link ${location.pathname === ('/listagem/vendedores') ? 'active' : 'link-body-emphasis'}`}><svg className="me-2" width="16" height="16" aria-hidden="true"></svg>
                                                 <i className="bi bi-people-fill me-2"></i>
                                                 Vendedores
                                             </Link>
                                         </li>
                                     )}
-                                    <Link to="/listagem/clientes" className={`nav-link ${location.pathname.includes('/clientes') ? 'active' : 'link-body-emphasis'}`}><svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#people-circle"></use></svg>
+                                    <Link to="/listagem/clientes" className={`nav-link ${location.pathname.includes('/clientes') ? 'active' : 'link-body-emphasis'}`}><svg className="me-2" width="16" height="16" aria-hidden="true"></svg>
                                         <i className="bi bi-person-lines-fill me-2"></i>
                                         Clientes
                                     </Link>
+                                    {user.role === 'gerente' && (
+                                        <li>
+                                            <Link to="/gerenciar/comissoes" className={`nav-link ${location.pathname.includes('/gerenciar/comissoes') ? 'active' : 'link-body-emphasis'}`}> <svg className="me-2" width="16" height="16" aria-hidden="true"></svg>
+                                                <i class="bi bi-cash me-2"></i>
+                                                Comissões</Link>
+                                        </li>
+                                    )}
                                 </ul>
                                 <hr></hr>
 
