@@ -19,6 +19,10 @@ const ProtectedRoute = ({ allowedRoles }) => {
         return <Navigate to="/" replace />;
     }
 
+    if (user && user.precisa_alterar_senha && location.pathname !== '/primeiro-acesso/alterar-senha') {
+        return <Navigate to="/primeiro-acesso/alterar-senha" replace />;
+    }
+
     if (allowedRoles && !allowedRoles.includes(user.role)) {
         return <Navigate to="/acesso-negado" replace />;
     }

@@ -41,9 +41,21 @@ import ListVendedores from './components/listagem/ListVendedores'
 import RegistroVendedor from './components/cadastro/Vendedor'
 import ResetarSenha from './components/ResetarSenha'
 import GerenciarComissoes from './components/GerenciarComissoes'
-
-import { ToastContainer } from 'react-toastify';
+import AlterarSenha from './components/AlterarSenha'
 import 'react-toastify/dist/ReactToastify.css';
+
+const ProtectedLayout = () => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) return <div>Carregando...</div>;
+
+  if (user && user.precisa_alterar_senha && location.pathname !== '/primeiro-acesso/alterar-senha') {
+    return <Navigate to="/primeiro-acesso/alterar-senha" replace />;
+  }
+
+  return <Outlet />;
+};
 
 function App() {
 
@@ -63,6 +75,7 @@ function App() {
       <div className='App'>
         <Routes>
           <Route path="/" element={<Login />}></Route>
+          <Route path="/primeiro-acesso/alterar-senha" element={<AlterarSenha />} />
           <Route path="/resetar-senha/:token" element={<ResetarSenha />} />
 
           {/* Rotas Protegidas */}
@@ -79,7 +92,6 @@ function App() {
             <Route path="/detalhes-venda/:id" element={<DetalhesVenda />}></Route>
             <Route path="/detalhes-gasto/:id" element={<DetalhesGasto />}></Route>
             <Route path="/detalhes-manutencao/:id" element={<DetalhesManutencao />}></Route>
-            <Route path="/compra" element={<Compra />}></Route>
             <Route path='/consignacao' element={<Consignacao />}></Route>
             <Route path='/editar-automovel/:id' element={<EditarAutomovel />}></Route>
             <Route path="/editar-cliente/:id" element={<EditarCliente />} />
@@ -96,6 +108,7 @@ function App() {
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['gerente']} />}>
+            <Route path="/compra" element={<Compra />}></Route>
             <Route path="/relatorios" element={<Relatorios />}></Route>
             <Route path="/manutencao" element={<Manutencao />}></Route>
             <Route path="/gastos" element={<Gasto />}></Route>

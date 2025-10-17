@@ -1,0 +1,80 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import FuncionarioDataService from '../services/funcionarioDataService';
+import { useAuth } from '../context/AuthContext';
+import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
+
+const AlterarSenhaPrimeiroAcesso = () => {
+    const navigate = useNavigate();
+    const { logout } = useAuth();
+    const [senha, setSenha] = useState('');
+    const [confirmarSenha, setConfirmarSenha] = useState('');
+    const [feedback, setFeedback] = useState({ tipo: '', msg: '' });
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log(senha);
+        if (senha !== confirmarSenha) {
+            setFeedback({ tipo: 'danger', msg: 'As senhas não coincidem.' });
+            return;
+        }
+        setLoading(true);
+        try {
+            await FuncionarioDataService.alterarSenha(senha); // Você precisará criar esta função no serviço
+            setFeedback({ tipo: 'success', msg: 'Senha alterada com sucesso!' });
+
+            setTimeout(() => {
+                logout(); // Desloga o utilizador
+                navigate('/'); // Redireciona para a página de login
+            }, 2000);
+
+        } catch (error) {
+            setFeedback({ tipo: 'danger', msg: 'Erro ao alterar a senha.' });
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="login-page-wrapper">
+            <Card className="shadow-lg border-0" style={{ maxWidth: '450px' }}>
+                <Card.Body className="p-5">
+                    <h3 className="text-center mb-2">Primeiro Acesso</h3>
+                    <p className="text-center text-muted mb-4">Por segurança, você precisa definir uma nova senha.</p>
+
+                    {feedback.msg && feedback.tipo === 'danger' &&
+                        <div className='d-flex align-items-center mb-3 container'>
+                            <i className="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                            <div className="text text-danger">{feedback.msg}</div>
+                        </div>
+                    }
+
+                    {feedback.msg && feedback.tipo === 'success' &&
+                        <div className='d-flex align-items-center mb-3 container'>
+                            <i className="bi bi-check text-sucess me-2"></i>
+                            <div className="text text-success">{feedback.msg}</div>
+                        </div>
+                    }
+
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Nova Senha</Form.Label>
+                            <Form.Control type="password" value={senha} onChange={(e) => setSenha(e.target.value)} />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Confirmar Nova Senha</Form.Label>
+                            <Form.Control type="password" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} />
+                        </Form.Group>
+                        <div className="d-grid">
+                            <Button type="submit" disabled={loading}>
+                                {loading ? <Spinner size="sm" /> : 'Definir Nova Senha'}
+                            </Button>
+                        </div>
+                    </Form>
+                </Card.Body>
+            </Card>
+        </div>
+    );
+};
+
+export default AlterarSenhaPrimeiroAcesso;

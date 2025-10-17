@@ -32,12 +32,10 @@ const Login = () => {
 
                 login(response.data.token);
 
-                navigate('/home');
             }
         } catch (error) {
             const mensagemErro = error.response?.data?.mensagem || "Erro ao tentar fazer login.";
             setErro(mensagemErro);
-        } finally {
             setLoading(false);
         }
     };
