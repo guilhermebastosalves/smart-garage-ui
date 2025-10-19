@@ -364,17 +364,17 @@ const Venda = () => {
 
         try {
 
-            const formData = new FormData();
+            const dataVenda = {
+                comissao: venda.comissao,
+                valor: venda.valor,
+                data: venda.data,
+                forma_pagamento: venda.forma_pagamento,
+                clienteId: venda.clienteId,
+                automovelId: venda.automovelId,
+                funcionarioId: venda.funcionarioId
+            };
 
-            formData.append("comissao", venda.comissao);
-            formData.append("valor", venda.valor);
-            formData.append("data", venda.data);
-            formData.append("forma_pagamento", venda.forma_pagamento);
-            formData.append("clienteId", venda.clienteId);
-            formData.append("automovelId", venda.automovelId);
-            formData.append("funcionarioId", venda.funcionarioId);
-
-            const vendaResp = await VendaDataService.create(formData)
+            const vendaResp = await VendaDataService.create(dataVenda)
                 .catch(e => {
                     console.error("Erro ao criar venda:", e);
                 });

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import FisicaDataService from '../../services/fisicaDataService';
 import JuridicaDataService from '../../services/juridicaDataService';
 
-function ModalCompra({ show, onHide, compra }) {
+function ModalCompra({ show, onHide, compra, onClienteVerificado }) {
     const navigate = useNavigate();
     const [identificacao, setId] = useState('');
     const [cadastro, setCadastro] = useState(false);
@@ -56,17 +56,19 @@ function ModalCompra({ show, onHide, compra }) {
 
             if (fisicaEncontrada?.id && fisicaEncontrada?.clienteId) {
 
-                handleRedirect('/compra', {
-                    fisicaId: fisicaEncontrada.id,
-                    clienteId: fisicaEncontrada.clienteId
-                });
+                // handleRedirect('/compra', {
+                //     fisicaId: fisicaEncontrada.id,
+                //     clienteId: fisicaEncontrada.clienteId
+                // });
+                onClienteVerificado(fisicaEncontrada.clienteId);
 
             } else if (juridicaEncontrada?.id && juridicaEncontrada?.clienteId) {
 
-                handleRedirect('/compra', {
-                    juridicaId: juridicaEncontrada.id,
-                    clienteId: juridicaEncontrada.clienteId
-                });
+                // handleRedirect('/compra', {
+                //     juridicaId: juridicaEncontrada.id,
+                //     clienteId: juridicaEncontrada.clienteId
+                // });
+                onClienteVerificado(juridicaEncontrada.clienteId);
 
             } else {
                 setCadastro(true);

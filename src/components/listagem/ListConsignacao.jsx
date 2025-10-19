@@ -4,28 +4,79 @@ import AutomovelDataService from '../../services/automovelDataService';
 import ModeloDataService from '../../services/modeloDataService';
 import MarcaDataService from '../../services/marcaDataService';
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ModalConsignacao from '../modais/ModalConsignacao';
 import ModalEncerrarConsignacao from '../modais/ModalEncerrarConsignacao';
-import ModalConfirmacao from '../modais/ModalConfirmacao';
+// import ModalConfirmacao from '../modais/ModalConfirmacao';
 import { useAuth } from '../../context/AuthContext';
-
+import ModalVerificarAutomovel from '../modais/ModalVerificarAutomovel';
 
 const Consignacoes = () => {
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const { user } = useAuth();
 
     const consignacaoLocalStorage = { negocio: "Consignacao" };
-    const [showModal, setShowModal] = useState(false);
+    // const [showModal, setShowModal] = useState(false);
 
     const [showEncerrarModal, setShowEncerrarModal] = useState(false);
     const [consignacaoSelecionada, setConsignacaoSelecionada] = useState(null);
 
-    const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [itemParaDeletar, setItemParaDeletar] = useState(null);
-    const [deleteLoading, setDeleteLoading] = useState(false);
+    // const [showConfirmModal, setShowConfirmModal] = useState(false);
+    // const [itemParaDeletar, setItemParaDeletar] = useState(null);
+    // const [deleteLoading, setDeleteLoading] = useState(false);
+
+    // const [showVerificarModal, setShowVerificarModal] = useState(false);
+    const [showClienteModal, setShowClienteModal] = useState(false);
+    const [showAutomovelModal, setShowAutomovelModal] = useState(false);
+    const [clienteSelecionadoId, setClienteSelecionadoId] = useState(null);
+
+    useEffect(() => {
+        // Pega os dados enviados pela página de cadastro de cliente
+        const { startAutomovelCheck, clienteId } = location.state || {};
+
+        // Se o sinal para iniciar a verificação do automóvel foi recebido...
+        if (startAutomovelCheck && clienteId) {
+            // ...guarda o ID do cliente que acabámos de criar...
+            setClienteSelecionadoId(clienteId);
+
+            // ...e abre o modal de verificação do automóvel para continuar o fluxo.
+            setShowAutomovelModal(true);
+
+            // Limpa o estado da navegação para evitar que o modal reabra se a página for atualizada
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [location.state, navigate]);
+
+    const handleNovaConsignacaoClick = () => {
+        sessionStorage.setItem("NegocioAtual", JSON.stringify({ negocio: "Consignacao" }));
+        setShowClienteModal(true);
+    };
+
+    // Etapa 1: Chamado quando o cliente é encontrado ou selecionado no primeiro modal
+    const handleClienteVerificado = (clienteId) => {
+        setClienteSelecionadoId(clienteId); // Guarda o ID do cliente
+        setShowClienteModal(false);         // Fecha o modal de cliente
+        setShowAutomovelModal(true);        // Abre o modal de automóvel
+    };
+
+    // Etapa 2: Chamado quando o automóvel é verificado no segundo modal
+    const handleAutomovelVerificado = (resultado) => {
+        setShowAutomovelModal(false); // Fecha o modal de automóvel
+
+        const statePayload = {
+            clienteId: clienteSelecionadoId // Passa o ID do cliente da primeira etapa
+        };
+
+        if (resultado.status === 'inativo') {
+            statePayload.automovelExistente = resultado.automovel; // Passa os dados do carro para reativação
+        }
+
+        // Navega para o formulário final com todos os dados necessários
+        navigate('/consignacao', { state: statePayload });
+    };
 
     const handleAbrirModalEncerramento = (consignacao) => {
         setConsignacaoSelecionada(consignacao);
@@ -36,30 +87,30 @@ const Consignacoes = () => {
         fetchData();
     };
 
-    const handleAbrirModalConfirmacao = (consignacao) => {
-        setItemParaDeletar(consignacao);
-        setShowConfirmModal(true);
-    };
+    // const handleAbrirModalConfirmacao = (consignacao) => {
+    //     setItemParaDeletar(consignacao);
+    //     setShowConfirmModal(true);
+    // };
 
-    const handleFecharModalConfirmacao = () => {
-        setItemParaDeletar(null);
-        setShowConfirmModal(false);
-    };
+    // const handleFecharModalConfirmacao = () => {
+    //     setItemParaDeletar(null);
+    //     setShowConfirmModal(false);
+    // };
 
-    const handleDeletarConsignacao = async () => {
-        if (!itemParaDeletar) return;
+    // const handleDeletarConsignacao = async () => {
+    //     if (!itemParaDeletar) return;
 
-        setDeleteLoading(true);
-        try {
-            await ConsignacaoDataService.remove(itemParaDeletar?.id);
-            fetchData();
-            handleFecharModalConfirmacao();
-        } catch (error) {
-            console.error("Erro ao deletar consignação:", error);
-        } finally {
-            setDeleteLoading(false);
-        }
-    };
+    //     setDeleteLoading(true);
+    //     try {
+    //         await ConsignacaoDataService.remove(itemParaDeletar?.id);
+    //         fetchData();
+    //         handleFecharModalConfirmacao();
+    //     } catch (error) {
+    //         console.error("Erro ao deletar consignação:", error);
+    //     } finally {
+    //         setDeleteLoading(false);
+    //     }
+    // };
 
     const [todasConsignacoes, setTodasConsignacoes] = useState([]);
     const [automovel, setAutomovel] = useState([]);
@@ -176,7 +227,7 @@ const Consignacoes = () => {
                         <h1 className="mb-0">Consignações</h1>
                         <p className="text-muted">Listagem e gerenciamento de consignações ativas.</p>
                     </div>
-                    <button className='btn btn-primary btn-lg' onClick={() => setShowModal(true)}>
+                    <button className='btn btn-primary btn-lg' onClick={handleNovaConsignacaoClick}>
                         <i className="bi bi-plus-circle-fill me-2"></i>
                         Nova Consignação
                     </button>
@@ -284,9 +335,10 @@ const Consignacoes = () => {
                 </div>
 
                 <ModalConsignacao
-                    show={showModal}
-                    onHide={() => setShowModal(false)}
+                    show={showClienteModal}
+                    onHide={() => setShowClienteModal(false)}
                     consignacao={consignacaoLocalStorage}
+                    onClienteVerificado={handleClienteVerificado}
                 />
 
                 {consignacaoSelecionada && (
@@ -298,7 +350,7 @@ const Consignacoes = () => {
                     />
                 )}
 
-                <ModalConfirmacao
+                {/* <ModalConfirmacao
                     show={showConfirmModal}
                     onHide={handleFecharModalConfirmacao}
                     onConfirm={handleDeletarConsignacao}
@@ -310,6 +362,12 @@ const Consignacoes = () => {
                             <p className="text"><strong>Atenção:</strong> Esta ação também <strong>excluirá permanentemente</strong> o automóvel associado a ela. Esta operação <strong>não</strong> pode ser desfeita.</p>
                         </>
                     }
+                /> */}
+
+                <ModalVerificarAutomovel
+                    show={showAutomovelModal}
+                    onHide={() => setShowAutomovelModal(false)}
+                    onAutomovelVerificado={handleAutomovelVerificado}
                 />
 
             </div>

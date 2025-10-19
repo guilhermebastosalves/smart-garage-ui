@@ -34,6 +34,10 @@ class AutomovelDataService {
         return http.post("/api/automovel/verificar", data);
     }
 
+    verificarStatus(data) {
+        return http.post("/api/automovel/verificar-status", data);
+    }
+
     update(id, data, config) {
         return http.put(`/api/automovel/${id}`, data, config)
     }

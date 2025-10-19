@@ -4,54 +4,104 @@ import AutomovelDataService from '../../services/automovelDataService';
 import ModeloDataService from '../../services/modeloDataService';
 import MarcaDataService from '../../services/marcaDataService';
 import { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ModalCompra from '../modais/ModalCompra';
-import ModalConfirmacao from '../modais/ModalConfirmacao';
-
+// import ModalConfirmacao from '../modais/ModalConfirmacao';
+import ModalVerificarAutomovel from '../modais/ModalVerificarAutomovel';
 
 const Compras = () => {
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const compraLocalStorage = { negocio: "Compra" };
-    const [showModal, setShowModal] = useState(false);
+    // const [showModal, setShowModal] = useState(false);
+
+    const [showClienteModal, setShowClienteModal] = useState(false);
+    const [showAutomovelModal, setShowAutomovelModal] = useState(false);
+    const [clienteSelecionadoId, setClienteSelecionadoId] = useState(null);
+
+    useEffect(() => {
+        // Pega os dados enviados pela página de cadastro de cliente
+        const { startAutomovelCheck, clienteId } = location.state || {};
+
+        // Se o sinal para iniciar a verificação do automóvel foi recebido...
+        if (startAutomovelCheck && clienteId) {
+            // ...guarda o ID do cliente que acabámos de criar...
+            setClienteSelecionadoId(clienteId);
+
+            // ...e abre o modal de verificação do automóvel para continuar o fluxo.
+            setShowAutomovelModal(true);
+
+            // Limpa o estado da navegação para evitar que o modal reabra se a página for atualizada
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [location.state, navigate]);
 
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
     const [marca, setMarca] = useState([]);
     const [todasCompras, setTodasCompras] = useState([]);
 
-    const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [itemParaDeletar, setItemParaDeletar] = useState(null);
-    const [deleteLoading, setDeleteLoading] = useState(false);
-
-
-    const handleAbrirModalConfirmacao = (compra) => {
-        setItemParaDeletar(compra);
-        setShowConfirmModal(true);
+    const handleNovaCompraClick = () => {
+        sessionStorage.setItem("NegocioAtual", JSON.stringify({ negocio: "Compra" }));
+        setShowClienteModal(true);
     };
 
-    const handleFecharModalConfirmacao = () => {
-        setItemParaDeletar(null);
-        setShowConfirmModal(false);
+    // Etapa 1: Chamado quando o cliente é encontrado ou selecionado no primeiro modal
+    const handleClienteVerificado = (clienteId) => {
+        setClienteSelecionadoId(clienteId); // Guarda o ID do cliente
+        setShowClienteModal(false);         // Fecha o modal de cliente
+        setShowAutomovelModal(true);        // Abre o modal de automóvel
     };
 
-    const handleDeletarCompra = async () => {
-        if (!itemParaDeletar) return;
+    // Etapa 2: Chamado quando o automóvel é verificado no segundo modal
+    const handleAutomovelVerificado = (resultado) => {
+        setShowAutomovelModal(false); // Fecha o modal de automóvel
 
-        setDeleteLoading(true);
-        try {
-            await CompraDataService.remove(itemParaDeletar.id);
+        const statePayload = {
+            clienteId: clienteSelecionadoId // Passa o ID do cliente da primeira etapa
+        };
 
-            setTodasCompras(prev => prev.filter(c => c.id !== itemParaDeletar.id));
-
-            handleFecharModalConfirmacao();
-        } catch (error) {
-            console.error("Erro ao deletar compra:", error);
-        } finally {
-            setDeleteLoading(false);
+        if (resultado.status === 'inativo') {
+            statePayload.automovelExistente = resultado.automovel; // Passa os dados do carro para reativação
         }
+
+        // Navega para o formulário final com todos os dados necessários
+        navigate('/compra', { state: statePayload });
     };
+
+    // const [showConfirmModal, setShowConfirmModal] = useState(false);
+    // const [itemParaDeletar, setItemParaDeletar] = useState(null);
+    // const [deleteLoading, setDeleteLoading] = useState(false);
+
+
+    // const handleAbrirModalConfirmacao = (compra) => {
+    //     setItemParaDeletar(compra);
+    //     setShowConfirmModal(true);
+    // };
+
+    // const handleFecharModalConfirmacao = () => {
+    //     setItemParaDeletar(null);
+    //     setShowConfirmModal(false);
+    // };
+
+    // const handleDeletarCompra = async () => {
+    //     if (!itemParaDeletar) return;
+
+    //     setDeleteLoading(true);
+    //     try {
+    //         await CompraDataService.remove(itemParaDeletar.id);
+
+    //         setTodasCompras(prev => prev.filter(c => c.id !== itemParaDeletar.id));
+
+    //         handleFecharModalConfirmacao();
+    //     } catch (error) {
+    //         console.error("Erro ao deletar compra:", error);
+    //     } finally {
+    //         setDeleteLoading(false);
+    //     }
+    // };
 
     const [periodo, setPeriodo] = useState('todos');
 
@@ -151,8 +201,8 @@ const Compras = () => {
                         <h1 className="mb-0">Compras</h1>
                         <p className="text-muted">Listagem e gerenciamento de compras.</p>
                     </div>
-                    <button className='btn btn-primary btn-lg' onClick={() => setShowModal(true)}>
-                        <i className="bi bi-plus-circle-fill me-2"></i> {/* Ícone opcional */}
+                    <button className='btn btn-primary btn-lg' onClick={handleNovaCompraClick}>
+                        <i className="bi bi-plus-circle-fill me-2"></i>
                         Nova Compra
                     </button>
                 </div>
@@ -267,12 +317,19 @@ const Compras = () => {
                 </div>
 
                 <ModalCompra
-                    show={showModal}
-                    onHide={() => setShowModal(false)}
+                    show={showClienteModal}
+                    onHide={() => setShowClienteModal(false)}
                     compra={compraLocalStorage}
+                    onClienteVerificado={handleClienteVerificado}
                 />
 
-                <ModalConfirmacao
+                <ModalVerificarAutomovel
+                    show={showAutomovelModal}
+                    onHide={() => setShowAutomovelModal(false)}
+                    onAutomovelVerificado={handleAutomovelVerificado}
+                />
+
+                {/* <ModalConfirmacao
                     show={showConfirmModal}
                     onHide={handleFecharModalConfirmacao}
                     onConfirm={handleDeletarCompra}
@@ -284,7 +341,7 @@ const Compras = () => {
                             <p ><strong>Atenção:</strong> Esta ação também excluirá <strong>permanentemente</strong> o automóvel associado a ela. Esta operação <strong>não </strong> pode ser desfeita.</p>
                         </>
                     }
-                />
+                /> */}
 
             </div >
         </>

@@ -108,8 +108,7 @@ const Vendas = () => {
         return todasVendas
             .filter(venda => {
                 if (origem === 'todas') return true;
-                const auto = automovel.find(a => a.id === venda.automovelId);
-                return auto && auto.origem === origem;
+                return venda.origem_automovel === origem;
             })
             .filter(item => {
                 if (!dataFiltro) return true;
@@ -117,7 +116,7 @@ const Vendas = () => {
             })
             .sort((a, b) => new Date(b.data) - new Date(a.data));
 
-    }, [periodo, todasVendas, origem, automovel]);
+    }, [periodo, todasVendas, origem]);
 
     useEffect(() => {
         setCurrentPage(1);

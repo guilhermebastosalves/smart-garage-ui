@@ -437,11 +437,23 @@ const Cliente = () => {
                 }
                 if (modeloNegocio?.negocio === "Consignacao") {
                     sessionStorage.setItem("NegocioAtual", JSON.stringify(consignacao));
-                    navigate('/consignacao', { state: { clienteId: clienteResp.data.id } });
+                    navigate('/listagem/consignacoes',
+                        {
+                            state: {
+                                startAutomovelCheck: true,
+                                clienteId: clienteResp.data.id
+                            }
+                        });
                 }
                 if (modeloNegocio?.negocio === "Compra") {
                     sessionStorage.setItem("NegocioAtual", JSON.stringify(compra));
-                    navigate('/compra', { state: { clienteId: clienteResp.data.id } });
+                    navigate('/listagem/compras',
+                        {
+                            state: {
+                                startAutomovelCheck: true,
+                                clienteId: clienteResp.data.id
+                            }
+                        });
                 }
                 if (modeloNegocio?.negocio === "Troca") {
                     sessionStorage.setItem("NegocioAtual", JSON.stringify(troca));
@@ -579,11 +591,23 @@ const Cliente = () => {
                 }
                 if (modeloNegocio?.negocio === "Consignacao") {
                     sessionStorage.setItem("NegocioAtual", JSON.stringify(consignacao));
-                    navigate('/consignacao', { state: { clienteId: clienteJuridicaResp.data.id } });
+                    navigate('/listagem/consignacoes',
+                        {
+                            state: {
+                                startAutomovelCheck: true,
+                                clienteId: clienteJuridicaResp.data.id
+                            }
+                        });
                 }
                 if (modeloNegocio?.negocio === "Compra") {
                     sessionStorage.setItem("NegocioAtual", JSON.stringify(compra));
-                    navigate('/compra', { state: { clienteId: clienteJuridicaResp.data.id } });
+                    navigate('/listagem/compras',
+                        {
+                            state: {
+                                startAutomovelCheck: true,
+                                clienteId: clienteJuridicaResp.data.id
+                            }
+                        });
                 }
                 if (modeloNegocio?.negocio === "Troca") {
                     sessionStorage.setItem("NegocioAtual", JSON.stringify(troca));

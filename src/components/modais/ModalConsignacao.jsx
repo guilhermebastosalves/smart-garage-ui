@@ -5,7 +5,7 @@ import JuridicaDataService from '../../services/juridicaDataService';
 import { Modal, Button, Form, InputGroup, Alert } from 'react-bootstrap';
 import { FaSearch, FaUserPlus, FaExclamationTriangle, FaArrowLeft } from "react-icons/fa";
 
-function ModalCadastro({ show, onHide, consignacao }) {
+function ModalCadastro({ show, onHide, consignacao, onClienteVerificado }) {
     const navigate = useNavigate();
     const [identificacao, setId] = useState('');
     const [cadastro, setCadastro] = useState(false);
@@ -55,17 +55,21 @@ function ModalCadastro({ show, onHide, consignacao }) {
 
             if (fisicaEncontrada?.id && fisicaEncontrada?.clienteId) {
 
-                handleRedirect('/consignacao', {
-                    fisicaId: fisicaEncontrada.id,
-                    clienteId: fisicaEncontrada.clienteId
-                });
+                // handleRedirect('/consignacao', {
+                //     fisicaId: fisicaEncontrada.id,
+                //     clienteId: fisicaEncontrada.clienteId
+                // });
+
+                onClienteVerificado(fisicaEncontrada.clienteId);
 
             } else if (juridicaEncontrada?.id && juridicaEncontrada?.clienteId) {
 
-                handleRedirect('/consignacao', {
-                    juridicaId: juridicaEncontrada.id,
-                    clienteId: juridicaEncontrada.clienteId
-                });
+                // handleRedirect('/consignacao', {
+                //     juridicaId: juridicaEncontrada.id,
+                //     clienteId: juridicaEncontrada.clienteId
+                // });
+
+                onClienteVerificado(juridicaEncontrada.clienteId);
 
             } else {
                 setCadastro(true);
