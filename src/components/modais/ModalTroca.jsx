@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import FisicaDataService from '../../services/fisicaDataService';
 import JuridicaDataService from '../../services/juridicaDataService';
 
-function ModalTroca({ show, onHide, troca }) {
+function ModalTroca({ show, onHide, troca, onClienteVerificado }) {
     const navigate = useNavigate();
     const [identificacao, setId] = useState('');
     const [cadastro, setCadastro] = useState(false);
@@ -57,17 +57,10 @@ function ModalTroca({ show, onHide, troca }) {
 
             if (fisicaEncontrada?.id && fisicaEncontrada?.clienteId) {
 
-                handleRedirect('/troca', {
-                    fisicaId: fisicaEncontrada.id,
-                    clienteId: fisicaEncontrada.clienteId
-                });
+                onClienteVerificado(fisicaEncontrada.clienteId);
 
             } else if (juridicaEncontrada?.id && juridicaEncontrada?.clienteId) {
-
-                handleRedirect('/troca', {
-                    juridicaId: juridicaEncontrada.id,
-                    clienteId: juridicaEncontrada.clienteId
-                });
+                onClienteVerificado(juridicaEncontrada.clienteId);
 
             } else {
                 setCadastro(true);

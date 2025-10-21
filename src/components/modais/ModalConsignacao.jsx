@@ -55,20 +55,9 @@ function ModalCadastro({ show, onHide, consignacao, onClienteVerificado }) {
 
             if (fisicaEncontrada?.id && fisicaEncontrada?.clienteId) {
 
-                // handleRedirect('/consignacao', {
-                //     fisicaId: fisicaEncontrada.id,
-                //     clienteId: fisicaEncontrada.clienteId
-                // });
-
                 onClienteVerificado(fisicaEncontrada.clienteId);
 
             } else if (juridicaEncontrada?.id && juridicaEncontrada?.clienteId) {
-
-                // handleRedirect('/consignacao', {
-                //     juridicaId: juridicaEncontrada.id,
-                //     clienteId: juridicaEncontrada.clienteId
-                // });
-
                 onClienteVerificado(juridicaEncontrada.clienteId);
 
             } else {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap';
 import AutomovelDataService from '../../services/automovelDataService';
+import { Modal, Button, Form, InputGroup, Alert, Spinner } from 'react-bootstrap';
+import { FaSearch, FaUserPlus, FaExclamationTriangle, FaArrowLeft } from "react-icons/fa";
 
 function ModalVerificarAutomovel({ show, onHide, onAutomovelVerificado }) {
     const [identificador, setIdentificador] = useState('');
@@ -12,11 +13,32 @@ function ModalVerificarAutomovel({ show, onHide, onAutomovelVerificado }) {
         setFeedback({ tipo: '', msg: '' });
         try {
 
-            const isPlaca = identificador.length <= 7;
-            const data = isPlaca ? { placa: identificador.toUpperCase() } : { renavam: identificador };
+            let data;
+            const identificadorLimpo = identificador.trim();
+
+            if (identificadorLimpo.length === 0) {
+                alert("Por favor, informe uma Placa ou Renavam.")
+                return;
+            }
+            else if (identificadorLimpo.length === 7) {
+                data = { placa: identificadorLimpo.toUpperCase() };
+            }
+            else if (identificadorLimpo.length === 11) {
+                if (isNaN(identificadorLimpo)) {
+                    setFeedback({ tipo: 'danger', msg: 'Renavam inválido. Deve conter apenas números.' });
+                    setLoading(false);
+                    return;
+                }
+                data = { renavam: identificadorLimpo };
+            }
+            else {
+                setFeedback({ tipo: 'danger', msg: 'Placa ou Renavam inválido' });
+                setLoading(false);
+                return;
+            }
 
             const response = await AutomovelDataService.verificarStatus(data);
-            console.log(response.data);
+
             onAutomovelVerificado(response.data);
             onHide();
         } catch (error) {
@@ -38,29 +60,50 @@ function ModalVerificarAutomovel({ show, onHide, onAutomovelVerificado }) {
     }
 
     return (
-        <Modal show={show} onHide={handleClose} centered>
+
+        <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
             <Modal.Header closeButton>
-                <Modal.Title>Verificar Automóvel</Modal.Title>
+                <Modal.Title className="d-flex align-items-center">
+                    <FaUserPlus className="me-2" />
+                    Verificar Automóvel
+                </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {feedback.msg && <Alert variant={feedback.tipo}>{feedback.msg}</Alert>}
-                <Form.Group>
-                    <Form.Label>Informe a Placa ou o Renavam do Automóvel</Form.Label>
-                    <Form.Control
-                        type="text"
-                        value={identificador}
-                        onChange={(e) => setIdentificador(e.target.value)}
-                        autoFocus
-                    />
-                </Form.Group>
-            </Modal.Body>
+
+                <p className="text-muted mb-3">
+                    Informe a Placa ou Renavam do automóvel a ser registrado.
+                </p>
+                <Form>
+                    <Form.Group>
+                        <InputGroup>
+                            <InputGroup.Text>
+                                <FaSearch />
+                            </InputGroup.Text>
+                            <Form.Control
+                                type="text"
+                                value={identificador}
+                                onChange={(e) => setIdentificador(e.target.value)}
+                                placeholder='Digite a Placa ou Renavam...'
+                                autoFocus
+                            />
+                        </InputGroup>
+                    </Form.Group>
+                </Form>
+                {feedback.msg && feedback.tipo == "danger" &&
+                    <div className='d-flex align-items-center mt-1 container'>
+                        <i className="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                        <div className="text text-danger">{feedback.msg}</div>
+                    </div>
+                }
+            </Modal.Body >
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>Cancelar</Button>
                 <Button variant="primary" onClick={handleVerificar} disabled={loading}>
                     {loading ? <Spinner size="sm" /> : 'Verificar'}
                 </Button>
             </Modal.Footer>
-        </Modal>
+
+        </Modal >
     );
 }
 
