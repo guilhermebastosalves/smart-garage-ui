@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import { ButtonGroup } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
+import HelpPopover from "../HelpPopover";
 
 const Cliente = () => {
 
@@ -457,7 +458,14 @@ const Cliente = () => {
                 }
                 if (modeloNegocio?.negocio === "Troca") {
                     sessionStorage.setItem("NegocioAtual", JSON.stringify(troca));
-                    navigate('/troca', { state: { clienteId: clienteResp.data.id } });
+                    navigate('/listagem/trocas',
+                        {
+                            state: {
+                                startAutomovelCheck: true,
+                                clienteId: clienteResp.data.id
+
+                            }
+                        });
                 }
 
             }, 1500);
@@ -611,7 +619,14 @@ const Cliente = () => {
                 }
                 if (modeloNegocio?.negocio === "Troca") {
                     sessionStorage.setItem("NegocioAtual", JSON.stringify(troca));
-                    navigate('/troca', { state: { clienteId: clienteJuridicaResp.data.id } });
+                    navigate('/listagem/trocas',
+                        {
+                            state: {
+                                startAutomovelCheck: true,
+                                clienteId: clienteJuridicaResp.data.id
+
+                            }
+                        });
                 }
 
             }, 1500);
@@ -633,7 +648,31 @@ const Cliente = () => {
             <Header />
 
             <div className={`mb-4 mt-3 container`}>
-                <h1 className="fw-bold">Cadastro de Cliente</h1>
+                <div className="d-flex align-items-center">
+                    <h1 className="fw-bold mb-0 me-2">Cadastro de Cliente</h1>
+                    <HelpPopover
+                        title="Ajuda: Cadastro de Cliente"
+                        content={
+                            <>
+                                <p style={{ textAlign: "justify" }}>
+                                    Esta página é utilizada para cadastrar novos clientes, que podem ser tanto Pessoas Físicas (consumidores) quanto Pessoas Jurídicas (empresas).
+                                </p>
+                                <strong>Fluxo de Trabalho:</strong>
+                                <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                    <li className="mb-1">
+                                        <strong>Tipo de Pessoa:</strong> Use os botões no topo para alternar entre o formulário de Pessoa Física e Pessoa Jurídica.
+                                    </li>
+                                    <li className="mb-1">
+                                        <strong>Preenchimento:</strong> Insira todas as informações solicitadas sobre o cliente e seu endereço.
+                                    </li>
+                                    <li>
+                                        <strong>Continuidade do Negócio:</strong> Se você chegou a esta tela durante uma operação (como uma Venda ou Compra), após salvar o cliente, o sistema irá redirecioná-lo automaticamente para a próxima etapa do processo já com este novo cliente selecionado.
+                                    </li>
+                                </ol>
+                            </>
+                        }
+                    />
+                </div>
                 <p className="text-muted">Preencha os dados abaixo para registrar um novo cliente no sistema.</p>
             </div>
             <div className="container">

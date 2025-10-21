@@ -9,7 +9,7 @@ import ModeloDataService from "../../services/modeloDataService";
 import MarcaDataService from "../../services/marcaDataService";
 import ManutencaoDataService from "../../services/manutencaoDataService";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
-
+import HelpPopover from '../HelpPopover';
 
 
 const Manutencao = () => {
@@ -291,7 +291,28 @@ const Manutencao = () => {
             <div className="container">
 
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Registro de Manutenções</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Registro de Manutenções</h1>
+                        <HelpPopover
+                            title="Ajuda: Registro de Manutenções"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Esta página é usada para registrar despesas da garagem relacionadas às manutenções dos automóveis em estoque.
+                                    </p>
+                                    <strong>Fluxo de Trabalho:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Busca (Opcional):</strong> Use o campo "Renavam" para encontrar o automóvel desejado. O sistema preencherá o campo 'Automóvel' na seção de detalhes automaticamente.
+                                        </li>
+                                        <li>
+                                            <strong>Detalhes da Manutenção:</strong> Preencha o valor, a data e uma descrição para a manutenção. Se você não usou a busca, pode selecionar o automóvel manualmente na lista.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova manutenção.</p>
                 </div>
 

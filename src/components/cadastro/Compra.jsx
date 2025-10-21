@@ -14,7 +14,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
 import { FaCar, FaFileSignature } from "react-icons/fa";
 import { Alert } from "react-bootstrap";
-
+import HelpPopover from '../HelpPopover';
 
 const Compra = () => {
 
@@ -22,24 +22,6 @@ const Compra = () => {
 
     const location = useLocation();
     const clienteId = location.state?.clienteId;
-
-    // const [modeloNegocio, setModeloNegocio] = useState(null);
-
-    // useEffect(() => {
-    //     const negocio = sessionStorage.getItem("NegocioAtual");
-    //     if (negocio) {
-    //         setModeloNegocio(JSON.parse(negocio));
-    //     }
-    // }, []);
-
-    // useEffect(() => {
-    //     if (modeloNegocio?.negocio) {
-    //         setAutomovel(prev => ({
-    //             ...prev,
-    //             origem: modeloNegocio.negocio
-    //         }));
-    //     }
-    // }, [modeloNegocio]);
 
     const initialAutomovelState = {
         id: null,
@@ -491,7 +473,31 @@ const Compra = () => {
             <div className="container">
 
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Registro de Compra</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Registro de Compra</h1>
+                        <HelpPopover
+                            title="Ajuda: Registro de Compra"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Esta página é utilizada para registrar um automóvel adquirido através de uma compra direta, adicionando-o ao inventário como propriedade da empresa.
+                                    </p>
+                                    <strong>Fluxo de Trabalho:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Detalhes da Compra:</strong> Preencha o valor pago pelo automóvel, a data da transação e selecione o cliente que está vendendo (Fornecedor).
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Informações do Automóvel:</strong> Cadastre todos os dados do veículo que está entrando no estoque. O campo "Valor de Venda" refere-se ao preço pelo qual o automóvel será anunciado.
+                                        </li>
+                                        <li>
+                                            <strong>Modo Reativação:</strong> Se a compra for de um veículo que já esteve no sistema, alguns campos estarão bloqueados. Você precisará apenas atualizar a Quilometragem e o novo Valor de Venda.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova compra.</p>
                 </div>
 

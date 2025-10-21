@@ -15,7 +15,7 @@ import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa"
 import { useAuth } from '../../context/AuthContext';
 import { FaCar, FaFileSignature } from "react-icons/fa";
 import { Alert } from "react-bootstrap";
-
+import HelpPopover from '../HelpPopover';
 
 const Consignacao = () => {
 
@@ -485,7 +485,31 @@ const Consignacao = () => {
             <div className="container">
 
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Registro de Consignação</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Registro de Consignação</h1>
+                        <HelpPopover
+                            title="Ajuda: Registro de Consignação"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Use esta tela para registrar um automóvel deixado em consignação. O veículo será adicionado ao estoque para venda, mas a propriedade permanece com o cliente (Proprietário).
+                                    </p>
+                                    <strong>Fluxo de Trabalho:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Detalhes da Consignação:</strong> Informe o "Valor de Consignação" (valor a ser repassado ao proprietário após a venda), a data de início do contrato e selecione o cliente proprietário.
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Informações do Automóvel:</strong> Cadastre os dados completos do veículo. O "Valor de Venda" é o preço que será anunciado na loja.
+                                        </li>
+                                        <li>
+                                            <strong>Modo Reativação:</strong> Se um veículo está sendo consignado novamente, alguns campos estarão bloqueados. Apenas atualize a Quilometragem e o novo Valor de Venda.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova consignação no sistema.</p>
                 </div>
 
@@ -541,7 +565,7 @@ const Consignacao = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label for="fornecedor" class="form-label">Proprietario <span className="text-danger">*</span></label>
-                                    <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} class="form-select" id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleProprietarioChange} value={optionsFornecedor.find(option => option.value === consignacao.clienteId) || null} isClearable={true}
+                                    <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} class="form-select" id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} value={optionsFornecedor.find(option => option.value === consignacao.clienteId) || null} isClearable={true}
                                         styles={getCustomStyles("clienteId")}
                                         filterOption={(option, inputValue) => {
                                             const label = option.label;

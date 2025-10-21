@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../Header';
 import VendedorDataService from '../../services/vendedorDataService';
 import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
+import HelpPopover from "../HelpPopover";
 
 const RegistroVendedor = () => {
     const navigate = useNavigate();
@@ -39,8 +40,29 @@ const RegistroVendedor = () => {
             <div className="container mt-4">
                 <Card className="form-card mx-auto mb-3" style={{ maxWidth: '600px' }}>
                     <Card.Header>
-                        <h3 className="mb-3">Cadastrar Novo Vendedor</h3>
-                        <p className="text-muted small mb-0">
+                        <div className="d-flex align-items-center">
+                            <h3 className="mb-0 me-2">Cadastrar Novo Vendedor</h3>
+                            <HelpPopover
+                                title="Ajuda: Cadastro de Vendedor"
+                                content={
+                                    <>
+                                        <p style={{ textAlign: "justify" }}>
+                                            Esta página é destinada ao cadastro de novos vendedores no sistema, criando um perfil e credenciais de acesso para eles.
+                                        </p>
+                                        <strong>Fluxo de Trabalho:</strong>
+                                        <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                            <li className='mb-1'>
+                                                <strong>Dados Pessoais:</strong> Preencha o nome completo, e-mail e telefone do vendedor para fins de registro e contato.
+                                            </li>
+                                            <li>
+                                                <strong>Credenciais de Acesso:</strong> Defina um "Nome de Usuário" e uma "Senha", que serão utilizados pelo vendedor para fazer login no sistema.
+                                            </li>
+                                        </ol>
+                                    </>
+                                }
+                            />
+                        </div>
+                        <p className="text-muted small mb-0 mt-3">
                             Campos com <span className="text-danger">*</span> são de preenchimento obrigatório.
                         </p>
                     </Card.Header>
@@ -61,7 +83,7 @@ const RegistroVendedor = () => {
                         }
 
                         <Form onSubmit={handleSubmit}>
-                            <Form.Group className="mb-3">
+                            <Form.Group className="mb-3 mt-0">
                                 <Form.Label htmlFor="nome">Nome Completo <span className="text-danger">*</span></Form.Label>
                                 <Form.Control id="nome" name="nome" type="text" onChange={handleInputChange} />
                             </Form.Group>

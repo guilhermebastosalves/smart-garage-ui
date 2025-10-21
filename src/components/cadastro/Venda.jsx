@@ -16,7 +16,7 @@ import { FaBuilding, FaUserTie, FaIdCard } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileContract, FaFileSignature } from "react-icons/fa";
 import { useAuth } from '../../context/AuthContext';
 import ComissaoDataService from '../../services/comissaoDataService';
-
+import HelpPopover from "../HelpPopover";
 
 const Venda = () => {
 
@@ -435,7 +435,31 @@ const Venda = () => {
             <div className="container">
 
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Registro de Venda</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Registro de Venda</h1>
+                        <HelpPopover
+                            title="Ajuda: Registro de Venda"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Utilize esta tela para formalizar a venda de um automóvel do seu estoque para um cliente. Esta ação irá inativar o veículo no sistema e registrar a transação financeira.
+                                    </p>
+                                    <strong>Fluxo de Trabalho:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Detalhes da Venda:</strong> Preencha o valor final da venda, a forma de pagamento e a data da transação. A comissão é calculada automaticamente com base no valor da venda.
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Seleção do Comprador e Veículo:</strong> Escolha o cliente que está comprando e o automóvel que está sendo vendido. Se você iniciou a venda a partir da página de detalhes de um veículo, esses campos já virão preenchidos.
+                                        </li>
+                                        <li>
+                                            <strong>Pós-Venda:</strong> Ao salvar, o automóvel será marcado como inativo. Se o veículo era consignado, o contrato de consignação será automaticamente finalizado com a data da venda.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova venda no sistema.</p>
                 </div>
 

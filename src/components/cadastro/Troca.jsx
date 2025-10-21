@@ -15,7 +15,8 @@ import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa"
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import { useAuth } from '../../context/AuthContext';
 import ComissaoDataService from '../../services/comissaoDataService';
-
+import { Alert } from "react-bootstrap";
+import HelpPopover from '../HelpPopover';
 
 const Troca = () => {
 
@@ -25,26 +26,6 @@ const Troca = () => {
 
     const location = useLocation();
     const clienteId = location.state?.clienteId;
-    const fisicaId = location.state?.fisicaId;
-    const juridicaId = location.state?.juridicaId;
-
-    const [modeloNegocio, setModeloNegocio] = useState(null);
-
-    useEffect(() => {
-        const negocio = sessionStorage.getItem("NegocioAtual");
-        if (negocio) {
-            setModeloNegocio(JSON.parse(negocio));
-        }
-    }, []);
-
-    useEffect(() => {
-        if (modeloNegocio?.negocio) {
-            setAutomovel(prev => ({
-                ...prev,
-                origem: modeloNegocio.negocio
-            }));
-        }
-    }, [modeloNegocio]);
 
     const initialAutomovelState = {
         id: null,
@@ -63,6 +44,26 @@ const Troca = () => {
     };
 
     const [automovel, setAutomovel] = useState(initialAutomovelState);
+    const [isReativacao, setIsReativacao] = useState(false);
+
+    useEffect(() => {
+        const automovelExistente = location.state?.automovelExistente;
+        const clienteIdPredefinido = location.state?.clienteId;
+        const negocio = JSON.parse(sessionStorage.getItem("NegocioAtual"));
+
+        if (automovelExistente) {
+            setAutomovel(automovelExistente);
+            setAutomovel(prev => ({ ...prev, origem: negocio.negocio }));
+            setIsReativacao(true);
+        } else if (negocio) {
+            setAutomovel(prev => ({ ...prev, origem: negocio.negocio }));
+        }
+
+        if (clienteIdPredefinido) {
+            setTroca(prev => ({ ...prev, clienteId: clienteIdPredefinido }));
+        }
+
+    }, [location.state]);
 
     const [marcasOptions, setMarcasOptions] = useState([]);
     const [modelosOptions, setModelosOptions] = useState([]);
@@ -77,7 +78,7 @@ const Troca = () => {
     useEffect(() => {
         if (!automovel.marcaId) {
             setModelosOptions([]);
-            setAutomovel(prev => ({ ...prev, modeloId: '' }));
+            // setAutomovel(prev => ({ ...prev, modeloId: '' }));
             return;
         }
 
@@ -125,20 +126,6 @@ const Troca = () => {
             clienteId: clienteId || ""
         }));
     }, [clienteId]);
-
-
-
-    // useEffect(() => {
-    //     let comissao = "";
-    //     if (troca?.valor_aquisicao !== "") {
-    //         comissao = troca?.valor_aquisicao < 50000 ? 300 : troca?.valor_aquisicao > 100000 ? 1500 : 500;
-    //     }
-    //     setTroca(prev => ({
-    //         ...prev,
-    //         comissao: comissao
-    //     }));
-    //     // }
-    // }, [troca?.valor_aquisicao]);
 
     const [regrasComissao, setRegrasComissao] = useState([]);
 
@@ -423,7 +410,7 @@ const Troca = () => {
 
                 <div className="small text-muted d-flex align-items-center mt-1">
                     <FaRegIdCard className="me-1" />
-                    <span>Renavam: {label.renavam}</span>
+                    <span>Placa: {label.placa}</span>
                     <span className="mx-2">|</span>
                     <FaCalendarAlt className="me-1" />
                     <span>Ano: {label.ano}</span>
@@ -512,41 +499,63 @@ const Troca = () => {
 
 
         try {
-            const verificacao = await AutomovelDataService.duplicidade({
-                placa: automovel.placa,
-                renavam: automovel.renavam
-            })
 
-            if (verificacao.data.erro) {
-                setErro(verificacao.data.erro);
-                setMensagemErro(verificacao.data.mensagemErro);
-                throw new Error(verificacao.data.mensagemErro);
+            let automovelIdParaTroca;
+
+            if (isReativacao) {
+
+                const dadosUpdate = {
+                    ativo: true,
+                    km: automovel.km,
+                    valor: automovel.valor,
+                    origem: automovel.origem
+                };
+
+                await AutomovelDataService.update(automovel.id, dadosUpdate);
+
+                automovelIdParaTroca = automovel.id;
+
+            } else {
+
+                const verificacao = await AutomovelDataService.duplicidade({
+                    placa: automovel.placa,
+                    renavam: automovel.renavam
+                })
+
+                if (verificacao.data.erro) {
+                    setErro(verificacao.data.erro);
+                    setMensagemErro(verificacao.data.mensagemErro);
+                    throw new Error(verificacao.data.mensagemErro);
+                }
+
+                const formData = new FormData();
+
+                formData.append("ano_fabricacao", automovel.ano_fabricacao);
+                formData.append("ano_modelo", automovel.ano_modelo);
+                formData.append("cor", automovel.cor);
+                formData.append("combustivel", automovel.combustivel);
+                formData.append("km", automovel.km);
+                formData.append("origem", automovel.origem);
+                formData.append("placa", automovel.placa);
+                formData.append("renavam", automovel.renavam);
+                formData.append("valor", automovel.valor);
+                formData.append("marcaId", automovel.marcaId);
+                formData.append("modeloId", automovel.modeloId);
+                formData.append("file", automovel.file);
+
+                const automovelResp = await AutomovelDataService.create(formData, {
+                    headers: { "Content-type": "multipart/form-data" }
+                })
+                    .catch(e => {
+                        console.error("Erro ao cadastrar automovel:", e.response?.data || e.message);
+                    });
+
+                automovelIdParaTroca = automovelResp.data.id;
             }
 
-            const formData = new FormData();
-
-            formData.append("ano_fabricacao", automovel.ano_fabricacao);
-            formData.append("ano_modelo", automovel.ano_modelo);
-            formData.append("cor", automovel.cor);
-            formData.append("combustivel", automovel.combustivel);
-            formData.append("km", automovel.km);
-            formData.append("origem", automovel.origem);
-            formData.append("placa", automovel.placa);
-            formData.append("renavam", automovel.renavam);
-            formData.append("valor", automovel.valor);
-            formData.append("marcaId", automovel.marcaId);
-            formData.append("modeloId", automovel.modeloId);
-            formData.append("file", automovel.file);
-
-            const automovelResp = await AutomovelDataService.create(formData, {
-                headers: { "Content-type": "multipart/form-data" }
-            })
-                .catch(e => {
-                    console.error("Erro ao cadastrar automovel:", e.response?.data || e.message);
-                });
-
-            const automovelId = automovelResp.data.id;
-            if (!automovelId) throw new Error("Falha ao obter ID do automóvel.");
+            if (!automovelIdParaTroca) {
+                throw new Error("Falha ao processar o automóvel.");
+            }
 
             const trocaData = new FormData();
 
@@ -555,7 +564,7 @@ const Troca = () => {
             trocaData.append("data", troca.data);
             trocaData.append("forma_pagamento", troca.forma_pagamento);
             trocaData.append("clienteId", troca.clienteId);
-            trocaData.append("automovelId", automovelResp?.data.id);
+            trocaData.append("automovelId", automovelIdParaTroca);
             trocaData.append("automovel_fornecido", troca.automovel_fornecido);
             trocaData.append("funcionarioId", troca.funcionarioId);
             trocaData.append("valor_aquisicao", troca.valor_aquisicao);
@@ -614,7 +623,31 @@ const Troca = () => {
             <div className="container">
 
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Registro de Troca</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Registro de Troca</h1>
+                        <HelpPopover
+                            title="Ajuda: Registro de Troca"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Esta página registra a entrada de um automóvel de um cliente como parte do pagamento na aquisição de outro veículo do seu estoque.
+                                    </p>
+                                    <strong>Fluxo de Trabalho:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Detalhes da Troca:</strong> Comece selecionando o cliente (Fornecedor) e o "Automóvel Fornecido" (o veículo do seu estoque que ele está levando).
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Valor de Aquisição:</strong> Insira o valor avaliado do carro que o cliente está entregando. O sistema calculará o "Valor Diferença" automaticamente. Se a loja precisar pagar uma diferença ao cliente, a "Forma de Pagamento" será habilitada.
+                                        </li>
+                                        <li>
+                                            <strong>Informações do Automóvel:</strong> Cadastre os dados do veículo que está sendo recebido do cliente. Ele será adicionado ao seu inventário.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para registrar uma nova troca no sistema.</p>
                 </div>
 
@@ -646,7 +679,7 @@ const Troca = () => {
                             <div className="row g-3">
                                 <div className="col-md-4">
                                     <label for="fornecedor" class="form-label">Fornecedor <span className="text-danger">*</span></label>
-                                    <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("fornecedor") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} onChange={handleFornecedorChange} value={optionsFornecedor.find(option => option.value === troca.clienteId) || null} isClearable={true}
+                                    <Select formatOptionLabel={formatOptionLabelFornecedor} isSearchable={true} className={`${hasError("fornecedor") && "is-invalid"}`} id="fornecedor" name="fornecedor" placeholder="Selecione o fornecedor" options={optionsFornecedor} value={optionsFornecedor.find(option => option.value === troca.clienteId) || null} isClearable={true}
                                         styles={getCustomStyles("clienteId")}
                                         filterOption={(option, inputValue) => {
                                             const label = option.label;
@@ -654,7 +687,7 @@ const Troca = () => {
                                                 label.nome,
                                                 label.razaoSocial,
                                                 label.cpf,
-                                                label.cnpj,
+                                                label.cnpj
                                             ].filter(Boolean).join(" ").toLowerCase();
                                             return texto.includes(inputValue.toLowerCase());
                                         }}>
@@ -672,6 +705,7 @@ const Troca = () => {
                                                 label.marca,
                                                 label.modelo,
                                                 label.renavam,
+                                                label.placa
                                             ].filter(Boolean).join(" ").toLowerCase();
                                             return texto.includes(inputValue.toLowerCase());
                                         }}>
@@ -728,6 +762,11 @@ const Troca = () => {
                             Informações Principais do Automóvel
                         </div>
                         <div className="card-body">
+                            {isReativacao && (
+                                <Alert variant="info">
+                                    <strong>Modo de Reativação:</strong> Você está a consignar um automóvel que já existe no sistema. Os dados principais não podem ser alterados. Por favor, atualize a **Quilometragem** e o novo **Valor de Venda**.
+                                </Alert>
+                            )}
                             <div className="row g-3">
                                 <div className="col-md-4">
                                     <label htmlFor="marca" className="form-label">Marca <span className="text-danger">*</span></label>
@@ -738,6 +777,7 @@ const Troca = () => {
                                         onChange={(option) => handleSelectChange(option, 'marcaId')}
                                         isClearable isSearchable
                                         styles={getCustomStyles("marca")}
+                                        isDisabled={isReativacao}
                                     />
                                     {vazio.includes("marca") && <div className="form-text text-danger ms-1">Informe a marca.</div>}
                                 </div>
@@ -748,7 +788,7 @@ const Troca = () => {
                                         options={modelosOptions}
                                         value={modelosOptions.find(option => option.value === automovel.modeloId) || null}
                                         onChange={(option) => handleSelectChange(option, 'modeloId')}
-                                        isDisabled={!automovel.marcaId}
+                                        isDisabled={isReativacao || !automovel.marcaId}
                                         isLoading={isModelosLoading}
                                         isClearable isSearchable
                                         styles={getCustomStyles("modelo")}
@@ -757,45 +797,45 @@ const Troca = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="cor" className="form-label">Cor <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("cor") && "is-invalid"}`} id="cor" name="cor" onChange={handleInputChangeAutomovel} />
+                                    <input type="text" className={`form-control ${hasError("cor") && "is-invalid"}`} id="cor" name="cor" onChange={handleInputChangeAutomovel} value={automovel.cor} />
                                     {vazio.includes("cor") && <div className="invalid-feedback">Informe a cor.</div>}
                                     {tipo.includes("cor") && <div className="invalid-feedback ms-1">Cor inválida.</div>}
                                 </div>
                                 <div className="col-md-2">
                                     <label htmlFor="anofabricacao" className="form-label">Ano Fabricação <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("ano_fabricacao") && "is-invalid"} ${hasError("ano_modelo_fabricacao") && "is-invalid"}`} id="anofabricacao" name="ano_fabricacao" onChange={handleInputChangeAutomovel} />
+                                    <input type="text" className={`form-control ${hasError("ano_fabricacao") && "is-invalid"} ${hasError("ano_modelo_fabricacao") && "is-invalid"}`} id="anofabricacao" name="ano_fabricacao" onChange={handleInputChangeAutomovel} value={automovel.ano_fabricacao} readOnly={isReativacao} />
                                     {vazio.includes("ano_fabricacao") && <div className="invalid-feedback ms-1">Informe o ano de fabricação.</div>}
                                     {tipo.includes("ano_fabricacao") && <div className="invalid-feedback ms-1">Ano de fabricação inválido.</div>}
                                     {tipo.includes("ano_modelo_fabricacao") && <div className="invalid-feedback ms-1">Ano de fabricação posterior a ano modelo.</div>}
                                 </div>
                                 <div className="col-md-2">
                                     <label htmlFor="anomodelo" className="form-label">Ano Modelo <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"} ${hasError("ano_modelo_futuro") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} />
+                                    <input type="text" className={`form-control ${hasError("ano_modelo") && "is-invalid"} ${hasError("ano_modelo_futuro") && "is-invalid"}`} id="anomodelo" name="ano_modelo" onChange={handleInputChangeAutomovel} value={automovel.ano_modelo} readOnly={isReativacao} />
                                     {vazio.includes("ano_modelo") && <div className="invalid-feedback ms-1">Informe o ano modelo.</div>}
                                     {tipo.includes("ano_modelo") && <div className="invalid-feedback ms-1">Ano modelo inválido.</div>}
                                     {tipo.includes("ano_modelo_futuro") && (<div className="invalid-feedback ms-1">Ano modelo inválido (não pode ser maior que {new Date().getFullYear() + 1}).</div>)}
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="placa" className="form-label">Placa <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("placa") && "is-invalid"}`} id="placa" name="placa" onChange={handleInputChangeAutomovel} />
+                                    <input type="text" className={`form-control ${hasError("placa") && "is-invalid"}`} id="placa" name="placa" onChange={handleInputChangeAutomovel} value={automovel.placa} readOnly={isReativacao} />
                                     {vazio.includes("placa") && <div className="invalid-feedback ms-1">Informe a placa.</div>}
                                     {tamanho.includes("placa") && <div className="invalid-feedback ms-1">Placa inválida (deve ter 7 caracteres).</div>}
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="renavam" className="form-label">Renavam <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("renavam") && "is-invalid"}`} id="renavam" name="renavam" onChange={handleInputChangeAutomovel} />
+                                    <input type="text" className={`form-control ${hasError("renavam") && "is-invalid"}`} id="renavam" name="renavam" onChange={handleInputChangeAutomovel} value={automovel.renavam} readOnly={isReativacao} />
                                     {vazio.includes("renavam") && <div className="invalid-feedback ms-1">Informe o Renavam.</div>}
                                     {tamanho.includes("renavam") && <div className="invalid-feedback ms-1">Renavam inválido (deve ter 11 dígitos numéricos).</div>}
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="km" className="form-label">Quilometragem <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("km") && "is-invalid"}`} id="km" name="km" onChange={handleInputChangeAutomovel} />
+                                    <input type="text" className={`form-control ${hasError("km") && "is-invalid"}`} id="km" name="km" onChange={handleInputChangeAutomovel} value={automovel.km} />
                                     {vazio.includes("km") && <div className="invalid-feedback ms-1">Informe a quilometragem.</div>}
                                     {tipo.includes("km") && <div className="invalid-feedback ms-1">Quilometragem inválida.</div>}
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="combustivel" className="form-label">Combustível <span className="text-danger">*</span></label>
-                                    <select className={`form-select ${hasError("combustivel") && "is-invalid"}`} id="combustivel" name="combustivel" onChange={handleInputChangeAutomovel}>
+                                    <select className={`form-select ${hasError("combustivel") && "is-invalid"}`} id="combustivel" name="combustivel" onChange={handleInputChangeAutomovel} value={automovel.combustivel} disabled={isReativacao}>
                                         <option value="">Selecione...</option>
                                         <option value="Diesel">Diesel</option>
                                         <option value="Etanol">Etanol</option>
@@ -808,7 +848,7 @@ const Troca = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="origem" className="form-label">Origem do Automóvel <span className="text-danger">*</span></label>
-                                    <select className={`form-select ${hasError("origem") && "is-invalid"}`} id="origem" name="origem" value={automovel.origem} onChange={handleInputChangeAutomovel}>
+                                    <select className={`form-select ${hasError("origem") && "is-invalid"}`} id="origem" name="origem" value={automovel.origem}>
                                         <option value="">Selecione...</option>
                                         <option value="Compra">Compra</option>
                                         <option value="Consignacao">Consignação</option>
@@ -818,7 +858,7 @@ const Troca = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="valor" className="form-label">Valor de Venda (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} />
+                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} value={automovel.valor} />
                                     {vazio.includes("valor") && <div className="invalid-feedback ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div className="invalid-feedback ms-1">Valor inválido.</div>}
                                 </div>
