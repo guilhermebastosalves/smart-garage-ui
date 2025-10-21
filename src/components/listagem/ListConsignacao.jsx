@@ -7,7 +7,6 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ModalConsignacao from '../modais/ModalConsignacao';
 import ModalEncerrarConsignacao from '../modais/ModalEncerrarConsignacao';
-// import ModalConfirmacao from '../modais/ModalConfirmacao';
 import { useAuth } from '../../context/AuthContext';
 import ModalVerificarAutomovel from '../modais/ModalVerificarAutomovel';
 
@@ -19,16 +18,10 @@ const Consignacoes = () => {
     const { user } = useAuth();
 
     const consignacaoLocalStorage = { negocio: "Consignacao" };
-    // const [showModal, setShowModal] = useState(false);
 
     const [showEncerrarModal, setShowEncerrarModal] = useState(false);
     const [consignacaoSelecionada, setConsignacaoSelecionada] = useState(null);
 
-    // const [showConfirmModal, setShowConfirmModal] = useState(false);
-    // const [itemParaDeletar, setItemParaDeletar] = useState(null);
-    // const [deleteLoading, setDeleteLoading] = useState(false);
-
-    // const [showVerificarModal, setShowVerificarModal] = useState(false);
     const [showClienteModal, setShowClienteModal] = useState(false);
     const [showAutomovelModal, setShowAutomovelModal] = useState(false);
     const [clienteSelecionadoId, setClienteSelecionadoId] = useState(null);
@@ -86,31 +79,6 @@ const Consignacoes = () => {
     const handleEncerramentoSucesso = (idConsignacaoEncerrada) => {
         fetchData();
     };
-
-    // const handleAbrirModalConfirmacao = (consignacao) => {
-    //     setItemParaDeletar(consignacao);
-    //     setShowConfirmModal(true);
-    // };
-
-    // const handleFecharModalConfirmacao = () => {
-    //     setItemParaDeletar(null);
-    //     setShowConfirmModal(false);
-    // };
-
-    // const handleDeletarConsignacao = async () => {
-    //     if (!itemParaDeletar) return;
-
-    //     setDeleteLoading(true);
-    //     try {
-    //         await ConsignacaoDataService.remove(itemParaDeletar?.id);
-    //         fetchData();
-    //         handleFecharModalConfirmacao();
-    //     } catch (error) {
-    //         console.error("Erro ao deletar consignação:", error);
-    //     } finally {
-    //         setDeleteLoading(false);
-    //     }
-    // };
 
     const [todasConsignacoes, setTodasConsignacoes] = useState([]);
     const [automovel, setAutomovel] = useState([]);
@@ -349,20 +317,6 @@ const Consignacoes = () => {
                         onSuccess={handleEncerramentoSucesso}
                     />
                 )}
-
-                {/* <ModalConfirmacao
-                    show={showConfirmModal}
-                    onHide={handleFecharModalConfirmacao}
-                    onConfirm={handleDeletarConsignacao}
-                    loading={deleteLoading}
-                    titulo="Confirmar Exclusão de Consignação"
-                    corpo={
-                        <>
-                            <p>Você tem certeza que deseja excluir esse registro de consignação?</p>
-                            <p className="text"><strong>Atenção:</strong> Esta ação também <strong>excluirá permanentemente</strong> o automóvel associado a ela. Esta operação <strong>não</strong> pode ser desfeita.</p>
-                        </>
-                    }
-                /> */}
 
                 <ModalVerificarAutomovel
                     show={showAutomovelModal}

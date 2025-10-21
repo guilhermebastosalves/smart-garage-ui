@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 const Estoque = () => {
 
     const navigate = useNavigate();
+    const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || "http://localhost:3000";
 
     const [automovel, setAutomovel] = useState([]);
     const [automovelInativo, setAutomovelInativo] = useState([]);
@@ -61,7 +62,8 @@ const Estoque = () => {
             return (
                 modelo2?.nome.toLowerCase().includes(searchTerm) ||
                 marca2?.nome.toLowerCase().includes(searchTerm) ||
-                auto.ano_fabricacao.toString().includes(searchTerm)
+                auto.ano_fabricacao.toString().includes(searchTerm) ||
+                auto.placa.toLowerCase().includes(searchTerm)
             );
         });
     }, [search, opcao, automovel, automovelInativo, modelo, marca]);
@@ -132,7 +134,7 @@ const Estoque = () => {
                                 <div className="card h-100 card-hover">
                                     {auto.imagem ? (
                                         <img
-                                            src={`http://localhost:3000/${auto.imagem}`}
+                                            src={`${apiUrl}/${auto.imagem}`}
                                             className="card-img-top car-image"
                                             alt={`${marca2?.nome} ${modelo2?.nome}`}
                                         />

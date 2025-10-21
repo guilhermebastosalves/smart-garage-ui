@@ -55,8 +55,8 @@ const Header = () => {
                                     }
                                     {user.role === "gerente" && (
                                         <li>
-                                            <Link to="/relatorios" className={`nav-link ${location.pathname === '/relatorios' ? 'active' : 'link-body-emphasis'}`}> <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#grid"></use></svg>
-                                                <i className="bi bi-file-earmark-bar-graph-fill me-2"></i>Relatórios
+                                            <Link to="/consultas" className={`nav-link ${location.pathname === '/consultas' ? 'active' : 'link-body-emphasis'}`}> <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlinkHref="#grid"></use></svg>
+                                                <i className="bi bi-file-earmark-bar-graph-fill me-2"></i>Consultas Gerenciais
                                             </Link>
                                         </li>
                                     )}

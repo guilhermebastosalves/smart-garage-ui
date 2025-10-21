@@ -6,7 +6,7 @@ import Venda from './components/cadastro/Venda'
 import Gasto from './components/cadastro/Gasto'
 import Manutencao from './components/cadastro/Manutencao'
 import Troca from './components/cadastro/Troca'
-import Relatorios from './components/Relatorios'
+import Consultas from './components/Consultas'
 import Estoque from './components/Estoque'
 import Automovel from './components/cadastro/Automovel'
 import Detalhes from './components/Detalhes'
@@ -109,7 +109,7 @@ function App() {
 
           <Route element={<ProtectedRoute allowedRoles={['gerente']} />}>
             <Route path="/compra" element={<Compra />}></Route>
-            <Route path="/relatorios" element={<Relatorios />}></Route>
+            <Route path="/consultas" element={<Consultas />}></Route>
             <Route path="/manutencao" element={<Manutencao />}></Route>
             <Route path="/gastos" element={<Gasto />}></Route>
             <Route path='/editar-gasto/:id' element={<EditarGasto />}></Route>

@@ -7,55 +7,64 @@ import ClienteDataService from '../../services/clienteDataService';
 import FisicaDataService from '../../services/fisicaDataService';
 import JuridicaDataService from '../../services/juridicaDataService';
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ModalTroca from '../modais/ModalTroca';
-import ModalConfirmacao from '../modais/ModalConfirmacao';
 import { useAuth } from '../../context/AuthContext';
+import ModalVerificarAutomovel from '../modais/ModalVerificarAutomovel';
 
 
 const Trocas = () => {
 
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const trocaLocalStorage = { negocio: "Troca" };
-    const [showModal, setShowModal] = useState(false);
 
     const [automovel, setAutomovel] = useState([]);
     const [modelo, setModelo] = useState([]);
     const [marca, setMarca] = useState([]);
     const [todasTrocas, setTodasTrocas] = useState([]);
 
+    const [showClienteModal, setShowClienteModal] = useState(false);
+    const [showAutomovelModal, setShowAutomovelModal] = useState(false);
+    const [clienteSelecionadoId, setClienteSelecionadoId] = useState(null);
 
-    const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [itemParaDeletar, setItemParaDeletar] = useState(null);
-    const [deleteLoading, setDeleteLoading] = useState(false);
+    useEffect(() => {
+        const { startAutomovelCheck, clienteId } = location.state || {};
 
-    const handleAbrirModalConfirmacao = (troca) => {
-        setItemParaDeletar(troca);
-        setShowConfirmModal(true);
-    };
-
-    const handleFecharModalConfirmacao = () => {
-        setItemParaDeletar(null);
-        setShowConfirmModal(false);
-    };
-
-    const handleDeletarTroca = async () => {
-        if (!itemParaDeletar) return;
-
-        setDeleteLoading(true);
-        try {
-            await TrocaDataService.remove(itemParaDeletar.id);
-            setTodasTrocas(prev => prev.filter(t => t.id !== itemParaDeletar.id));
-            handleFecharModalConfirmacao();
-        } catch (error) {
-            console.error("Erro ao deletar troca:", error);
-        } finally {
-            setDeleteLoading(false);
+        if (startAutomovelCheck && clienteId) {
+            setClienteSelecionadoId(clienteId);
+            setShowAutomovelModal(true);
+            navigate(location.pathname, { replace: true, state: {} });
         }
+    }, [location.state, navigate]);
+
+    const handleNovaTrocaClick = () => {
+        sessionStorage.setItem("NegocioAtual", JSON.stringify({ negocio: "Troca" }));
+        setShowClienteModal(true);
     };
 
-    const navigate = useNavigate();
+    const handleClienteVerificado = (clienteId) => {
+        setClienteSelecionadoId(clienteId);
+        setShowClienteModal(false);
+        setShowAutomovelModal(true);
+    };
+
+    const handleAutomovelVerificado = (resultado) => {
+        setShowAutomovelModal(false);
+
+        const statePayload = {
+            clienteId: clienteSelecionadoId
+        };
+
+        if (resultado.status === 'inativo') {
+            statePayload.automovelExistente = resultado.automovel;
+        }
+
+        navigate('/troca', { state: statePayload });
+    };
+
 
     const [periodo, setPeriodo] = useState('todos');
 
@@ -157,7 +166,7 @@ const Trocas = () => {
                         <h1 className="mb-0">Trocas</h1>
                         <p className="text-muted">Listagem e gerenciamento de trocas.</p>
                     </div>
-                    <button className='btn btn-primary btn-lg' onClick={() => setShowModal(true)}>
+                    <button className='btn btn-primary btn-lg' onClick={handleNovaTrocaClick}>
                         <i className="bi bi-plus-circle-fill me-2"></i>
                         Nova Troca
                     </button>
@@ -236,14 +245,6 @@ const Trocas = () => {
                                                         >
                                                             <i className="bi bi-pencil-fill"></i>
                                                         </button>}
-                                                    {/* {user.role === "gerente" &&
-                                                        <button
-                                                            className='btn btn-outline-danger btn-sm'
-                                                            onClick={() => handleAbrirModalConfirmacao(d)}
-                                                            title="Excluir Troca"
-                                                        >
-                                                            <i className="bi bi-trash-fill"></i>
-                                                        </button>} */}
                                                 </td>
                                             </tr>
 
@@ -283,28 +284,16 @@ const Trocas = () => {
                 </div>
 
                 <ModalTroca
-                    show={showModal}
-                    onHide={() => setShowModal(false)}
+                    show={showClienteModal}
+                    onHide={() => setShowClienteModal(false)}
                     troca={trocaLocalStorage}
+                    onClienteVerificado={handleClienteVerificado}
                 />
 
-                <ModalConfirmacao
-                    show={showConfirmModal}
-                    onHide={handleFecharModalConfirmacao}
-                    onConfirm={handleDeletarTroca}
-                    loading={deleteLoading}
-                    titulo="Confirmar Exclusão de Troca"
-                    corpo={
-                        <>
-                            <p>Você tem certeza que deseja excluir a troca <strong>#{itemParaDeletar?.id}</strong>?</p>
-                            <p className="text-danger fw-bold">Atenção: Esta ação é complexa e não pode ser desfeita.</p>
-                            <ul>
-                                <li>O registro desta <strong>troca</strong> será excluído.</li>
-                                <li>O automóvel <strong>recebido</strong> pela loja será excluído permanentemente.</li>
-                                <li>O automóvel <strong>fornecido</strong> pelo cliente voltará ao status de "Ativo" no estoque.</li>
-                            </ul>
-                        </>
-                    }
+                <ModalVerificarAutomovel
+                    show={showAutomovelModal}
+                    onHide={() => setShowAutomovelModal(false)}
+                    onAutomovelVerificado={handleAutomovelVerificado}
                 />
 
             </div >
