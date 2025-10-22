@@ -7,7 +7,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalConfirmacao from '../modais/ModalConfirmacao';
 import { useAuth } from '../../context/AuthContext';
-
+import HelpPopover from '../HelpPopover';
 
 const Gastos = () => {
 
@@ -143,7 +143,31 @@ const Gastos = () => {
             <div className="container">
                 <div className="d-flex justify-content-between align-items-center mb-4 mt-3">
                     <div>
-                        <h1 className="mb-0">Gastos</h1>
+                        <div className="d-flex align-items-center">
+                            <h1 className="fw-bold mb-0 me-2">Gastos</h1>
+                            <HelpPopover
+                                title="Ajuda: Gerenciamento de Gastos"
+                                content={
+                                    <>
+                                        <p style={{ textAlign: "justify" }}>
+                                            Esta página exibe todos os gastos registrados, sejam eles despesas operacionais da empresa ou custos diretamente associados a um veículo específico.
+                                        </p>
+                                        <strong>Funcionalidades:</strong>
+                                        <ul className="mt-1" style={{ textAlign: "justify" }}>
+                                            <li className="mb-1">
+                                                <strong>Novo Gasto:</strong> (Visível para gerentes) Permite registrar uma nova despesa, vinculando-a a um automóvel do estoque ou classificando-a como um gasto geral.
+                                            </li>
+                                            <li className="mb-1">
+                                                <strong>Filtro de Período:</strong> Facilita a visualização de despesas recentes ou de um período específico.
+                                            </li>
+                                            <li>
+                                                <strong>Ações:</strong> Utilize os botões em cada linha para ver os detalhes, editar ou excluir um registro de gasto.
+                                            </li>
+                                        </ul>
+                                    </>
+                                }
+                            />
+                        </div>
                         <p className="text-muted">Listagem e gerenciamento de gastos.</p>
                     </div>
                     {user.role === "gerente" &&

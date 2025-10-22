@@ -6,8 +6,8 @@ import MarcaDataService from '../../services/marcaDataService';
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ModalCompra from '../modais/ModalCompra';
-// import ModalConfirmacao from '../modais/ModalConfirmacao';
 import ModalVerificarAutomovel from '../modais/ModalVerificarAutomovel';
+import HelpPopover from '../HelpPopover';
 
 const Compras = () => {
 
@@ -70,38 +70,6 @@ const Compras = () => {
         // Navega para o formulário final com todos os dados necessários
         navigate('/compra', { state: statePayload });
     };
-
-    // const [showConfirmModal, setShowConfirmModal] = useState(false);
-    // const [itemParaDeletar, setItemParaDeletar] = useState(null);
-    // const [deleteLoading, setDeleteLoading] = useState(false);
-
-
-    // const handleAbrirModalConfirmacao = (compra) => {
-    //     setItemParaDeletar(compra);
-    //     setShowConfirmModal(true);
-    // };
-
-    // const handleFecharModalConfirmacao = () => {
-    //     setItemParaDeletar(null);
-    //     setShowConfirmModal(false);
-    // };
-
-    // const handleDeletarCompra = async () => {
-    //     if (!itemParaDeletar) return;
-
-    //     setDeleteLoading(true);
-    //     try {
-    //         await CompraDataService.remove(itemParaDeletar.id);
-
-    //         setTodasCompras(prev => prev.filter(c => c.id !== itemParaDeletar.id));
-
-    //         handleFecharModalConfirmacao();
-    //     } catch (error) {
-    //         console.error("Erro ao deletar compra:", error);
-    //     } finally {
-    //         setDeleteLoading(false);
-    //     }
-    // };
 
     const [periodo, setPeriodo] = useState('todos');
 
@@ -198,7 +166,33 @@ const Compras = () => {
             <div className="container">
                 <div className="d-flex justify-content-between align-items-center mb-4 mt-3">
                     <div>
-                        <h1 className="mb-0">Compras</h1>
+                        <div className="d-flex align-items-center">
+                            <h1 className="fw-bold mb-0 me-2">Compras</h1>
+                            <HelpPopover
+                                title="Ajuda: Gerenciamento de Compras"
+                                content={
+                                    <>
+                                        <p style={{ textAlign: "justify" }}>
+                                            Esta tela centraliza todas as compras de veículos feitas pela empresa. Daqui, você pode visualizar o histórico e iniciar o registro de novas aquisições.
+                                        </p>
+                                        <strong>Fluxo "Nova Compra":</strong>
+                                        <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                            <li className="mb-1">
+                                                <strong>Verificação do Cliente:</strong> Ao clicar em "Nova Compra", primeiro você irá identificar o vendedor (cliente). Você pode selecionar um existente ou cadastrar um novo.
+                                            </li>
+                                            <li className="mb-1">
+                                                <strong>Verificação do Automóvel:</strong> Em seguida, o sistema perguntará sobre o veículo. Se ele já esteve no seu estoque, você entrará no modo de "Reativação". Caso contrário, seguirá para o cadastro de um novo automóvel.
+                                            </li>
+                                            <li>
+                                                <strong>Formulário de Compra:</strong> Por fim, você será levado ao formulário final para preencher os detalhes financeiros da transação.
+                                            </li>
+                                        </ol>
+                                        <strong>Funcionalidades da Lista:</strong>
+                                        <p className='mb-1 mt-2'>Use o filtro de período para refinar sua busca e os botões de ação para visualizar ou editar os detalhes de cada compra.</p>
+                                    </>
+                                }
+                            />
+                        </div>
                         <p className="text-muted">Listagem e gerenciamento de compras.</p>
                     </div>
                     <button className='btn btn-primary btn-lg' onClick={handleNovaCompraClick}>
@@ -328,20 +322,6 @@ const Compras = () => {
                     onHide={() => setShowAutomovelModal(false)}
                     onAutomovelVerificado={handleAutomovelVerificado}
                 />
-
-                {/* <ModalConfirmacao
-                    show={showConfirmModal}
-                    onHide={handleFecharModalConfirmacao}
-                    onConfirm={handleDeletarCompra}
-                    loading={deleteLoading}
-                    titulo="Confirmar Exclusão de Compra"
-                    corpo={
-                        <>
-                            <p>Você tem certeza que deseja excluir a compra ?</p>
-                            <p ><strong>Atenção:</strong> Esta ação também excluirá <strong>permanentemente</strong> o automóvel associado a ela. Esta operação <strong>não </strong> pode ser desfeita.</p>
-                        </>
-                    }
-                /> */}
 
             </div >
         </>

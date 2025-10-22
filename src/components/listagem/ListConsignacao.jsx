@@ -9,6 +9,7 @@ import ModalConsignacao from '../modais/ModalConsignacao';
 import ModalEncerrarConsignacao from '../modais/ModalEncerrarConsignacao';
 import { useAuth } from '../../context/AuthContext';
 import ModalVerificarAutomovel from '../modais/ModalVerificarAutomovel';
+import HelpPopover from '../HelpPopover';
 
 const Consignacoes = () => {
 
@@ -192,7 +193,36 @@ const Consignacoes = () => {
             <div className="container">
                 <div className="d-flex justify-content-between align-items-center mb-4 mt-3">
                     <div>
-                        <h1 className="mb-0">Consignações</h1>
+                        <div className="d-flex align-items-center">
+                            <h1 className="fw-bold mb-0 me-2">Consignações</h1>
+                            <HelpPopover
+                                title="Ajuda: Gerenciamento de Consignações"
+                                content={
+                                    <>
+                                        <p style={{ textAlign: "justify" }}>
+                                            Aqui você gerencia todos os contratos de consignação. A tela permite filtrar por contratos ativos ou finalizados e iniciar novos registros.
+                                        </p>
+                                        <strong>Fluxo "Nova Consignação":</strong>
+                                        <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                            <li className="mb-1">
+                                                <strong>Verificação do Cliente:</strong> Primeiro, identifique o proprietário do veículo (cliente).
+                                            </li>
+                                            <li className="mb-1">
+                                                <strong>Verificação do Automóvel:</strong> Em seguida, informe os dados do veículo para verificar se ele já existe no sistema (reativação) ou se é um novo cadastro.
+                                            </li>
+                                            <li>
+                                                <strong>Formulário de Consignação:</strong> Finalmente, preencha os detalhes do contrato, como o valor a ser pago ao proprietário e a data de início.
+                                            </li>
+                                        </ol>
+                                        <strong>Ações da Lista:</strong>
+                                        <ul className='mt-2' style={{ textAlign: "justify" }}>
+                                            <li><strong>Visualizar/Editar:</strong> Acessa os detalhes ou permite a correção do registro.</li>
+                                            <li><strong>Encerrar:</strong> Finaliza um contrato ativo, registrando o motivo (Venda ou Devolução).</li>
+                                        </ul>
+                                    </>
+                                }
+                            />
+                        </div>
                         <p className="text-muted">Listagem e gerenciamento de consignações ativas.</p>
                     </div>
                     <button className='btn btn-primary btn-lg' onClick={handleNovaConsignacaoClick}>

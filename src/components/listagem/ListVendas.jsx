@@ -7,7 +7,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModalConfirmacao from '../modais/ModalConfirmacao';
 import { useAuth } from '../../context/AuthContext';
-
+import HelpPopover from '../HelpPopover';
 
 const Vendas = () => {
 
@@ -150,7 +150,32 @@ const Vendas = () => {
             <div className="container">
                 <div className="d-flex justify-content-between align-items-center mb-4 mt-3">
                     <div>
-                        <h1 className="mb-0">Vendas</h1>
+                        <div className="d-flex align-items-center">
+                            <h1 className="fw-bold mb-0 me-2">Vendas</h1>
+                            <HelpPopover
+                                title="Ajuda: Gerenciamento de Vendas"
+                                content={
+                                    <>
+                                        <p style={{ textAlign: "justify" }}>
+                                            Esta página centraliza o histórico de todas as vendas realizadas. A partir daqui, você pode analisar o desempenho e acessar os detalhes de cada transação.
+                                        </p>
+                                        <strong>Funcionalidades da Lista:</strong>
+                                        <ul className="mt-1" style={{ textAlign: "justify" }}>
+                                            <li className="mb-1">
+                                                <strong>Filtro de Origem:</strong> Permite visualizar apenas as vendas de veículos que entraram no estoque por Compra, Consignação ou Troca.
+                                            </li>
+                                            <li className="mb-1">
+                                                <strong>Filtro de Período:</strong> Ajuda a analisar as vendas de um intervalo de tempo específico, como o último mês ou semestre.
+                                            </li>
+                                            <li>
+                                                <strong>Ações:</strong> Utilize os botões para visualizar os detalhes completos da venda ou, se for um gerente, editar um registro caso seja necessário corrigir alguma informação.
+                                            </li>
+                                        </ul>
+                                        <small className="d-block mt-3 text-muted" style={{ textAlign: "justify" }}>Para registrar uma nova venda, vá até a página de "Detalhes" do automóvel desejado e clique em "Vender".</small>
+                                    </>
+                                }
+                            />
+                        </div>
                         <p className="text-muted">Listagem e gerenciamento de vendas.</p>
                     </div>
                 </div>

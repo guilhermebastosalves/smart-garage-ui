@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import ClienteDataService from '../../services/clienteDataService';
 import { Table, Card, Button, InputGroup, Form, Spinner, Alert, Badge } from 'react-bootstrap';
+import HelpPopover from '../HelpPopover';
 
 const ListClientes = () => {
     const navigate = useNavigate();
@@ -57,7 +58,31 @@ const ListClientes = () => {
             <div className="container mt-4">
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h1 className="fw-bold">Gerenciar Clientes</h1>
+                        <div className="d-flex align-items-center">
+                            <h1 className="fw-bold mb-0 me-2">Gerenciar Clientes</h1>
+                            <HelpPopover
+                                title="Ajuda: Gerenciamento de Clientes"
+                                content={
+                                    <>
+                                        <p style={{ textAlign: "justify" }}>
+                                            Esta tela funciona como a sua agenda de contatos, listando todos os clientes (Pessoas Físicas e Jurídicas) cadastrados no sistema.
+                                        </p>
+                                        <strong>Funcionalidades:</strong>
+                                        <ul className="mt-1" style={{ textAlign: "justify" }}>
+                                            <li className="mb-1">
+                                                <strong>Busca Rápida:</strong> Utilize o campo de busca no canto superior direito para filtrar e encontrar um cliente rapidamente pelo nome.
+                                            </li>
+                                            <li className="mb-1">
+                                                <strong>Edição de Dados:</strong> O botão "Editar" permite acessar o formulário do cliente para atualizar informações de contato, documentos ou endereço.
+                                            </li>
+                                            <li>
+                                                <strong>Cadastro de Novos Clientes:</strong> Note que não há um botão "Novo Cliente" aqui. Os clientes são cadastrados diretamente durante as operações de Venda, Compra, Troca ou Consignação para garantir que cada novo contato esteja vinculado a uma negociação.
+                                            </li>
+                                        </ul>
+                                    </>
+                                }
+                            />
+                        </div>
                         <p className="text-muted">Consulte, busque e edite os clientes do sistema.</p>
                     </div>
                 </div>

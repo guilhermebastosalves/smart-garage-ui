@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import ModalConfirmacao from '../modais/ModalConfirmacao';
 import ModalFinalizarManutencao from '../modais/ModalFinalizarManutencao';
 import { useAuth } from '../../context/AuthContext';
-
+import HelpPopover from '../HelpPopover';
 
 const Manutencao = () => {
 
@@ -173,7 +173,31 @@ const Manutencao = () => {
             <div className="container">
                 <div className="d-flex justify-content-between align-items-center mb-4 mt-3">
                     <div>
-                        <h1 className="mb-0">Manutenções</h1>
+                        <div className="d-flex align-items-center">
+                            <h1 className="fw-bold mb-0 me-2">Manutenções</h1>
+                            <HelpPopover
+                                title="Ajuda: Gerenciamento de Manutenções"
+                                content={
+                                    <>
+                                        <p style={{ textAlign: "justify" }}>
+                                            Esta tela controla os veículos que foram enviados para serviços de manutenção em oficinas externas.
+                                        </p>
+                                        <strong>Funcionalidades:</strong>
+                                        <ul className="mt-1" style={{ textAlign: "justify" }}>
+                                            <li className="mb-1">
+                                                <strong>Nova Manutenção:</strong> (Visível para gerentes) Permite registrar o envio de um novo veículo para manutenção, informando o serviço, valor orçado e previsão de retorno.
+                                            </li>
+                                            <li className="mb-1">
+                                                <strong>Filtros:</strong> Você pode alternar a visualização entre manutenções "Ativas" (em andamento) e "Finalizadas", além de filtrar por período.
+                                            </li>
+                                            <li>
+                                                <strong>Ações:</strong> Utilize os botões para ver detalhes, editar ou "Finalizar" uma manutenção, registrando a data de retorno do veículo.
+                                            </li>
+                                        </ul>
+                                    </>
+                                }
+                            />
+                        </div>
                         <p className="text-muted">Listagem e gerenciamento de manutenções.</p>
                     </div>
                     {user.role === "gerente" &&

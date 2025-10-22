@@ -11,7 +11,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ModalTroca from '../modais/ModalTroca';
 import { useAuth } from '../../context/AuthContext';
 import ModalVerificarAutomovel from '../modais/ModalVerificarAutomovel';
-
+import HelpPopover from '../HelpPopover';
 
 const Trocas = () => {
 
@@ -163,7 +163,33 @@ const Trocas = () => {
 
                 <div className="d-flex justify-content-between align-items-center mb-4 mt-3">
                     <div>
-                        <h1 className="mb-0">Trocas</h1>
+                        <div className="d-flex align-items-center">
+                            <h1 className="fw-bold mb-0 me-2">Trocas</h1>
+                            <HelpPopover
+                                title="Ajuda: Gerenciamento de Trocas"
+                                content={
+                                    <>
+                                        <p style={{ textAlign: "justify" }}>
+                                            Aqui são listadas todas as operações de troca, onde um veículo do cliente foi aceito como parte do pagamento por um veículo do seu estoque.
+                                        </p>
+                                        <strong>Fluxo "Nova Troca":</strong>
+                                        <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                            <li className="mb-1">
+                                                <strong>Verificação do Cliente:</strong> Primeiro, identifique o cliente que está realizando a troca.
+                                            </li>
+                                            <li className="mb-1">
+                                                <strong>Verificação do Automóvel:</strong> Em seguida, informe os dados do veículo que o cliente está entregando para checar se ele já esteve no estoque (reativação).
+                                            </li>
+                                            <li>
+                                                <strong>Formulário de Troca:</strong> Você será levado à tela final para preencher os valores, o veículo do seu estoque que está sendo fornecido e os detalhes financeiros.
+                                            </li>
+                                        </ol>
+                                        <strong>Funcionalidades da Lista:</strong>
+                                        <p className='mb-1 mt-2' style={{ textAlign: "justify" }}>Use o filtro de período para refinar sua busca e os botões de ação para visualizar ou editar os detalhes de cada troca.</p>
+                                    </>
+                                }
+                            />
+                        </div>
                         <p className="text-muted">Listagem e gerenciamento de trocas.</p>
                     </div>
                     <button className='btn btn-primary btn-lg' onClick={handleNovaTrocaClick}>
