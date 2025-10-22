@@ -6,6 +6,7 @@ import ModeloDataService from "../../services/modeloDataService";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useCallback } from "react";
 import Select from "react-select";
+import HelpPopover from '../HelpPopover';
 
 import { FaCar } from "react-icons/fa";
 
@@ -266,7 +267,31 @@ const EditarAutomovel = () => {
             <div className="container">
 
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Edição do Automóvel</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Edição do Automóvel</h1>
+                        <HelpPopover
+                            title="Ajuda: Edição de Automóvel"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Esta página é usada para editar as informações cadastrais de um veículo no inventário. Todas as características podem ser atualizadas.
+                                    </p>
+                                    <strong>Pontos Importantes:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Dados Gerais:</strong> Corrija informações como marca, modelo, ano, cor, placa, renavam e quilometragem.
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Valores e Origem:</strong> Atualize o "Valor de Venda" anunciado ou a origem do veículo (se foi cadastrado incorretamente).
+                                        </li>
+                                        <li>
+                                            <strong>Foto:</strong> Você pode enviar uma nova foto para o automóvel a qualquer momento.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para editar o automóvel selecionado.</p>
                 </div>
 

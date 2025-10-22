@@ -15,6 +15,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import React from "react";
+import HelpPopover from "../HelpPopover";
 
 const EditarTroca = () => {
 
@@ -353,7 +354,31 @@ const EditarTroca = () => {
 
             <div className="container">
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Edição de Troca</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Edição de Troca</h1>
+                        <HelpPopover
+                            title="Ajuda: Edição de Troca"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Esta tela permite a correção dos dados de uma operação de troca, envolvendo um veículo recebido e um veículo do estoque.
+                                    </p>
+                                    <strong>Pontos Importantes:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Veículos Envolvidos:</strong> Você pode corrigir qual foi o 'Automóvel Recebido' do cliente e qual foi o 'Automóvel Fornecido' do seu estoque.
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Valores:</strong> Ajuste o 'Valor de Aquisição' (valor do carro do cliente) para recalcular a 'Diferença'. A forma de pagamento pode ser alterada se houver saldo.
+                                        </li>
+                                        <li>
+                                            <strong>Participantes:</strong> O cliente envolvido na transação e a data da troca também podem ser atualizados.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para editar a troca desejada.</p>
                 </div>
 

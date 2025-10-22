@@ -12,6 +12,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import React from "react";
+import HelpPopover from "../HelpPopover";
 
 const EditarManutencao = () => {
 
@@ -265,7 +266,31 @@ const EditarManutencao = () => {
 
             <div className="container">
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Edição de Manutenção</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Edição de Manutenção</h1>
+                        <HelpPopover
+                            title="Ajuda: Edição de Manutenção"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Esta página serve para atualizar as informações de um veículo que foi enviado para manutenção externa.
+                                    </p>
+                                    <strong>Pontos Importantes:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Datas e Prazos:</strong> Altere a 'Data de envio' ou a 'Previsão de retorno' para refletir o andamento do serviço.
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Custos e Descrição:</strong> Atualize o valor orçado para a manutenção e edite a descrição para detalhar os serviços que estão sendo realizados.
+                                        </li>
+                                        <li>
+                                            <strong>Veículo:</strong> É possível corrigir o automóvel associado a este registro de manutenção, caso tenha sido selecionado incorretamente.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para editar a manutenção desejada.</p>
                 </div>
 

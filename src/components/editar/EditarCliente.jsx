@@ -6,6 +6,7 @@ import JuridicaDataService from '../../services/juridicaDataService';
 import FisicaDataService from '../../services/fisicaDataService';
 import Select from "react-select";
 import { Form, Button, Card, Alert, Spinner, ToggleButton, ButtonGroup, Row, Col } from 'react-bootstrap';
+import HelpPopover from '../HelpPopover';
 
 const EditarCliente = () => {
     const { id } = useParams();
@@ -204,8 +205,29 @@ const EditarCliente = () => {
         <>
             <Header />
             <div className="container mt-4">
-                <div className="mb-4">
-                    <h1 className="fw-bold">Editar Cliente</h1>
+                <div className="mb-1">
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Editar Cliente</h1>
+                        <HelpPopover
+                            title="Ajuda: Edição de Cliente"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Esta tela permite atualizar todas as informações de um cliente já cadastrado no sistema, como dados de contato, documentos e endereço.
+                                    </p>
+                                    <strong>Pontos Importantes:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Tipo de Cliente Fixo:</strong> O tipo de cliente (Pessoa Física ou Jurídica) é definido no cadastro e não pode ser alterado. Os botões no topo apenas indicam qual tipo de registro está sendo editado.
+                                        </li>
+                                        <li>
+                                            <strong>Atualização Completa:</strong> Todos os outros campos, incluindo nome, e-mail, telefone, documentos e endereço, podem ser livremente modificados.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Altere os dados abaixo para atualizar o cliente.</p>
                 </div>
 

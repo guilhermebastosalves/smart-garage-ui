@@ -14,6 +14,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import React from "react";
+import HelpPopover from "../HelpPopover";
 
 const EditarGasto = () => {
 
@@ -258,7 +259,31 @@ const EditarGasto = () => {
 
             <div className="container">
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Edição de Gasto</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Edição de Gasto</h1>
+                        <HelpPopover
+                            title="Ajuda: Edição de Gasto"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Utilize esta página para editar um registro de gasto, seja ele geral ou associado a um veículo específico.
+                                    </p>
+                                    <strong>Pontos Importantes:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Detalhes Financeiros:</strong> Corrija o valor e a data do gasto para manter a precisão dos seus registros contábeis.
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Descrição:</strong> Altere a descrição para fornecer mais detalhes ou corrigir informações sobre a natureza do gasto.
+                                        </li>
+                                        <li>
+                                            <strong>Associação:</strong> Você pode alterar o automóvel ao qual este gasto está vinculado. Para desvincular, basta selecionar a opção "Gasto Geral".
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para editar o gasto selecionado.</p>
                 </div>
 

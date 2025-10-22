@@ -15,6 +15,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import React from "react";
+import HelpPopover from "../HelpPopover";
 
 const EditarVenda = () => {
 
@@ -367,7 +368,31 @@ const EditarVenda = () => {
             <div className="container">
 
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Edição de Venda</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Edição de Venda</h1>
+                        <HelpPopover
+                            title="Ajuda: Edição de Venda"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Use esta página para corrigir ou atualizar os detalhes de uma venda já registrada no sistema.
+                                    </p>
+                                    <strong>Pontos Importantes:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Correção de Dados:</strong> Altere o valor final da venda, a data, a forma de pagamento e a comissão, se necessário.
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Vínculos:</strong> Você pode corrigir o cliente (comprador) ou o automóvel associado a esta transação.
+                                        </li>
+                                        <li>
+                                            <strong>Impacto Financeiro:</strong> Lembre-se que as alterações nos valores afetarão diretamente os relatórios financeiros e de comissões.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para editar a venda desejada.</p>
                 </div>
 

@@ -15,6 +15,7 @@ import React from "react";
 import 'react-datepicker/dist/react-datepicker.css';
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
+import HelpPopover from "../HelpPopover";
 
 const EditarConsignacao = () => {
 
@@ -322,7 +323,31 @@ const EditarConsignacao = () => {
             <div className="container">
 
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Edição de Consignação</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Edição de Consignação</h1>
+                        <HelpPopover
+                            title="Ajuda: Edição de Consignação"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Use esta tela para editar os detalhes de um contrato de consignação existente. Ideal para corrigir erros de digitação ou atualizar acordos.
+                                    </p>
+                                    <strong>Pontos Importantes:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Ajuste de Valores:</strong> Você pode alterar o "Valor da Consignação" acordado com o proprietário.
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Correção de Vínculos:</strong> É possível corrigir o proprietário (cliente) ou o automóvel vinculado a este contrato de consignação.
+                                        </li>
+                                        <li>
+                                            <strong>Data de Início:</strong> A data de início do contrato também pode ser ajustada.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para editar a consignação desejada.</p>
                 </div>
 

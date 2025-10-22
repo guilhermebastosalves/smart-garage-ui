@@ -15,6 +15,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import React from "react";
+import HelpPopover from "../HelpPopover";
 
 const EditarCompra = () => {
 
@@ -325,7 +326,28 @@ const EditarCompra = () => {
             <div className="container">
 
                 <div className="mb-4 mt-3">
-                    <h1 className="fw-bold">Edição de Compra</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Edição de Compra</h1>
+                        <HelpPopover
+                            title="Ajuda: Edição de Compra"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Esta página permite corrigir ou atualizar as informações de uma operação de compra registrada anteriormente.
+                                    </p>
+                                    <strong>Pontos Importantes:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Correção de Dados:</strong> Altere o valor, a data, o fornecedor (cliente vendedor) ou o automóvel associado à compra, conforme necessário.
+                                        </li>
+                                        <li>
+                                            <strong>Impacto:</strong> As alterações feitas aqui afetarão os registros financeiros e o histórico do veículo. Certifique-se de que os dados estão corretos antes de salvar.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Preencha os dados abaixo para editar a compraResp desejada.</p>
                 </div>
 
