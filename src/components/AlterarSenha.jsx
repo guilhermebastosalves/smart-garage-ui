@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FuncionarioDataService from '../services/funcionarioDataService';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +12,27 @@ const AlterarSenhaPrimeiroAcesso = () => {
     const [confirmarSenha, setConfirmarSenha] = useState('');
     const [feedback, setFeedback] = useState({ tipo: '', msg: '' });
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'F1') {
+                event.preventDefault();
+
+                const helpIcon = document.getElementById('page-help-popover');
+
+                if (helpIcon) {
+                    helpIcon.click();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -43,6 +64,7 @@ const AlterarSenhaPrimeiroAcesso = () => {
                     <div className="d-flex align-items-center justify-content-center">
                         <h3 className="text-center mb-0">Primeiro Acesso</h3>
                         <HelpPopover
+                            id="page-help-popover"
                             title="Ajuda: Primeiro Acesso"
                             content="Como este é seu primeiro login, o sistema exige que você defina uma senha pessoal e segura para sua conta. Após definir a nova senha, você será redirecionado para a tela de login para entrar novamente."
                         />

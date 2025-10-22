@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AuthService from '../services/authDataService';
 import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
@@ -13,6 +13,27 @@ const ResetarSenha = () => {
     const [mensagem, setMensagem] = useState('');
     const [erro, setErro] = useState('');
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'F1') {
+                event.preventDefault();
+
+                const helpIcon = document.getElementById('page-help-popover');
+
+                if (helpIcon) {
+                    helpIcon.click();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -41,6 +62,7 @@ const ResetarSenha = () => {
                     <div className="d-flex align-items-center justify-content-center">
                         <h3 className="text-center mb-0">Crie uma Nova Senha</h3>
                         <HelpPopover
+                            id="page-help-popover"
                             title="Ajuda: Redefinir Senha"
                             content="Você chegou aqui através de um link enviado para o seu e-mail. Por favor, digite e confirme sua nova senha para recuperar o acesso à sua conta."
                         />

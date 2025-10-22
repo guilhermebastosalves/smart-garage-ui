@@ -2,7 +2,7 @@
 import { FaCar, FaUserAlt, FaLock } from 'react-icons/fa';
 import { InputGroup, Form } from 'react-bootstrap';
 import ModalEsqueciSenha from './modais/ModalEsqueciSenha';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../services/authDataService';
 import { useAuth } from '../context/AuthContext';
@@ -18,6 +18,27 @@ const Login = () => {
     const [erro, setErro] = useState('');
 
     const [showEsqueciSenhaModal, setShowEsqueciSenhaModal] = useState(false);
+
+    useEffect(() => {
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'F1') {
+                event.preventDefault();
+
+                const helpIcon = document.getElementById('page-help-popover');
+
+                if (helpIcon) {
+                    helpIcon.click();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [])
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -48,6 +69,7 @@ const Login = () => {
                 <div className="card shadow-lg border-0 login-card-animated" style={{ width: '100%', maxWidth: '450px' }}>
                     <div className="text-end me-3 mt-2">
                         <HelpPopover
+                            id="page-help-popover"
                             title="Ajuda: Login"
                             content="Insira seu nome de usuário e senha para acessar o sistema. Se você não se lembra da sua senha, clique no link 'Esqueceu a senha?' abaixo."
                         />
