@@ -262,6 +262,7 @@ const EditarGasto = () => {
                     <div className="d-flex align-items-center">
                         <h1 className="fw-bold mb-0 me-2">Edição de Gasto</h1>
                         <HelpPopover
+                            id="page-help-popover"
                             title="Ajuda: Edição de Gasto"
                             content={
                                 <>

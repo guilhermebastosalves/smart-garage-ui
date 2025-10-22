@@ -476,6 +476,7 @@ const Compra = () => {
                     <div className="d-flex align-items-center">
                         <h1 className="fw-bold mb-0 me-2">Registro de Compra</h1>
                         <HelpPopover
+                            id="page-help-popover"
                             title="Ajuda: Registro de Compra"
                             content={
                                 <>

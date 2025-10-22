@@ -43,6 +43,7 @@ const RegistroVendedor = () => {
                         <div className="d-flex align-items-center">
                             <h3 className="mb-0 me-2">Cadastrar Novo Vendedor</h3>
                             <HelpPopover
+                                id="page-help-popover"
                                 title="Ajuda: Cadastro de Vendedor"
                                 content={
                                     <>

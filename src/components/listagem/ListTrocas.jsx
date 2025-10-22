@@ -166,6 +166,7 @@ const Trocas = () => {
                         <div className="d-flex align-items-center">
                             <h1 className="fw-bold mb-0 me-2">Trocas</h1>
                             <HelpPopover
+                                id="page-help-popover"
                                 title="Ajuda: Gerenciamento de Trocas"
                                 content={
                                     <>
