@@ -10,6 +10,7 @@ import MarcaDataService from '../services/marcaDataService';
 import gerarPDF from '../utils/pdfGenerator';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import HelpPopover from './HelpPopover';
 
 const Consultas = () => {
 
@@ -384,7 +385,32 @@ const Consultas = () => {
 
             <div className="container mt-4">
                 <div className="mb-4">
-                    <h1 className="fw-bold">Consultas Gerenciais</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="fw-bold mb-0 me-2">Consultas Gerenciais</h1>
+                        <HelpPopover
+                            id="page-help-popover"
+                            title="Ajuda: Consultas Gerenciais"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Esta é a sua central de inteligência de negócios. Gere relatórios detalhados sobre as operações da empresa para análise de desempenho e tomada de decisões.
+                                    </p>
+                                    <strong>Fluxo de Trabalho:</strong>
+                                    <ol className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Selecione os Filtros:</strong> Escolha o "Tipo de Operação" (Vendas, Compras, etc.) e o "Período" que deseja analisar.
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Gerar Consulta:</strong> Clique no botão para processar os dados. O sistema exibirá um sumário com os principais indicadores, uma tabela detalhada e um gráfico de desempenho.
+                                        </li>
+                                        <li>
+                                            <strong>Exportar PDF:</strong> Após gerar a consulta, o botão "Gerar PDF" ficará disponível para que você possa baixar um relatório formal, ideal para impressão ou arquivamento.
+                                        </li>
+                                    </ol>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted">Selecione os filtros para gerar uma consulta detalhada.</p>
                 </div>
 

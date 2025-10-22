@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import ComissaoDataService from '../services/comissaoDataService';
 import { Form, Button, Card, Alert, Spinner, InputGroup } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import HelpPopover from './HelpPopover';
 
 const GerenciarComissoes = () => {
     const [regras, setRegras] = useState([]);
@@ -112,8 +113,33 @@ const GerenciarComissoes = () => {
             <div className="container mt-4">
                 <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
                     <div>
-                        <h1 className="fw-bold">
-                            Gerenciar Comissões</h1>
+                        <div className="d-flex align-items-center">
+                            <h1 className="fw-bold mb-0 me-2">Gerenciar Comissões</h1>
+                            <HelpPopover
+                                id="page-help-popover"
+                                title="Ajuda: Gerenciar Comissões"
+                                content={
+                                    <>
+                                        <p style={{ textAlign: "justify" }}>
+                                            Nesta tela, você define as regras que o sistema usará para calcular automaticamente a comissão dos vendedores em cada Venda ou Troca.
+                                        </p>
+                                        <strong>Funcionamento:</strong>
+                                        <ul className="mt-1" style={{ textAlign: "justify" }}>
+                                            <li className="mb-1">
+                                                <strong>Faixas de Valor:</strong> As comissões são baseadas em faixas de valor de venda. Cada linha representa uma faixa.
+                                            </li>
+                                            <li className="mb-1">
+                                                <strong>Definição de Limites:</strong> O valor "De R$" de uma faixa é sempre o final da faixa anterior. Você só precisa definir o valor "Até R$". A última faixa sempre terá o valor máximo em branco, significando "acima".
+                                            </li>
+                                            <li>
+                                                <strong>Adicionar/Remover:</strong> Use os botões para criar novas faixas de comissão ou remover as existentes.
+                                            </li>
+                                        </ul>
+                                        <small className="d-block mt-3 text-muted">Lembre-se de clicar em "Salvar Alterações" para que as novas regras entrem em vigor.</small>
+                                    </>
+                                }
+                            />
+                        </div>
                         <p className="text-muted">Defina as faixas de valor e as comissões correspondentes para vendas e trocas.</p>
                     </div>
                     <button className="btn btn-outline-secondary d-flex align-items-center" onClick={() => navigate('/home')}>

@@ -4,6 +4,7 @@ import ModalConsignacao from "./modais/ModalConsignacao";
 import { useState } from "react";
 import "../../public/static/style.css";
 import { useAuth } from '../context/AuthContext';
+import HelpPopover from './HelpPopover';
 
 const Home = () => {
 
@@ -15,7 +16,29 @@ const Home = () => {
 
             <div className="container py-5">
                 <div className="page-header mb-5">
-                    <h1 className="display-5 fw-bold">Bem-vindo, {user.nome}!</h1>
+                    <div className="d-flex align-items-center">
+                        <h1 className="display-5 fw-bold me-2">Bem-vindo, {user.nome}!</h1>
+                        <HelpPopover
+                            id="page-help-popover"
+                            title="Ajuda: Painel Principal"
+                            content={
+                                <>
+                                    <p style={{ textAlign: "justify" }}>
+                                        Esta é a sua central de navegação. A partir daqui, você pode acessar rapidamente os principais módulos do sistema para gerenciar as operações da sua garagem.
+                                    </p>
+                                    <strong>Funcionalidades:</strong>
+                                    <ul className="mt-1" style={{ textAlign: "justify" }}>
+                                        <li className="mb-1">
+                                            <strong>Navegação Rápida:</strong> Use os cartões para ir diretamente para as seções de Consignações, Estoque, Manutenções, Trocas, e outras áreas importantes.
+                                        </li>
+                                        <li>
+                                            <strong>Acesso por Perfil:</strong> Os módulos exibidos podem variar dependendo do seu nível de acesso (Vendedor ou Gerente).
+                                        </li>
+                                    </ul>
+                                </>
+                            }
+                        />
+                    </div>
                     <p className="text-muted fs-5">Selecione uma das opções abaixo para começar a gerenciar sua garagem.</p>
                 </div>
 

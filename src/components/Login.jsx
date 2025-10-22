@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../services/authDataService';
 import { useAuth } from '../context/AuthContext';
+import HelpPopover from './HelpPopover';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -45,11 +46,19 @@ const Login = () => {
         <>
             <div className="login-page-wrapper">
                 <div className="card shadow-lg border-0 login-card-animated" style={{ width: '100%', maxWidth: '450px' }}>
+                    <div className="text-end me-3 mt-2">
+                        <HelpPopover
+                            title="Ajuda: Login"
+                            content="Insira seu nome de usuário e senha para acessar o sistema. Se você não se lembra da sua senha, clique no link 'Esqueceu a senha?' abaixo."
+                        />
+                    </div>
                     <div className="card-body p-5">
-
                         <div className={`text-center ${!erro ? "mb-5" : "mb-2"}`}>
                             <img src="/static/img/logoapenas.png" alt="Smart Garage Logo" className="navbar-logo mb-1" />
+                            {/* <div className="d-flex align-items-center justify-content-center"> */}
                             <h1 className="fw-bold">Smart Garage</h1>
+
+                            {/* </div> */}
                             <p className="text-muted">Faça login para continuar</p>
                         </div>
 

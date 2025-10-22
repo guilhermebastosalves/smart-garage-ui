@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AuthService from '../services/authDataService';
 import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
+import HelpPopover from './HelpPopover';
 
 const ResetarSenha = () => {
     const { token } = useParams();
@@ -37,7 +38,13 @@ const ResetarSenha = () => {
         <div className="login-page-wrapper">
             <Card className="shadow-lg border-0 login-card-animated" style={{ maxWidth: '450px' }}>
                 <Card.Body className="p-5">
-                    <h3 className="text-center mb-4">Crie uma Nova Senha</h3>
+                    <div className="d-flex align-items-center justify-content-center">
+                        <h3 className="text-center mb-0">Crie uma Nova Senha</h3>
+                        <HelpPopover
+                            title="Ajuda: Redefinir Senha"
+                            content="Você chegou aqui através de um link enviado para o seu e-mail. Por favor, digite e confirme sua nova senha para recuperar o acesso à sua conta."
+                        />
+                    </div>
                     {mensagem && <Alert variant="success">{mensagem}</Alert>}
                     {erro && (
                         <div className='d-flex align-items-center mb-3 container'>

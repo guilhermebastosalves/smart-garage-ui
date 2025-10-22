@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import FuncionarioDataService from '../services/funcionarioDataService';
 import { useAuth } from '../context/AuthContext';
 import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
+import HelpPopover from './HelpPopover';
 
 const AlterarSenhaPrimeiroAcesso = () => {
     const navigate = useNavigate();
@@ -39,7 +40,13 @@ const AlterarSenhaPrimeiroAcesso = () => {
         <div className="login-page-wrapper">
             <Card className="shadow-lg border-0" style={{ maxWidth: '450px' }}>
                 <Card.Body className="p-5">
-                    <h3 className="text-center mb-2">Primeiro Acesso</h3>
+                    <div className="d-flex align-items-center justify-content-center">
+                        <h3 className="text-center mb-0">Primeiro Acesso</h3>
+                        <HelpPopover
+                            title="Ajuda: Primeiro Acesso"
+                            content="Como este é seu primeiro login, o sistema exige que você defina uma senha pessoal e segura para sua conta. Após definir a nova senha, você será redirecionado para a tela de login para entrar novamente."
+                        />
+                    </div>
                     <p className="text-center text-muted mb-4">Por segurança, você precisa definir uma nova senha.</p>
 
                     {feedback.msg && feedback.tipo === 'danger' &&

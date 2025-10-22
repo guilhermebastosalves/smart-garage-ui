@@ -7,7 +7,7 @@ import MarcaDataService from "../services/marcaDataService";
 import ModeloDataService from "../services/modeloDataService";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
+import HelpPopover from './HelpPopover';
 
 const Estoque = () => {
 
@@ -178,7 +178,32 @@ const Estoque = () => {
             <div className="container py-5">
                 <div className="d-flex justify-content-between align-items-center">
                     <div>
-                        <h1 className="fw-bold mb-0">Estoque de Automóveis</h1>
+                        <div className="d-flex align-items-center">
+                            <h1 className="fw-bold mb-0 me-2">Estoque de Automóveis</h1>
+                            <HelpPopover
+                                id="page-help-popover"
+                                title="Ajuda: Estoque de Automóveis"
+                                content={
+                                    <>
+                                        <p style={{ textAlign: "justify" }}>
+                                            Esta tela é a vitrine virtual da sua garagem, exibindo todos os veículos cadastrados no sistema.
+                                        </p>
+                                        <strong>Funcionalidades:</strong>
+                                        <ul className="mt-1" style={{ textAlign: "justify" }}>
+                                            <li className="mb-1">
+                                                <strong>Filtro de Status:</strong> Use o seletor para alternar a visualização entre veículos "Ativos" (disponíveis para venda) e "Inativos" (já vendidos ou devolvidos).
+                                            </li>
+                                            <li className="mb-1">
+                                                <strong>Busca Inteligente:</strong> O campo de busca permite encontrar veículos rapidamente por marca, modelo, ano ou placa.
+                                            </li>
+                                            <li>
+                                                <strong>Ver Detalhes:</strong> Clicar no botão "Ver Detalhes" de qualquer veículo leva a uma página com todas as suas informações, histórico e opções de negociação (como Vender ou Editar).
+                                            </li>
+                                        </ul>
+                                    </>
+                                }
+                            />
+                        </div>
                         <p className="text-muted">Consulte e gerencie todos os automóveis disponíveis.</p>
                     </div>
                     <div className="d-flex align-items-center col-md-4">
