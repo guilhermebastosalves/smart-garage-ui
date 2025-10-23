@@ -278,7 +278,7 @@ const EditarGasto = () => {
                                             <strong>Descrição:</strong> Altere a descrição para fornecer mais detalhes ou corrigir informações sobre a natureza do gasto.
                                         </li>
                                         <li>
-                                            <strong>Associação:</strong> Você pode alterar o automóvel ao qual este gasto está vinculado. Para desvincular, basta selecionar a opção "Gasto Geral".
+                                            <strong>Automóvel:</strong> É possível corrigir o automóvel associado a este registro de gasto, caso tenha sido selecionado incorretamente.
                                         </li>
                                     </ol>
                                 </>

@@ -381,7 +381,7 @@ const EditarVenda = () => {
                                     <strong>Pontos Importantes:</strong>
                                     <ol className="mt-1" style={{ textAlign: "justify" }}>
                                         <li className="mb-1">
-                                            <strong>Correção de Dados:</strong> Altere o valor final da venda, a data, a forma de pagamento e a comissão, se necessário.
+                                            <strong>Correção de Dados:</strong> Altere o valor final da venda, a data e a forma de pagamento, se necessário. O valor de comissão será calculado automaticamente a partir do valor final da venda.
                                         </li>
                                         <li className="mb-1">
                                             <strong>Vínculos:</strong> Você pode corrigir o cliente (comprador) ou o automóvel associado a esta transação.

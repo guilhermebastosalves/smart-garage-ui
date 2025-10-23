@@ -275,7 +275,7 @@ const EditarAutomovel = () => {
                             content={
                                 <>
                                     <p style={{ textAlign: "justify" }}>
-                                        Esta página é usada para editar as informações cadastrais de um veículo no inventário. Todas as características podem ser atualizadas.
+                                        Esta página é usada para editar as informações cadastrais de um veículo em estoque. Todas as características podem ser atualizadas.
                                     </p>
                                     <strong>Pontos Importantes:</strong>
                                     <ol className="mt-1" style={{ textAlign: "justify" }}>

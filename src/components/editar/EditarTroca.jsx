@@ -367,7 +367,7 @@ const EditarTroca = () => {
                                     <strong>Pontos Importantes:</strong>
                                     <ol className="mt-1" style={{ textAlign: "justify" }}>
                                         <li className="mb-1">
-                                            <strong>Veículos Envolvidos:</strong> Você pode corrigir qual foi o 'Automóvel Recebido' do cliente e qual foi o 'Automóvel Fornecido' do seu estoque.
+                                            <strong>Automóveis Envolvidos:</strong> Você pode corrigir qual foi o 'Automóvel Recebido' do cliente e qual foi o 'Automóvel Fornecido' do seu estoque.
                                         </li>
                                         <li className="mb-1">
                                             <strong>Valores:</strong> Ajuste o 'Valor de Aquisição' (valor do carro do cliente) para recalcular a 'Diferença'. A forma de pagamento pode ser alterada se houver saldo.

@@ -285,7 +285,7 @@ const EditarManutencao = () => {
                                             <strong>Custos e Descrição:</strong> Atualize o valor orçado para a manutenção e edite a descrição para detalhar os serviços que estão sendo realizados.
                                         </li>
                                         <li>
-                                            <strong>Veículo:</strong> É possível corrigir o automóvel associado a este registro de manutenção, caso tenha sido selecionado incorretamente.
+                                            <strong>Automóvel:</strong> É possível corrigir o automóvel associado a este registro de manutenção, caso tenha sido selecionado incorretamente.
                                         </li>
                                     </ol>
                                 </>
