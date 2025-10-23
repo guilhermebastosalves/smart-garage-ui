@@ -6,6 +6,7 @@ import ConsignacaoDataService from '../../services/consignacaoDataService';
 
 const ModalEncerrarConsignacao = ({ show, onHide, consignacao, onSuccess }) => {
     const [dataFim, setDataFim] = useState(new Date());
+    const [motivo, setMotivo] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -14,6 +15,7 @@ const ModalEncerrarConsignacao = ({ show, onHide, consignacao, onSuccess }) => {
         if (show) {
             setError('');
             setDataFim(new Date());
+            setMotivo('');
         }
     }, [show]);
 
@@ -26,7 +28,8 @@ const ModalEncerrarConsignacao = ({ show, onHide, consignacao, onSuccess }) => {
         try {
 
             await ConsignacaoDataService.encerrar(consignacao.id, {
-                data_termino: dataFim
+                data_termino: dataFim,
+                motivo_encerramento: motivo
             });
 
             onSuccess(consignacao.id);
@@ -49,14 +52,26 @@ const ModalEncerrarConsignacao = ({ show, onHide, consignacao, onSuccess }) => {
 
                 <p>Por favor, selecione a data de término para esta consignação. Esta ação definirá a consignação como <strong>inativa</strong>.</p>
 
-                <Form.Group>
+                <Form.Group className='mb-2'>
                     <Form.Label className="fw-bold">Data de Término</Form.Label>
                     <DatePicker
                         className="form-control"
+                        calendarClassName="custom-datepicker-container"
                         selected={dataFim}
                         onChange={(date) => setDataFim(date)}
                         dateFormat="dd/MM/yyyy"
                         required
+                    />
+                </Form.Group>
+
+                <Form.Group>
+                    <Form.Label className="fw-bold">Motivo do Encerramento (Opcional)</Form.Label>
+                    <Form.Control
+                        as="textarea"
+                        rows={3}
+                        placeholder="Ex: Devolução pelo proprietário, fim do prazo do contrato..."
+                        value={motivo}
+                        onChange={(e) => setMotivo(e.target.value)}
                     />
                 </Form.Group>
             </Modal.Body>

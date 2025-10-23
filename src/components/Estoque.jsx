@@ -8,6 +8,7 @@ import ModeloDataService from "../services/modeloDataService";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import HelpPopover from './HelpPopover';
+import VendaDataService from "../services/vendaDataService";
 
 const Estoque = () => {
 
@@ -19,6 +20,7 @@ const Estoque = () => {
     const [marca, setMarca] = useState([]);
     const [modelo, setModelo] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [vendas, setVendas] = useState([]);
 
     const [opcao, setOpcao] = useState('ativos');
 
@@ -34,11 +36,13 @@ const Estoque = () => {
             AutomovelDataService.getByInativo(),
             MarcaDataService.getAll(),
             ModeloDataService.getAll(),
-        ]).then(([automoveisRes, automoveisInativos, marcasRes, modelosRes]) => {
+            VendaDataService.getAll(),
+        ]).then(([automoveisRes, automoveisInativos, marcasRes, modelosRes, vendasRes]) => {
             setAutomovel(automoveisRes.data);
             setAutomovelInativo(automoveisInativos.data);
             setMarca(marcasRes.data);
             setModelo(modelosRes.data);
+            setVendas(vendasRes.data);
         }).catch(e => {
             console.error("Erro ao carregar dados do estoque:", e);
         }).finally(() => {
@@ -50,7 +54,21 @@ const Estoque = () => {
 
     const automoveisFiltrados = useMemo(() => {
 
-        const listaBase = opcao === 'ativos' ? automovel : automovelInativo;
+        let listaBase;
+
+        switch (opcao) {
+            case 'inativos':
+                listaBase = automovelInativo;
+                break;
+            case 'vendidos':
+                const idsVendidos = new Set(vendas.map(v => v.automovelId));
+                listaBase = automovelInativo.filter(auto => idsVendidos.has(auto.id));
+                break;
+            case 'ativos':
+            default:
+                listaBase = automovel;
+                break;
+        }
 
         if (!search) return listaBase;
 
@@ -66,7 +84,7 @@ const Estoque = () => {
                 auto.placa.toLowerCase().includes(searchTerm)
             );
         });
-    }, [search, opcao, automovel, automovelInativo, modelo, marca]);
+    }, [search, opcao, automovel, automovelInativo, modelo, marca, vendas]);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -211,6 +229,7 @@ const Estoque = () => {
                             <select name="opcao" id="opcao" className="form-select me-2" value={opcao} onChange={handleInputChangeOpcao}>
                                 <option value="ativos">Ativos</option>
                                 <option value="inativos">Inativos</option>
+                                <option value="vendidos">Vendidos</option>
                             </select>
                         </div>
                         <input

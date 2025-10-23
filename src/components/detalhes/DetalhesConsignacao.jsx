@@ -186,6 +186,7 @@ const DetalhesConsignacao = () => {
                                     <ListGroup.Item><strong>Data de Início:</strong> {new Date(detalhes.data_inicio).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</ListGroup.Item>
                                     <ListGroup.Item><strong>Data de Término:</strong> {detalhes.data_fim ? new Date(detalhes.data_fim).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'Não Finalizada'}</ListGroup.Item>
                                     <ListGroup.Item><strong>Valor Acordado:</strong> <span>{formatter.format(detalhes.valor)}</span></ListGroup.Item>
+                                    {detalhes.motivo_encerramento && <ListGroup.Item><strong>Motivo do Encerramento:</strong> <span>{detalhes.motivo_encerramento}</span></ListGroup.Item>}
                                     <ListGroup.Item>
                                         <strong>Status:</strong>
                                         {detalhes.ativo ? (
