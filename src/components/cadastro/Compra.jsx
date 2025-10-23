@@ -492,7 +492,7 @@ const Compra = () => {
                                             <strong>Informações do Automóvel:</strong> Cadastre todos os dados do veículo que está entrando no estoque. O campo "Valor de Venda" refere-se ao preço pelo qual o automóvel será anunciado.
                                         </li>
                                         <li>
-                                            <strong>Modo Reativação:</strong> Se a compra for de um veículo que já esteve no sistema, alguns campos estarão bloqueados. Você precisará apenas atualizar a Quilometragem e o novo Valor de Venda.
+                                            <strong>Modo Reativação:</strong> Se a compra for de um veículo que já esteve no sistema, alguns campos estarão bloqueados. Você poderá atualizar os campos "Quilometragem", "Valor de Venda" e "Cor".
                                         </li>
                                     </ol>
                                 </>

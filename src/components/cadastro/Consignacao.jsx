@@ -498,13 +498,13 @@ const Consignacao = () => {
                                     <strong>Fluxo de Trabalho:</strong>
                                     <ol className="mt-1" style={{ textAlign: "justify" }}>
                                         <li className="mb-1">
-                                            <strong>Detalhes da Consignação:</strong> Informe o "Valor de Consignação" (valor a ser repassado ao proprietário após a venda), a data de início do contrato e selecione o cliente proprietário.
+                                            <strong>Detalhes da Consignação:</strong> Informe o "Valor de Consignação" (valor o qual representará o faturamento da garagem após a venda), a data de início do contrato e selecione o cliente proprietário.
                                         </li>
                                         <li className="mb-1">
                                             <strong>Informações do Automóvel:</strong> Cadastre os dados completos do veículo. O "Valor de Venda" é o preço que será anunciado na loja.
                                         </li>
                                         <li>
-                                            <strong>Modo Reativação:</strong> Se um veículo está sendo consignado novamente, alguns campos estarão bloqueados. Apenas atualize a Quilometragem e o novo Valor de Venda.
+                                            <strong>Modo Reativação:</strong> Se um veículo está sendo consignado novamente, alguns campos estarão bloqueados. Você poderá atualizar os campos "Quilometragem", "Valor de Venda" e "Cor".
                                         </li>
                                     </ol>
                                 </>

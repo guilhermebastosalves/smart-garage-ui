@@ -636,13 +636,13 @@ const Troca = () => {
                                     <strong>Fluxo de Trabalho:</strong>
                                     <ol className="mt-1" style={{ textAlign: "justify" }}>
                                         <li className="mb-1">
-                                            <strong>Detalhes da Troca:</strong> Comece selecionando o cliente (Fornecedor) e o "Automóvel Fornecido" (o veículo do seu estoque que ele está levando).
+                                            <strong>Detalhes da Troca:</strong> Comece selecionando o "Automóvel Fornecido" (o automóvel do seu estoque que será cedido na troca).
                                         </li>
                                         <li className="mb-1">
-                                            <strong>Valor de Aquisição:</strong> Insira o valor avaliado do carro que o cliente está entregando. O sistema calculará o "Valor Diferença" automaticamente. Se a loja precisar pagar uma diferença ao cliente, a "Forma de Pagamento" será habilitada.
+                                            <strong>Valor de Aquisição:</strong> Insira o valor avaliado do carro que o cliente está entregando. O sistema calculará o "Valor Diferença" automaticamente. Se o cliente precisar pagar uma diferença ao estabelecimento, a "Forma de Pagamento" será habilitada.
                                         </li>
                                         <li>
-                                            <strong>Informações do Automóvel:</strong> Cadastre os dados do veículo que está sendo recebido do cliente. Ele será adicionado ao seu inventário.
+                                            <strong>Informações do Automóvel:</strong> Cadastre os dados do veículo que está sendo recebido do cliente. Ele será adicionado ao estoque.
                                         </li>
                                     </ol>
                                 </>

@@ -129,7 +129,7 @@ const Gasto = () => {
 
                 <div className="small text-muted d-flex align-items-center mt-1">
                     <FaRegIdCard className="me-1" />
-                    <span>Renavam: {label.renavam}</span>
+                    <span>Placa: {label.placa}</span>
                     <span className="mx-2">|</span>
                     <FaCalendarAlt className="me-1" />
                     <span>Ano: {label.ano}</span>
@@ -382,6 +382,7 @@ const Gasto = () => {
                                                 label.marca,
                                                 label.modelo,
                                                 label.renavam,
+                                                label.placa
                                             ].filter(Boolean).join(" ").toLowerCase();
                                             return texto.includes(inputValue.toLowerCase());
                                         }}>

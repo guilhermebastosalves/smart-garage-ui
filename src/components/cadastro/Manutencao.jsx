@@ -173,7 +173,7 @@ const Manutencao = () => {
 
                 <div className="small text-muted d-flex align-items-center mt-1">
                     <FaRegIdCard className="me-1" />
-                    <span>Renavam: {label.renavam}</span>
+                    <span>Placa: {label.placa}</span>
                     <span className="mx-2">|</span>
                     <FaCalendarAlt className="me-1" />
                     <span>Ano: {label.ano}</span>
@@ -307,7 +307,7 @@ const Manutencao = () => {
                                             <strong>Busca (Opcional):</strong> Use o campo "Renavam" para encontrar o automóvel desejado. O sistema preencherá o campo 'Automóvel' na seção de detalhes automaticamente.
                                         </li>
                                         <li>
-                                            <strong>Detalhes da Manutenção:</strong> Preencha o valor, a data e uma descrição para a manutenção. Se você não usou a busca, pode selecionar o automóvel manualmente na lista.
+                                            <strong>Detalhes da Manutenção:</strong> Preencha o valor, a data de envio, a previsão de retorno (se houver) e uma descrição para a manutenção. Se você não usou a busca, pode selecionar o automóvel manualmente na lista.
                                         </li>
                                     </ol>
                                 </>
@@ -418,6 +418,7 @@ const Manutencao = () => {
                                                 label.marca,
                                                 label.modelo,
                                                 label.renavam,
+                                                label.placa
                                             ].filter(Boolean).join(" ").toLowerCase();
                                             return texto.includes(inputValue.toLowerCase());
                                         }}>

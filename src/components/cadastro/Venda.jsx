@@ -450,9 +450,6 @@ const Venda = () => {
                                         <li className="mb-1">
                                             <strong>Detalhes da Venda:</strong> Preencha o valor final da venda, a forma de pagamento e a data da transação. A comissão é calculada automaticamente com base no valor da venda.
                                         </li>
-                                        <li className="mb-1">
-                                            <strong>Seleção do Comprador e Veículo:</strong> Escolha o cliente que está comprando e o automóvel que está sendo vendido. Se você iniciou a venda a partir da página de detalhes de um veículo, esses campos já virão preenchidos.
-                                        </li>
                                         <li>
                                             <strong>Pós-Venda:</strong> Ao salvar, o automóvel será marcado como inativo. Se o veículo era consignado, o contrato de consignação será automaticamente finalizado com a data da venda.
                                         </li>
