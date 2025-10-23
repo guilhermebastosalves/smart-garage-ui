@@ -71,7 +71,7 @@ const Login = () => {
                         <HelpPopover
                             id="page-help-popover"
                             title="Ajuda: Login"
-                            content="Insira seu nome de usuário e senha para acessar o sistema. Se você não se lembra da sua senha, clique no link 'Esqueceu a senha?' abaixo."
+                            content='Insira seu nome de usuário e senha, em seguida clique no botão "Entrar" para acessar o sistema. Se você não se lembra da sua senha, clique no link "Esqueceu a senha?".'
                         />
                     </div>
                     <div className="card-body p-5">

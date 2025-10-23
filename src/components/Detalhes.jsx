@@ -8,6 +8,7 @@ import ModalVenda from "./modais/ModalVenda";
 import ModeloDataService from "../services/modeloDataService";
 import MarcaDataService from "../services/marcaDataService";
 import { FaCar } from "react-icons/fa";
+import HelpPopover from "./HelpPopover";
 
 const Detalhes = () => {
 
@@ -111,7 +112,32 @@ const Detalhes = () => {
 
                     <div className="col-lg-5">
                         <div className="p-3">
-                            <h1 className="display-5 fw-bold">{`${marcaNome?.nome} ${modeloNome?.nome}`}</h1>
+                            <div className="d-flex align-items-center">
+                                <h1 className="display-5 fw-bold mb-0 me-2">{`${marcaNome?.nome} ${modeloNome?.nome}`}</h1>
+                                <HelpPopover
+                                    id="page-help-popover"
+                                    title="Ajuda: Detalhes do Automóvel"
+                                    content={
+                                        <>
+                                            <p style={{ textAlign: "justify" }}>
+                                                Esta página exibe as informações detalhadas de um veículo específico do seu estoque.
+                                            </p>
+                                            <strong>Ações Disponíveis:</strong>
+                                            <ul className="mt-1" style={{ textAlign: "justify" }}>
+                                                <li className="mb-1">
+                                                    <strong>Editar:</strong> Permite corrigir ou atualizar qualquer informação cadastral do veículo, como valor, quilometragem, cor, etc.
+                                                </li>
+                                                <li className="mb-1">
+                                                    <strong>Vender:</strong> Inicia o processo de venda para este automóvel, abrindo um modal para você identificar o cliente (comprador). Esta opção só está disponível para veículos ativos.
+                                                </li>
+                                                <li>
+                                                    <strong>Voltar:</strong> Retorna para a tela de listagem do estoque.
+                                                </li>
+                                            </ul>
+                                        </>
+                                    }
+                                />
+                            </div>
                             <p className="lead text-muted">ID do Automóvel: {automovel && automovel.id}</p>
 
                             <h2 className="text-primary my-4">{automovel && automovel.valor && `${parseFloat(automovel.valor).toLocaleString('pt-BR', {

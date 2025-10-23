@@ -29,7 +29,10 @@ const Home = () => {
                                     <strong>Funcionalidades:</strong>
                                     <ul className="mt-1" style={{ textAlign: "justify" }}>
                                         <li className="mb-1">
-                                            <strong>Navegação Rápida:</strong> Use os cartões para ir diretamente para as seções de Consignações, Estoque, Manutenções, Trocas, e outras áreas importantes.
+                                            <strong>Navegação Rápida:</strong> Use os cards para ir diretamente para as seções de Consignações, Estoque, Manutenções, Trocas, e outras áreas importantes. Basta clicar no botão "Acessar".
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Menu:</strong> Ao clicar no ícone de Menu no canto superior direito, você terá acesso ao restante dos componentes do sistema que não estão listados nos cards principais.
                                         </li>
                                         <li>
                                             <strong>Acesso por Perfil:</strong> Os módulos exibidos podem variar dependendo do seu nível de acesso (Vendedor ou Gerente).

@@ -186,18 +186,18 @@ const Estoque = () => {
                                 content={
                                     <>
                                         <p style={{ textAlign: "justify" }}>
-                                            Esta tela é a vitrine virtual da sua garagem, exibindo todos os veículos cadastrados no sistema.
+                                            Esta tela é a vitrine virtual da sua garagem, exibindo todos os automóveis cadastrados no sistema.
                                         </p>
                                         <strong>Funcionalidades:</strong>
                                         <ul className="mt-1" style={{ textAlign: "justify" }}>
                                             <li className="mb-1">
-                                                <strong>Filtro de Status:</strong> Use o seletor para alternar a visualização entre veículos "Ativos" (disponíveis para venda) e "Inativos" (já vendidos ou devolvidos).
+                                                <strong>Filtro de Status:</strong> Use o seletor para alternar a visualização entre automóveis "Ativos" (disponíveis para venda) e "Inativos" (já vendidos ou devolvidos).
                                             </li>
                                             <li className="mb-1">
-                                                <strong>Busca Inteligente:</strong> O campo de busca permite encontrar veículos rapidamente por marca, modelo, ano ou placa.
+                                                <strong>Busca Inteligente:</strong> O campo de busca permite encontrar automóveis rapidamente por marca, modelo, ano ou placa.
                                             </li>
                                             <li>
-                                                <strong>Ver Detalhes:</strong> Clicar no botão "Ver Detalhes" de qualquer veículo leva a uma página com todas as suas informações, histórico e opções de negociação (como Vender ou Editar).
+                                                <strong>Ver Detalhes:</strong> Clicar no botão "Ver Detalhes" de qualquer automóvel leva a uma página com todas as suas informações, histórico e opções de negociação (como Vender ou Editar).
                                             </li>
                                         </ul>
                                     </>
@@ -216,7 +216,7 @@ const Estoque = () => {
                         <input
                             type="search"
                             className="form-control me-2"
-                            placeholder="Buscar por modelo, marca, ano..."
+                            placeholder="Buscar por modelo, marca, placa..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
