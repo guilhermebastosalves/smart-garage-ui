@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { FaCar, FaFileSignature } from "react-icons/fa";
 import { Alert } from "react-bootstrap";
 import HelpPopover from '../HelpPopover';
+import { NumericFormat } from 'react-number-format';
 
 const Consignacao = () => {
 
@@ -542,7 +543,24 @@ const Consignacao = () => {
                             <div className="row g-3">
                                 <div className="col-md-4">
                                     <label for="valor" class="form-label">Valor de Consignação (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" class={`form-control ${hasError("valorConsig") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeConsignacao} />
+                                    <NumericFormat class={`form-control ${hasError("valorConsig") && "is-invalid"}`} id="valor" name="valor" placeholder="R$ 0,00" value={consignacao.valor}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChangeConsignacao(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valorConsig") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor acordado.</div>}
                                     {tipo.includes("valorConsig") && <div id="valorHelp" class="form-text text-danger ms-1">Valor da consignação inválido.</div>}
                                 </div>
@@ -698,7 +716,24 @@ const Consignacao = () => {
 
                                 <div className="col-md-4">
                                     <label htmlFor="valor" className={`form-label ${hasError("valor") && "is-invalid"}`}>Valor de Venda (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} value={automovel.valor} />
+                                    <NumericFormat className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" placeholder="R$ 0,00" value={automovel.valor}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChangeAutomovel(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valor") && <div className="invalid-feedback ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div className="invalid-feedback ms-1">Valor inválido.</div>}
                                 </div>

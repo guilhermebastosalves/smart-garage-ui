@@ -17,6 +17,7 @@ import { useAuth } from '../../context/AuthContext';
 import ComissaoDataService from '../../services/comissaoDataService';
 import { Alert } from "react-bootstrap";
 import HelpPopover from '../HelpPopover';
+import { NumericFormat } from 'react-number-format';
 
 const Troca = () => {
 
@@ -119,6 +120,7 @@ const Troca = () => {
     };
 
     const [troca, setTroca] = useState(initialTrocaState);
+    const [valorAutomovelFornecido, setValorAutomovelFornecido] = useState(0);
 
     useEffect(() => {
         setTroca(prev => ({
@@ -194,6 +196,8 @@ const Troca = () => {
         const valorCarroFornecido = carroFornecidoInfo
             ? parseFloat(carroFornecidoInfo.valor)
             : NaN;
+
+        setValorAutomovelFornecido(valorCarroFornecido || 0);
 
         if (!isNaN(valorCarroNovo) && !isNaN(valorCarroFornecido)) {
             const diferenca = valorCarroFornecido - valorCarroNovo;
@@ -714,29 +718,71 @@ const Troca = () => {
                                     {vazio.includes("automovel_fornecido") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o automóvel fornecido.</div>}
                                 </div>
                                 <div className="col-md-4">
+                                    <label htmlFor="valor_carro_fornecido" className="form-label">Valor do Automóvel Fornecido (R$)</label>
+                                    <input
+                                        type="text"
+                                        id="valor_carro_fornecido"
+                                        className="form-control"
+                                        readOnly
+                                        value={
+                                            valorAutomovelFornecido.toLocaleString('pt-BR', {
+                                                style: 'currency',
+                                                currency: 'BRL'
+                                            })
+                                        }
+                                    />
+                                </div>
+                                <div className="col-md-4">
                                     <label for="valor_aquisicao" class="form-label">Valor Aquisição (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valor_aquisicao") && "is-invalid"}`} id="valor_aquisicao" name="valor_aquisicao" aria-describedby="valorHelp" onChange={handleInputChangeTroca} />
+                                    <NumericFormat className={`form-control ${hasError("valor_aquisicao") && "is-invalid"}`} id="valor_aquisicao" name="valor_aquisicao" placeholder="R$ 0,00" value={troca.valor_aquisicao}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor_aquisicao",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChangeTroca(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valor_aquisicao") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor de aquisição.</div>}
                                     {tipo.includes("valor_aquisicao") && <div id="valorHelp" class="form-text text-danger ms-1">Valor aquisição inválido.</div>}
                                 </div>
                                 <div className="col-md-4">
                                     <label for="valor" class="form-label">Valor Diferença (R$)</label>
-                                    <input type="text" className={`form-control ${hasError("valor_diferenca") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" readOnly value={troca.valor || ""} />
+                                    <NumericFormat className={`form-control ${hasError("valor_diferenca") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" placeholder="R$ 0,00" readOnly value={troca.valor || ""}
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true} />
                                 </div>
-                                <div className="col-md-3">
+                                <div className="col-md-4">
                                     <label for="forma_pagamento" class="form-label">Forma de Pagamento </label>
                                     <Select className={`${hasError("forma_pagamento") && "is-invalid"}`} id="forma_pagamento" name="forma_pagamento" placeholder="Selecione a forma de pagamento" value={optionsFormaPagamento.find(option => option.value === troca.forma_pagamento)} onChange={(option) => setTroca({ ...troca, forma_pagamento: option ? option.value : null })} options={optionsFormaPagamento} isClearable={true}
                                         isDisabled={!troca.valor || troca.valor === 0 || troca.valor === "0" || troca.valor < 0}>
                                     </Select>
                                     {vazio.includes("forma_pagamento") && <div id="formapagamentohelp" class="form-text text-danger ms-1">Informe a forma de pagamento.</div>}
                                 </div>
-                                <div className="col-md-3">
+                                <div className="col-md-4">
                                     <label for="comissao" class="form-label">Comissão (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={troca.comissao} readOnly />
+                                    <NumericFormat className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={troca.comissao} readOnly
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true} />
                                     {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
                                     {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
                                 </div>
-                                <div className="col-md-2">
+                                <div className="col-md-3">
                                     <label for="data" class="form-label">Data <span className="text-danger">*</span></label><br />
                                     <DatePicker
                                         calendarClassName="custom-datepicker-container"
@@ -859,7 +905,24 @@ const Troca = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="valor" className="form-label">Valor de Venda (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} value={automovel.valor} />
+                                    <NumericFormat className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" value={automovel.valor} placeholder="R$ 0,00"
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChangeAutomovel(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false} />
+
                                     {vazio.includes("valor") && <div className="invalid-feedback ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div className="invalid-feedback ms-1">Valor inválido.</div>}
                                 </div>

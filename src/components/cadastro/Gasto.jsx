@@ -10,6 +10,7 @@ import MarcaDataService from "../../services/marcaDataService";
 import GastoDataService from "../../services/gastoDataService";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import HelpPopover from '../HelpPopover';
+import { NumericFormat } from 'react-number-format';
 
 const Gasto = () => {
 
@@ -21,7 +22,7 @@ const Gasto = () => {
         setLoading(true);
         const timeout = setTimeout(() => setLoading(false), 8000);
         Promise.all([
-            AutomovelDataService.getAll(),
+            AutomovelDataService.getByAtivo(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll()
         ]).then(([automoveis, modelos, marcas]) => {
@@ -351,7 +352,24 @@ const Gasto = () => {
                             <div className="row g-3">
                                 <div className="col-md-4">
                                     <label for="valor" class="form-label">Valor do Gasto (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeGasto} />
+                                    <NumericFormat className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" placeholder="R$ 0,00" value={gasto.valor}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChangeGasto(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
                                 </div>

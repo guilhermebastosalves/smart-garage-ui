@@ -15,6 +15,7 @@ import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa"
 import { FaCar, FaFileSignature } from "react-icons/fa";
 import { Alert } from "react-bootstrap";
 import HelpPopover from '../HelpPopover';
+import { NumericFormat } from 'react-number-format';
 
 const Compra = () => {
 
@@ -531,7 +532,24 @@ const Compra = () => {
                             <div className="row g-3">
                                 <div class="col-md-4">
                                     <label for="valor" class="form-label">Valor da Compra (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valorCompra") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeCompra} />
+                                    <NumericFormat className={`form-control ${hasError("valorCompra") && "is-invalid"}`} id="valor" name="valor" placeholder="R$ 0,00" value={compra.valor}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChangeCompra(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valorCompra") && <div className="invalid-feedback ms-1">Informe o valor da compra.</div>
                                     }
                                     {tipo.includes("valorCompra") && <div className="invalid-feedback ms-1">Valor de compra inválido.</div>
@@ -681,7 +699,24 @@ const Compra = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="valor" className="form-label">Valor de Venda (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChangeAutomovel} value={automovel.valor} />
+                                    <NumericFormat className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" placeholder="R$ 0,00" value={automovel.valor}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChangeAutomovel(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valor") && <div className="invalid-feedback ms-1">Informe o valor de venda.</div>}
                                     {tipo.includes("valor") && <div className="invalid-feedback ms-1">Valor de venda inválido.</div>}
                                 </div>

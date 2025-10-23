@@ -4,6 +4,7 @@ import ComissaoDataService from '../services/comissaoDataService';
 import { Form, Button, Card, Alert, Spinner, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import HelpPopover from './HelpPopover';
+import { NumericFormat } from 'react-number-format';
 
 const GerenciarComissoes = () => {
     const [regras, setRegras] = useState([]);
@@ -20,9 +21,9 @@ const GerenciarComissoes = () => {
                     setRegras(response.data);
                 } else {
                     const regrasPadrao = [
-                        { id: `temp-0`, valor_minimo: 0, valor_maximo: 50000, valor_comissao: '' },
+                        { id: `temp-0`, valor_minimo: 0, valor_maximo: 49999.99, valor_comissao: '' },
                         { id: `temp-1`, valor_minimo: 50000, valor_maximo: 100000, valor_comissao: '' },
-                        { id: `temp-2`, valor_minimo: 100000, valor_maximo: null, valor_comissao: '' },
+                        { id: `temp-2`, valor_minimo: 100000.01, valor_maximo: null, valor_comissao: '' },
                     ];
                     setRegras(regrasPadrao);
                 }
@@ -194,26 +195,50 @@ const GerenciarComissoes = () => {
                             regras.map((regra, index) => (
                                 <InputGroup className="mb-3" key={regra.id || `temp-key-${index}`}>
                                     <InputGroup.Text>De R$</InputGroup.Text>
-                                    <Form.Control
-                                        type="number"
+                                    <NumericFormat
+                                        customInput={Form.Control}
                                         value={regra.valor_minimo}
-                                        onChange={handleInputChange(index, 'valor_minimo')}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = { target: { value: values.value } };
+                                            handleInputChange(index, 'valor_minimo')(syntheticEvent);
+                                        }}
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
                                         readOnly={index > 0}
                                     />
                                     <InputGroup.Text>Até R$</InputGroup.Text>
-                                    <Form.Control
-                                        type="number"
+                                    <NumericFormat
+                                        customInput={Form.Control}
                                         placeholder="acima"
                                         value={regra.valor_maximo === null ? '' : regra.valor_maximo}
-                                        onChange={handleInputChange(index, 'valor_maximo')}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = { target: { value: values.value } };
+                                            handleInputChange(index, 'valor_maximo')(syntheticEvent);
+                                        }}
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
                                     // disabled={index === regras.length - 1 && regras.length > 2}
                                     />
                                     <InputGroup.Text>Comissão de R$</InputGroup.Text>
-                                    <Form.Control
-                                        type="number"
-                                        placeholder="0.00"
+                                    <NumericFormat
+                                        customInput={Form.Control}
+                                        placeholder="0,00"
                                         value={regra.valor_comissao}
-                                        onChange={handleInputChange(index, 'valor_comissao')}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = { target: { value: values.value } };
+                                            handleInputChange(index, 'valor_comissao')(syntheticEvent);
+                                        }}
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
                                     />
                                     <Button
                                         variant="outline-danger"

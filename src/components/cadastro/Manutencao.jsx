@@ -10,7 +10,7 @@ import MarcaDataService from "../../services/marcaDataService";
 import ManutencaoDataService from "../../services/manutencaoDataService";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import HelpPopover from '../HelpPopover';
-
+import { NumericFormat } from "react-number-format";
 
 const Manutencao = () => {
 
@@ -22,7 +22,7 @@ const Manutencao = () => {
         setLoading(true);
         const timeout = setTimeout(() => setLoading(false), 8000);
         Promise.all([
-            AutomovelDataService.getAll(),
+            AutomovelDataService.getByAtivo(),
             ModeloDataService.getAll(),
             MarcaDataService.getAll()
         ]).then(([automoveis, modelos, marcas]) => {
@@ -68,14 +68,6 @@ const Manutencao = () => {
     }
 
     const [loading, setLoading] = useState(true);
-
-    const [automovelOpt, setAutomovelOpt] = useState([]);
-    const [modeloOpt, setModeloOpt] = useState([]);
-    const [marcaOpt, setMarcaOpt] = useState([]);
-    const [cliente, setCliente] = useState([]);
-    const [fisica, setFisica] = useState([]);
-    const [juridica, setJuridica] = useState([]);
-
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -365,7 +357,24 @@ const Manutencao = () => {
                             <div className="row g-3">
                                 <div className="col-md-4">
                                     <label for="valor" class="form-label">Valor da Manutenção (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChangeManutencao} />
+                                    <NumericFormat className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" placeholder="R$ 0,00"
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChangeManutencao(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
                                 </div>

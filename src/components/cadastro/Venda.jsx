@@ -17,6 +17,7 @@ import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileContract, FaFileSignature } fr
 import { useAuth } from '../../context/AuthContext';
 import ComissaoDataService from '../../services/comissaoDataService';
 import HelpPopover from "../HelpPopover";
+import { NumericFormat } from 'react-number-format';
 
 const Venda = () => {
 
@@ -489,7 +490,14 @@ const Venda = () => {
                             <div className="row g-3">
                                 <div className="col-md-4">
                                     <label for="valor" class="form-label">Valor da Venda (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={(e) => setVenda({ ...venda, valor: e.target.value })} value={venda.valor} />
+                                    <NumericFormat className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" placeholder="R$ 0,00" onValueChange={(values) => { setVenda(prev => ({ ...prev, valor: values.value })); }} value={venda.valor}
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div id="valorHelp" class="form-text text-danger ms-1">Valor inválido.</div>}
                                 </div>
@@ -502,7 +510,13 @@ const Venda = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label for="comissao" class="form-label">Comissão (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={venda?.comissao} readOnly />
+                                    <NumericFormat type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" placeholder="R$ 0,00" value={venda?.comissao} readOnly
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false} />
                                     {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
                                     {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
                                 </div>
