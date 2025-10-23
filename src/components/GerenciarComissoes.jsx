@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Header from '../components/Header';
 import ComissaoDataService from '../services/comissaoDataService';
 import { Form, Button, Card, Alert, Spinner, InputGroup } from 'react-bootstrap';
@@ -12,7 +12,7 @@ const GerenciarComissoes = () => {
     const [feedback, setFeedback] = useState({ tipo: '', msg: '' });
     const navigate = useNavigate();
 
-    useEffect(() => {
+    const fetchData = useCallback(() => {
         setLoading(true);
         ComissaoDataService.getAll()
             .then(response => {
@@ -34,9 +34,21 @@ const GerenciarComissoes = () => {
             .finally(() => setLoading(false));
     }, []);
 
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
     const handleInputChange = (index, field) => (e) => {
         const novasRegras = [...regras];
-        const valorInput = e.target.value;
+        let valorInput = e.target.value;
+
+        if (field === 'valor_minimo' || field === 'valor_maximo' || field === 'valor_comissao') {
+            const valorNumerico = parseFloat(valorInput);
+            if (!isNaN(valorNumerico) && valorNumerico < 0) {
+                // Força o valor para '0' se for negativo
+                valorInput = '0';
+            }
+        }
 
         // Atualiza o valor do campo que foi modificado
         novasRegras[index][field] = valorInput === '' && field === 'valor_maximo' ? null : valorInput;
@@ -47,7 +59,7 @@ const GerenciarComissoes = () => {
             const valorMaximoNumerico = parseFloat(valorInput);
 
             // Verifica se o valor é um número válido para evitar erros
-            if (!isNaN(valorMaximoNumerico)) {
+            if (!isNaN(valorMaximoNumerico) && valorMaximoNumerico >= 0) {
                 // Calcula o novo valor mínimo para a próxima faixa e formata com 2 casas decimais
                 novasRegras[index + 1].valor_minimo = (valorMaximoNumerico + 0.01).toFixed(2);
             }
@@ -67,6 +79,11 @@ const GerenciarComissoes = () => {
             return;
         }
 
+        if (valorMaximoAnterior < 0) {
+            setFeedback({ tipo: 'warning', msg: 'O valor máximo não pode ser negativo.' });
+            return;
+        }
+
         // Lógica de +0.01 aplicada aqui também
         const novoValorMinimo = (valorMaximoAnterior + 0.01).toFixed(2);
 
@@ -74,7 +91,7 @@ const GerenciarComissoes = () => {
         regrasAtualizadas[regras.length - 1].valor_maximo = valorMaximoAnterior;
 
         setRegras([
-            ...regrasAtualizadas,
+            ...regras,
             { id: `temp-${regras.length}`, valor_minimo: novoValorMinimo, valor_maximo: null, valor_comissao: '' }
         ]);
     };
@@ -91,8 +108,28 @@ const GerenciarComissoes = () => {
     const handleSave = async () => {
         setIsSaving(true);
         setFeedback({ tipo: '', msg: '' });
+
+        for (const regra of regras) {
+            const min = parseFloat(regra.valor_minimo);
+            const max = parseFloat(regra.valor_maximo);
+            const comissao = parseFloat(regra.valor_comissao);
+
+            if ((!isNaN(min) && min < 0) ||
+                (regra.valor_maximo !== null && !isNaN(max) && max < 0) ||
+                (!isNaN(comissao) && comissao < 0)) {
+                setFeedback({ tipo: 'danger', msg: 'Valores não podem ser negativos. Verifique os campos.' });
+                setIsSaving(false);
+                return;
+            }
+
+            if (regra.valor_maximo !== null && !isNaN(min) && !isNaN(max) && max <= min) {
+                setFeedback({ tipo: 'danger', msg: `O valor "Até R$" (${max}) deve ser maior que o valor "De R$" (${min}).` });
+                setIsSaving(false);
+                return;
+            }
+        }
+
         try {
-            // CORREÇÃO: Removemos o ID temporário antes de salvar
             const regrasParaSalvar = regras.map(regra => ({
                 valor_minimo: regra.valor_minimo,
                 valor_maximo: regra.valor_maximo,
