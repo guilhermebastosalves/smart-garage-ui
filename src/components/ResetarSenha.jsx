@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import AuthService from '../services/authDataService';
 import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 import HelpPopover from './HelpPopover';
+import PasswordStrengthMeter from './PasswordStrengthMeter';
 
 const ResetarSenha = () => {
     const { token } = useParams();
@@ -67,18 +68,24 @@ const ResetarSenha = () => {
                             content="Você chegou aqui através de um link enviado para o seu e-mail. Por favor, digite e confirme sua nova senha para recuperar o acesso à sua conta."
                         />
                     </div>
-                    {mensagem && <Alert variant="success">{mensagem}</Alert>}
+                    {mensagem &&
+                        <div className='d-flex align-items-center mb-3 mt-2'>
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <div className="text text-success">{mensagem}</div>
+                        </div>
+                    }
                     {erro && (
-                        <div className='d-flex align-items-center mb-3 container'>
+                        <div className='d-flex align-items-center mb-3 mt-2'>
                             <i className="bi bi-exclamation-triangle-fill text-danger me-2"></i>
                             <div className="text text-danger">{erro}</div>
                         </div>
 
                     )}
                     <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3">
+                        <Form.Group className="mb-3 mt-3">
                             <Form.Label>Nova Senha</Form.Label>
                             <Form.Control type="password" value={senha} onChange={(e) => setSenha(e.target.value)} required />
+                            {senha && <PasswordStrengthMeter password={senha} />}
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Confirmar Nova Senha</Form.Label>

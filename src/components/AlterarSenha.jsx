@@ -4,6 +4,7 @@ import FuncionarioDataService from '../services/funcionarioDataService';
 import { useAuth } from '../context/AuthContext';
 import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 import HelpPopover from './HelpPopover';
+import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
 
 const AlterarSenhaPrimeiroAcesso = () => {
     const navigate = useNavigate();
@@ -36,7 +37,7 @@ const AlterarSenhaPrimeiroAcesso = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(senha);
+
         if (senha !== confirmarSenha) {
             setFeedback({ tipo: 'danger', msg: 'As senhas não coincidem.' });
             return;
@@ -52,7 +53,8 @@ const AlterarSenhaPrimeiroAcesso = () => {
             }, 2000);
 
         } catch (error) {
-            setFeedback({ tipo: 'danger', msg: 'Erro ao alterar a senha.' });
+            const mensagemErro = error.response?.data?.mensagem
+            setFeedback({ tipo: 'danger', msg: mensagemErro });
             setLoading(false);
         }
     };
@@ -72,7 +74,7 @@ const AlterarSenhaPrimeiroAcesso = () => {
                     <p className="text-center text-muted mb-4">Por segurança, você precisa definir uma nova senha.</p>
 
                     {feedback.msg && feedback.tipo === 'danger' &&
-                        <div className='d-flex align-items-center mb-3 container'>
+                        <div className='d-flex align-items-center mb-2 container'>
                             <i className="bi bi-exclamation-triangle-fill text-danger me-2"></i>
                             <div className="text text-danger">{feedback.msg}</div>
                         </div>
@@ -89,6 +91,7 @@ const AlterarSenhaPrimeiroAcesso = () => {
                         <Form.Group className="mb-3">
                             <Form.Label>Nova Senha</Form.Label>
                             <Form.Control type="password" value={senha} onChange={(e) => setSenha(e.target.value)} />
+                            {senha && <PasswordStrengthMeter password={senha} />}
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Confirmar Nova Senha</Form.Label>
