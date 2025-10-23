@@ -106,115 +106,104 @@ const Cliente = () => {
     };
 
     const optionsEstados = [
-        {
-            label: "AC",
-            value: "AC"
-        },
-        {
-            label: "AL",
-            value: "AL"
-        },
-        {
-            label: "AP",
-            value: "AP"
-        },
-        {
-            label: "AM",
-            value: "AM"
-        },
-        {
-            label: "BA",
-            value: "BA"
-        },
-        {
-            label: "CE",
-            value: "CE"
-        },
-        {
-            label: "DF",
-            value: "DF"
-        },
-        {
-            label: "ES",
-            value: "ES"
-        },
-        {
-            label: "GO",
-            value: "GO"
-        },
-        {
-            label: "Ma",
-            value: "MA"
-        },
-        {
-            label: "MT",
-            value: "MT"
-        },
-        {
-            label: "MS",
-            value: "MS"
-        },
-        {
-            label: "MG",
-            value: "MG"
-        },
-        {
-            label: "PA",
-            value: "PA"
-        },
-        {
-            label: "PB",
-            value: "PB"
-        },
-        {
-            label: "PR",
-            value: "PR"
-        },
-        {
-            label: "PE",
-            value: "PE"
-        },
-        {
-            label: "PI",
-            value: "PI"
-        },
-        {
-            label: "RJ",
-            value: "RJ"
-        },
-        {
-            label: "RN",
-            value: "RN"
-        },
-        {
-            label: "RS",
-            value: "RS"
-        },
-        {
-            label: "RO",
-            value: "RO"
-        },
-        {
-            label: "RR",
-            value: "RR"
-        },
-        {
-            label: "SC",
-            value: "SC"
-        },
-        {
-            label: "SP",
-            value: "SP"
-        },
-        {
-            label: "SE",
-            value: "SE"
-        },
-        {
-            label: "TO",
-            value: "TO"
-        }
+        { label: "AC", value: "AC" },
+        { label: "AL", value: "AL" },
+        { label: "AP", value: "AP" },
+        { label: "AM", value: "AM" },
+        { label: "BA", value: "BA" },
+        { label: "CE", value: "CE" },
+        { label: "DF", value: "DF" },
+        { label: "ES", value: "ES" },
+        { label: "GO", value: "GO" },
+        { label: "Ma", value: "MA" },
+        { label: "MT", value: "MT" },
+        { label: "MS", value: "MS" },
+        { label: "MG", value: "MG" },
+        { label: "PA", value: "PA" },
+        { label: "PB", value: "PB" },
+        { label: "PR", value: "PR" },
+        { label: "PE", value: "PE" },
+        { label: "PI", value: "PI" },
+        { label: "RJ", value: "RJ" },
+        { label: "RN", value: "RN" },
+        { label: "RS", value: "RS" },
+        { label: "RO", value: "RO" },
+        { label: "RR", value: "RR" },
+        { label: "SC", value: "SC" },
+        { label: "SP", value: "SP" },
+        { label: "SE", value: "SE" },
+        { label: "TO", value: "TO" }
     ];
+
+
+    function validarCPF(cpf) {
+        if (typeof cpf !== 'string') return false;
+        cpf = cpf.replace(/[^\d]/g, ''); // Remove todos os caracteres não numéricos
+
+        if (cpf.length !== 11) return false;
+
+        // Elimina CPFs inválidos conhecidos (todos os dígitos iguais)
+        if (/^(\d)\1+$/.test(cpf)) return false;
+
+        let soma = 0;
+        let resto;
+
+        // Validação do primeiro dígito verificador
+        for (let i = 1; i <= 9; i++) {
+            soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+        }
+        resto = (soma * 10) % 11;
+        if ((resto === 10) || (resto === 11)) resto = 0;
+        if (resto !== parseInt(cpf.substring(9, 10))) return false;
+
+        soma = 0;
+        // Validação do segundo dígito verificador
+        for (let i = 1; i <= 10; i++) {
+            soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+        }
+        resto = (soma * 10) % 11;
+        if ((resto === 10) || (resto === 11)) resto = 0;
+        if (resto !== parseInt(cpf.substring(10, 11))) return false;
+
+        return true;
+    }
+
+    function validarCNPJ(cnpj) {
+        if (typeof cnpj !== 'string') return false;
+        cnpj = cnpj.replace(/[^\d]/g, ''); // Remove todos os caracteres não numéricos
+
+        if (cnpj.length !== 14) return false;
+
+        // Elimina CNPJs inválidos conhecidos (todos os dígitos iguais)
+        if (/^(\d)\1+$/.test(cnpj)) return false;
+
+        // Validação do primeiro dígito verificador
+        let tamanho = cnpj.length - 2;
+        let numeros = cnpj.substring(0, tamanho);
+        let digitos = cnpj.substring(tamanho);
+        let soma = 0;
+        let pos = tamanho - 7;
+        for (let i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado != digitos.charAt(0)) return false;
+
+        // Validação do segundo dígito verificador
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0, tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        for (let i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado != digitos.charAt(1)) return false;
+
+        return true;
+    }
 
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -241,7 +230,15 @@ const Cliente = () => {
         if (!cliente.email) vazioErros.push("email");
         if (!cliente.telefone) vazioErros.push("telefone");
 
-        if (!fisica.cpf) vazioErros.push("cpf");
+        // if (!fisica.cpf) {
+        //     vazioErros.push("cpf");
+        // } else {
+        //     if (!validarCPF(fisica.cpf)) {
+        //         tipoErros.push("cpf");
+        //     }
+        // }
+
+        if (!fisica.cpf) { vazioErros.push("cpf") };
 
         if (!endereco.cep) vazioErros.push("cep");
         if (!endereco.logradouro) vazioErros.push("logradouro");
@@ -280,7 +277,15 @@ const Cliente = () => {
         if (!cliente.telefone) vazioErros.push("telefone");
 
         if (!juridica.nome_responsavel) vazioErros.push("nome_responsavel");
-        if (!juridica.cnpj) vazioErros.push("cnpj");
+        // if (!juridica.cnpj) vazioErros.push("cnpj");
+
+        if (!juridica.cnpj) {
+            vazioErros.push("cnpj");
+        } else {
+            if (!validarCNPJ(juridica.cnpj)) {
+                tipoErros.push("cnpj");
+            }
+        }
 
         if (!endereco.cep) vazioErros.push("cep");
         if (!endereco.logradouro) vazioErros.push("logradouro");
@@ -751,7 +756,8 @@ const Cliente = () => {
                                     <label for="cpf" class="form-label">CPF <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("cpf") && "is-invalid"}`} id="cpf" name="cpf" aria-describedby="cpfeHelp" value={fisica.cpf} onChange={handleInputChangeFisica} />
                                     {vazio.includes("cpf") && <div className="invalid-feedback">Informe o CPF.</div>}
-                                    {tamanho.includes("cpf") && <div className="invalid-feedback">CPF inválido (deve ter 11 caracteres numéricos).</div>}
+                                    {tamanho.includes("cpf") && <div className="invalid-feedback">CPF inválido.</div>}
+                                    {tipo.includes("cpf") && <div className="invalid-feedback">CPF inválido.</div>}
                                 </div>
 
                                 <div class="col-md-4 ">
@@ -858,7 +864,7 @@ const Cliente = () => {
                                     <label for="cnpj" class="form-label">CNPJ <span className="text-danger">*</span></label>
                                     <input type="text" className={`form-control ${hasError("cnpj") && "is-invalid"}`} id="cpf" name="cnpj" aria-describedby="cnpjHelp" value={juridica.cnpj} onChange={handleInputChangeJuridica} />
                                     {vazio.includes("cnpj") && <div className="invalid-feedback">Informe o CNPJ.</div>}
-                                    {tamanho.includes("cnpj") && <div className="invalid-feedback">CNPJ inválido (deve ter 14 caracteres numéricos).</div>}
+                                    {(tamanho.includes("cnpj") || tipo.includes("cnpj")) && <div className="invalid-feedback">CNPJ inválido.</div>}
                                 </div>
 
                                 <div class="col-md-4">
