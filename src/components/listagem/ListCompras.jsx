@@ -179,7 +179,7 @@ const Compras = () => {
                                         <strong>Fluxo "Nova Compra":</strong>
                                         <ol className="mt-1" style={{ textAlign: "justify" }}>
                                             <li className="mb-1">
-                                                <strong>Verificação do Cliente:</strong> Ao clicar em "Nova Compra", primeiro você irá identificar o vendedor (cliente). Você pode selecionar um existente ou cadastrar um novo.
+                                                <strong>Verificação do Cliente:</strong> Ao clicar em "Nova Compra", primeiro você irá identificar o forncedor (cliente). Você pode selecionar um existente ou cadastrar um novo.
                                             </li>
                                             <li className="mb-1">
                                                 <strong>Verificação do Automóvel:</strong> Em seguida, o sistema perguntará sobre o veículo. Se ele já esteve no seu estoque, você entrará no modo de "Reativação". Caso contrário, seguirá para o cadastro de um novo automóvel.
@@ -189,7 +189,7 @@ const Compras = () => {
                                             </li>
                                         </ol>
                                         <strong>Funcionalidades da Lista:</strong>
-                                        <p className='mb-1 mt-2'>Use o filtro de período para refinar sua busca e os botões de ação para visualizar ou editar os detalhes de cada compra.</p>
+                                        <p className='mb-0 mt-2' style={{ textAlign: "justify" }}>Use o filtro de período para refinar sua busca e os botões de ação para visualizar ou editar os detalhes de cada compra.</p>
                                     </>
                                 }
                             />

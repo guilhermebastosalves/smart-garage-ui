@@ -212,13 +212,13 @@ const Consignacoes = () => {
                                                 <strong>Verificação do Automóvel:</strong> Em seguida, informe os dados do veículo para verificar se ele já existe no sistema (reativação) ou se é um novo cadastro.
                                             </li>
                                             <li>
-                                                <strong>Formulário de Consignação:</strong> Finalmente, preencha os detalhes do contrato, como o valor a ser pago ao proprietário e a data de início.
+                                                <strong>Formulário de Consignação:</strong> Finalmente, preencha os detalhes do contrato, como o valor acordado com proprietário e a data de início.
                                             </li>
                                         </ol>
                                         <strong>Ações da Lista:</strong>
                                         <ul className='mt-2' style={{ textAlign: "justify" }}>
                                             <li><strong>Visualizar/Editar:</strong> Acessa os detalhes ou permite a correção do registro.</li>
-                                            <li><strong>Encerrar:</strong> Finaliza um contrato ativo, registrando o motivo (Venda ou Devolução).</li>
+                                            <li><strong>Encerrar:</strong> Finaliza um contrato ativo, registrando a data de encerramento.</li>
                                         </ul>
                                     </>
                                 }

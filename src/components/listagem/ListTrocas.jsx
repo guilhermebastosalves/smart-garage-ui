@@ -171,7 +171,7 @@ const Trocas = () => {
                                 content={
                                     <>
                                         <p style={{ textAlign: "justify" }}>
-                                            Aqui são listadas todas as operações de troca, onde um veículo do cliente foi aceito como parte do pagamento por um veículo do seu estoque.
+                                            Aqui são listadas todas as operações de troca, onde um automóvel do cliente foi aceito como parte do pagamento por um automóvel do seu estoque.
                                         </p>
                                         <strong>Fluxo "Nova Troca":</strong>
                                         <ol className="mt-1" style={{ textAlign: "justify" }}>
@@ -179,10 +179,10 @@ const Trocas = () => {
                                                 <strong>Verificação do Cliente:</strong> Primeiro, identifique o cliente que está realizando a troca.
                                             </li>
                                             <li className="mb-1">
-                                                <strong>Verificação do Automóvel:</strong> Em seguida, informe os dados do veículo que o cliente está entregando para checar se ele já esteve no estoque (reativação).
+                                                <strong>Verificação do Automóvel:</strong> Em seguida, informe os dados do automóvel que o cliente está entregando para checar se ele já esteve no estoque (reativação).
                                             </li>
                                             <li>
-                                                <strong>Formulário de Troca:</strong> Você será levado à tela final para preencher os valores, o veículo do seu estoque que está sendo fornecido e os detalhes financeiros.
+                                                <strong>Formulário de Troca:</strong> Você será levado à tela final para preencher os valores, o automóvel do seu estoque que está sendo fornecido e os detalhes financeiros.
                                             </li>
                                         </ol>
                                         <strong>Funcionalidades da Lista:</strong>

@@ -151,18 +151,18 @@ const Gastos = () => {
                                 content={
                                     <>
                                         <p style={{ textAlign: "justify" }}>
-                                            Esta página exibe todos os gastos registrados, sejam eles despesas operacionais da empresa ou custos diretamente associados a um veículo específico.
+                                            Esta página exibe todos os gastos registrados, sendo estes custos diretamente associados a um automóvel específico.
                                         </p>
                                         <strong>Funcionalidades:</strong>
                                         <ul className="mt-1" style={{ textAlign: "justify" }}>
                                             <li className="mb-1">
-                                                <strong>Novo Gasto:</strong> (Visível para gerentes) Permite registrar uma nova despesa, vinculando-a a um automóvel do estoque ou classificando-a como um gasto geral.
+                                                <strong>Novo Gasto:</strong> (Visível para gerentes) Permite registrar uma nova despesa, vinculando-a a um automóvel ativo no estoque.
                                             </li>
                                             <li className="mb-1">
                                                 <strong>Filtro de Período:</strong> Facilita a visualização de despesas recentes ou de um período específico.
                                             </li>
                                             <li>
-                                                <strong>Ações:</strong> Utilize os botões em cada linha para ver os detalhes, editar ou excluir um registro de gasto.
+                                                <strong>Ações:</strong> Utilize os botões em cada linha para ver os detalhes ou editar um registro de gasto.
                                             </li>
                                         </ul>
                                     </>
