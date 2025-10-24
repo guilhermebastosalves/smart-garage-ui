@@ -126,7 +126,7 @@ const DetalhesManutencao = () => {
                                     <ListGroup.Item><strong>Data de Envio:</strong> {detalhes?.data_envio ? new Date(detalhes.data_envio).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : ''}</ListGroup.Item>
                                     <ListGroup.Item><strong>Data de Retorno:</strong> {detalhes?.data_retorno ? new Date(detalhes.data_retorno).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : ''}</ListGroup.Item>
                                     <ListGroup.Item><strong>Valor:</strong> <span>{formatter.format(detalhes.valor)}</span></ListGroup.Item>
-                                    <ListGroup.Item><strong>Descrição:</strong>{detalhes.descricao}</ListGroup.Item>
+                                    <ListGroup.Item><strong className='me-1'>Descrição:</strong>{detalhes.descricao}</ListGroup.Item>
                                 </ListGroup>
                             </Card.Body>
                         </Card>

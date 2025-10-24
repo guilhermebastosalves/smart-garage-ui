@@ -125,7 +125,7 @@ const DetalhesGasto = () => {
                                 <ListGroup variant="flush">
                                     <ListGroup.Item><strong>Data:</strong> {new Date(detalhes.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</ListGroup.Item>
                                     <ListGroup.Item><strong>Valor:</strong> <span>{formatter.format(detalhes.valor)}</span></ListGroup.Item>
-                                    <ListGroup.Item><strong>Descrição:</strong>{detalhes.descricao}</ListGroup.Item>
+                                    <ListGroup.Item><strong className='me-1'>Descrição:</strong>{detalhes.descricao}</ListGroup.Item>
                                 </ListGroup>
                             </Card.Body>
                         </Card>
