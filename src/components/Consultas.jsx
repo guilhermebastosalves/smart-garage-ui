@@ -467,14 +467,14 @@ const Consultas = () => {
                     <>
                         {dados.length > 0 ? (
                             <>
-                                <div className="d-flex justify-content-end mb-3">
+                                <div className="d-flex justify-content-end mb-1">
                                     <Button variant="success" onClick={handleGerarPDF}>
                                         <i className="bi bi-file-earmark-pdf-fill me-2"></i>
                                         Gerar PDF
                                     </Button>
                                 </div>
 
-                                <Row className="mt-4 g-3">
+                                <Row className="mt-0 g-3">
                                     {tipoRelatorioGerado === 'Troca' ? (
                                         <>
                                             <Col md={3}>
