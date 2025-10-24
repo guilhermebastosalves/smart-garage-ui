@@ -40,13 +40,13 @@ const Gasto = () => {
 
 
 
-    const [renavam, setRenavam] = useState("");
+    const [placa, setPlaca] = useState("");
 
     const navigate = useNavigate();
 
     const initialGastoState = {
         id: null,
-        data: "",
+        data: new Date(),
         descricao: "",
         valor: "",
         automovelId: ""
@@ -60,9 +60,9 @@ const Gasto = () => {
         setGasto({ ...gasto, [name]: value });
     }
 
-    const handleInputChangeRenavam = event => {
+    const handleInputChangePlaca = event => {
         const { value } = event.target;
-        setRenavam(value);
+        setPlaca(value);
     }
 
     const [loading, setLoading] = useState(true);
@@ -88,10 +88,6 @@ const Gasto = () => {
         if (!gasto.valor) vazioErros.push("valor");
         if (!gasto.data) vazioErros.push("data");
         if (!gasto.automovelId) vazioErros.push("automovelId");
-
-        //if (renavam === "" || renavam === null) vazioErros.push("renavam")
-
-        // Tamanho
 
         // Tipo
         if (gasto.data && gasto.data > new Date()) tipoErros.push("data");
@@ -146,15 +142,21 @@ const Gasto = () => {
         setErro(false);
         setMensagemErro('');
 
-        if (!renavam || renavam.trim() === "") {
+        if (!placa || placa.trim() === "") {
             setErro(true);
-            setMensagemErro("Informe o renavam para buscar.");
+            setMensagemErro("Informe a placa para busca.");
+            return;
+        }
+
+        if (placa.length !== 7) {
+            setErro(true);
+            setMensagemErro("Placa inválida.");
             return;
         }
 
         try {
 
-            const autoResp = await AutomovelDataService.getByRenavam(renavam)
+            const autoResp = await AutomovelDataService.getByPlaca(placa)
 
             if (autoResp.data.erro) {
                 setErro(autoResp.data.erro);
@@ -316,10 +318,8 @@ const Gasto = () => {
                     <legend className="h5 fw-bold mb-3 border-bottom pb-2">Busca pelo Automóvel</legend>
                     <div className="row">
                         <div className="col-md-8">
-                            <label for="valor" class="form-label">Renavam</label>
-                            <input type="text" className={`form-control ${hasError("renavam") && "is-invalid"}`} id="renavam" name="renavam" aria-describedby="renavamHelp" onChange={handleInputChangeRenavam} />
-                            {vazio.includes("renavam") && <div id="valorHelp" class="form-text text-danger ms-1">Informe o renavam.</div>}
-                            {tipo.includes("renavam") && <div id="valorHelp" class="form-text text-danger ms-1">Renavam inválido.</div>}
+                            <label for="valor" class="form-label">Placa</label>
+                            <input type="text" className={`form-control ${hasError("placa") && "is-invalid"}`} id="placa" name="placa" aria-describedby="placaHelp" onChange={handleInputChangePlaca} />
                         </div>
                         <div className="col-md-4 d-flex align-items-end">
                             <button

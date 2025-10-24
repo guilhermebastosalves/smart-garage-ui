@@ -40,13 +40,13 @@ const Manutencao = () => {
 
 
 
-    const [renavam, setRenavam] = useState("");
+    const [placa, setPlaca] = useState("");
 
     const navigate = useNavigate();
 
     const initialManutencaoState = {
         id: null,
-        data_envio: "",
+        data_envio: new Date(),
         data_retorno: null,
         previsao_retorno: null,
         descricao: "",
@@ -62,9 +62,9 @@ const Manutencao = () => {
         setManutencao({ ...manutencao, [name]: value });
     }
 
-    const handleInputChangeRenavam = event => {
+    const handleInputChangePlaca = event => {
         const { value } = event.target;
-        setRenavam(value);
+        setPlaca(value);
     }
 
     const [loading, setLoading] = useState(true);
@@ -90,8 +90,6 @@ const Manutencao = () => {
         if (!manutencao.valor) vazioErros.push("valor");
         if (!manutencao.data_envio) vazioErros.push("data_envio");
         if (!manutencao.automovelId) vazioErros.push("automovelId");
-
-        // Tamanho
 
         // Tipo
         if (manutencao.data_envio && manutencao.data_envio > new Date()) tipoErros.push("data_envio");
@@ -181,15 +179,21 @@ const Manutencao = () => {
         setErro(false);
         setMensagemErro('');
 
-        if (!renavam || renavam.trim() === "") {
+        if (!placa || placa.trim() === "") {
             setErro(true);
-            setMensagemErro("Informe o renavam para buscar.");
+            setMensagemErro("Informe a placa para busca.");
+            return;
+        }
+
+        if (placa.length !== 7) {
+            setErro(true);
+            setMensagemErro("Placa inválida.");
             return;
         }
 
         try {
 
-            const autoResp = await AutomovelDataService.getByRenavam(renavam)
+            const autoResp = await AutomovelDataService.getByPlaca(placa)
 
             if (autoResp.data.erro) {
                 setErro(autoResp.data.erro);
@@ -324,9 +328,8 @@ const Manutencao = () => {
                     <legend className="h5 fw-bold mb-3 border-bottom pb-2">Busca pelo Automóvel</legend>
                     <div className="row">
                         <div className="col-md-8">
-                            <label for="valor" class="form-label">Renavam</label>
-                            <input type="text" className={`form-control`} id="renavam" name="renavam" aria-describedby="renavamHelp" onChange={handleInputChangeRenavam} />
-
+                            <label for="valor" class="form-label">Placa</label>
+                            <input type="text" className={`form-control`} id="placa" name="placa" aria-describedby="placaHelp" onChange={handleInputChangePlaca} />
                         </div>
                         <div className="col-md-4 d-flex align-items-end">
                             <button
