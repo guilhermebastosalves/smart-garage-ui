@@ -142,6 +142,7 @@ const GraficoRelatorio = ({ dados, tipo, marcas, periodo }) => {
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
+        animation: false,
         plugins: {
             legend: {
                 position: 'top',

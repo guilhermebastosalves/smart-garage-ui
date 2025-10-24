@@ -615,7 +615,7 @@ const Consultas = () => {
                                 <Card className="form-card mt-4 mb-4">
                                     <Card.Header>Desempenho no Período</Card.Header>
                                     <Card.Body>
-                                        <div className="chart-container">
+                                        <div className="chart-container" ref={graficoRef}>
                                             <GraficoRelatorio periodo={periodo} marcas={marcas} dados={dados} tipo={tipoRelatorioGerado} />
                                         </div>
                                     </Card.Body>

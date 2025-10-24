@@ -8,7 +8,11 @@ import html2canvas from 'html2canvas';
 const logoUrl = '/static/img/logo.png';
 
 const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
-    const doc = new jsPDF();
+    const doc = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4'
+    });
     const pageHeight = doc.internal.pageSize.height;
     const pageWidth = doc.internal.pageSize.width;
 
@@ -196,7 +200,7 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
                     item.cliente?.nome || 'N/A',
                     item.automovel?.placa || 'N/A',
                     parseFloat(item.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-                    item.ativo
+                    item.ativo ? "Ativa" : "Inativa"
                 ]);
                 break;
             // Adicione outros cases para 'Gasto', 'Troca', etc.
@@ -246,11 +250,41 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
         try {
             const canvas = await html2canvas(graficoElement, {
                 useCORS: true,
-                scale: 2, // Melhora a resolução
+                scale: 3,
             });
             const imgData = canvas.toDataURL('image/png');
-            doc.addImage(imgData, 'PNG', margin.left, finalY, usableWidth, 80);
+            const imgProps = doc.getImageProperties(imgData);
+            const pdfWidth = doc.internal.pageSize.getWidth();
+            const margin = 15;
+
+            // Calcula a largura e altura para manter a proporção
+            const imgWidth = pdfWidth - margin * 2;
+            const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+            // Adiciona um espaço entre a tabela e o título do gráfico
+            const chartTitleY = finalY + 15;
+            doc.text("Desempenho no Período", margin, chartTitleY);
+
+            // Posição Y final do gráfico
+            const chartY = chartTitleY + 5; // Pequeno espaço após o título
+
+            // Verificação para evitar que o gráfico quebre a página (opcional, mas recomendado)
+            if (chartY + imgHeight > doc.internal.pageSize.getHeight() - margin) {
+                doc.addPage();
+                finalY = margin; // Reseta a posição Y para o topo da nova página
+                // Adicione o título novamente se desejar
+                doc.text("Desempenho no Período", margin, finalY + 5);
+                doc.addImage(imgData, 'PNG', margin, finalY + 10, imgWidth, imgHeight);
+            } else {
+                // 5. Use a variável `lastY` (atualizada) para posicionar o gráfico
+                doc.addImage(imgData, 'PNG', margin, chartY, imgWidth, imgHeight);
+            }
+
+            // doc.addImage(imgData, 'PNG', margin.left, finalY, usableWidth, 80);
+            // doc.addImage(imgData, 'PNG', margin, 150, imgWidth, imgHeight); // Ajuste a posição Y (150) conforme necessário
+
             finalY += 90;
+
         } catch (error) {
             console.error("Erro ao gerar a imagem do gráfico:", error);
             doc.setTextColor(255, 0, 0);

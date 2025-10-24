@@ -14,6 +14,10 @@ class AutomovelDataService {
         return http.get(`api/automovel/renavam/${renavam}`);
     }
 
+    getByPlaca(placa) {
+        return http.get(`api/automovel/placa/${placa}`);
+    }
+
     getByAtivo() {
         return http.get(`api/automovel/ativo`);
     }
