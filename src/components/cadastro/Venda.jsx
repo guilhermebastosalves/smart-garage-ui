@@ -45,7 +45,7 @@ const Venda = () => {
     const initialVendaState = {
         id: null,
         valor: "",
-        data: "",
+        data: new Date(),
         comissao: "",
         forma_pagamento: "",
         automovelId: "",
@@ -286,22 +286,6 @@ const Venda = () => {
             zIndex: 9999,
         }),
     });
-
-
-    // useEffect(() => {
-
-    //     let comissao = "";
-
-    //     if (venda?.valor !== "") {
-    //         comissao = venda?.valor < 50000 ? 300 : venda?.valor > 100000 ? 1500 : 500;
-    //     }
-
-    //     setVenda(prev => ({
-    //         ...prev,
-    //         comissao: comissao
-    //     }));
-
-    // }, [venda?.valor]);
 
     const [regrasComissao, setRegrasComissao] = useState([]);
 

@@ -111,7 +111,7 @@ const Troca = () => {
         comissao: "",
         forma_pagamento: "",
         valor: "",
-        data: null,
+        data: new Date(),
         automovelId: "",
         clienteId: "",
         funcionarioId: user?.id,

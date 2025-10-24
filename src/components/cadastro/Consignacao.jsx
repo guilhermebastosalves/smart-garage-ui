@@ -108,7 +108,7 @@ const Consignacao = () => {
     const initialConsignacaoState = {
         id: null,
         valor: "",
-        data_inicio: "",
+        data_inicio: new Date(),
         data_fim: "",
         automovelId: "",
         clienteId: "",

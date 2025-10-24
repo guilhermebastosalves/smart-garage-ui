@@ -104,7 +104,7 @@ const Compra = () => {
     const initialCompraState = {
         id: null,
         valor: "",
-        data: "",
+        data: new Date(),
         automovelId: "",
         clienteId: ""
     };
