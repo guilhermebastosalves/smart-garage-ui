@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useCallback } from "react";
 import Select from "react-select";
 import HelpPopover from '../HelpPopover';
+import { NumericFormat } from 'react-number-format';
 
 import { FaCar } from "react-icons/fa";
 
@@ -411,7 +412,24 @@ const EditarAutomovel = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label htmlFor="valor" className="form-label">Valor de Venda (R$) <span className="text-danger">*</span></label>
-                                    <input value={formData.valor ?? ""} type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" onChange={handleInputChange} />
+                                    <NumericFormat value={formData.valor ?? ""} placeholder="R$ 0,00" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor"
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChange(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
                                 </div>

@@ -16,6 +16,7 @@ import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa"
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import React from "react";
 import HelpPopover from "../HelpPopover";
+import { NumericFormat } from "react-number-format";
 
 const EditarTroca = () => {
 
@@ -197,7 +198,7 @@ const EditarTroca = () => {
 
     const optionsAutomovel = automovel?.map((d) => {
         const nomeMarca = marca?.find(marca => marca.id === d.marcaId);
-        const nomeModelo = modelo?.find(modelo => modelo.marcaId === nomeMarca.id);
+        const nomeModelo = modelo?.find(modelo => modelo.id === d.modeloId);
 
         return {
             value: d.id,
@@ -223,7 +224,7 @@ const EditarTroca = () => {
 
                 <div className="small text-muted d-flex align-items-center mt-1">
                     <FaRegIdCard className="me-1" />
-                    <span>Renavam: {label.renavam}</span>
+                    <span>Placa: {label.placa}</span>
                     <span className="mx-2">|</span>
                     <FaCalendarAlt className="me-1" />
                     <span>Ano: {label.ano}</span>
@@ -411,13 +412,47 @@ const EditarTroca = () => {
                             <div className="row g-3">
                                 <div className="col-md-3">
                                     <label for="valor" class="form-label">Valor Aquisicão (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valor_aquisicao") && "is-invalid"}`} id="valora_aquisicao" name="valor_aquisicao" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor_aquisicao ?? ""} />
+                                    <NumericFormat className={`form-control ${hasError("valor_aquisicao") && "is-invalid"}`} id="valora_aquisicao" name="valor_aquisicao" placeholder="R$ 0,00" value={formData.valor_aquisicao ?? ""}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor_aquisicao",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChange(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valor_aquisicao") && <div className="invalid-feedback">Informe o valor de aquisição.</div>}
                                     {tipo.includes("valor_aquisicao") && <div className="invalid-feedback">Valor aquisição inválido.</div>}
                                 </div>
                                 <div className="col-md-3">
                                     <label for="valor" class="form-label">Valor Diferença (R$)</label>
-                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor ?? ""} />
+                                    <NumericFormat className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" placeholder="R$ 0,00" value={formData.valor ?? ""}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChange(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
                                 </div>
@@ -479,6 +514,7 @@ const EditarTroca = () => {
                                                 label.marca,
                                                 label.modelo,
                                                 label.renavam,
+                                                label.placa
                                             ].filter(Boolean).join(" ").toLowerCase();
                                             return texto.includes(inputValue.toLowerCase());
                                         }}>
@@ -495,6 +531,7 @@ const EditarTroca = () => {
                                                 label.marca,
                                                 label.modelo,
                                                 label.renavam,
+                                                label.placa
                                             ].filter(Boolean).join(" ").toLowerCase();
                                             return texto.includes(inputValue.toLowerCase());
                                         }}>

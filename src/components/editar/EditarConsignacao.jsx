@@ -16,6 +16,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa";
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import HelpPopover from "../HelpPopover";
+import { NumericFormat } from 'react-number-format';
 
 const EditarConsignacao = () => {
 
@@ -380,7 +381,24 @@ const EditarConsignacao = () => {
                             <div className="row g-3">
                                 <div className="col-md-2">
                                     <label for="valor" class="form-label">Valor da Consignação (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor ?? ""} />
+                                    <NumericFormat className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" placeholder="R$ 0,00" value={formData.valor ?? ""}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChange(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
                                     {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor acordado.</div>}
                                 </div>

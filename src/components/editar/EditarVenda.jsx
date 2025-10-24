@@ -16,6 +16,7 @@ import { FaBuilding, FaUserTie, FaIdCard, FaFileContract } from "react-icons/fa"
 import { FaCar, FaRegIdCard, FaCalendarAlt, FaFileSignature } from "react-icons/fa";
 import React from "react";
 import HelpPopover from "../HelpPopover";
+import { NumericFormat } from "react-number-format";
 
 const EditarVenda = () => {
 
@@ -425,7 +426,24 @@ const EditarVenda = () => {
                             <div className="row g-3">
                                 <div className="col-md-4">
                                     <label for="valor" class="form-label">Valor da Venda (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" aria-describedby="valorHelp" onChange={handleInputChange} value={formData.valor ?? ""} />
+                                    <NumericFormat className={`form-control ${hasError("valor") && "is-invalid"}`} id="valor" name="valor" placeholder="R$ 0,00" value={formData.valor ?? ""}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "valor",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChange(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("valor") && <div className="invalid-feedback">Informe o valor.</div>}
                                     {tipo.includes("valor") && <div className="invalid-feedback">Valor inválido.</div>}
                                 </div>
@@ -437,7 +455,24 @@ const EditarVenda = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label for="comissao" class="form-label">Comissão (R$) <span className="text-danger">*</span></label>
-                                    <input type="text" className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={formData.comissao ?? ""} />
+                                    <NumericFormat className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" placeholder="R$ 0,00" value={formData.comissao ?? ""}
+                                        onValueChange={(values) => {
+                                            const syntheticEvent = {
+                                                target: {
+                                                    name: "comissao",
+                                                    value: values.value
+                                                }
+                                            };
+                                            handleInputChange(syntheticEvent);
+                                        }}
+
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix="R$ "
+                                        decimalScale={2}
+                                        fixedDecimalScale={true}
+                                        allowNegative={false}
+                                    />
                                     {vazio.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Informe o valor de comissão.</div>}
                                     {tipo.includes("comissao") && <div id="comissaohelp" class="form-text text-danger ms-1">Valor de comissão inválido.</div>}
                                 </div>
