@@ -628,7 +628,7 @@ const Troca = () => {
             <div className="container">
 
                 <div className="mb-4 mt-3">
-                    <div className="d-flex align-items-center">
+                    <div className="d-flex align-items-center mb-1">
                         <h1 className="fw-bold mb-0 me-2">Registro de Troca</h1>
                         <HelpPopover
                             id="page-help-popover"
@@ -774,7 +774,7 @@ const Troca = () => {
                                 </div>
                                 <div className="col-md-4">
                                     <label for="comissao" class="form-label">Comissão (R$) <span className="text-danger">*</span></label>
-                                    <NumericFormat className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" aria-describedby="comissaoHelp" value={troca.comissao} readOnly
+                                    <NumericFormat className={`form-control ${hasError("comissao") && "is-invalid"}`} id="comissao" name="comissao" placeholder="R$ 0,00" value={troca.comissao} readOnly
                                         thousandSeparator="."
                                         decimalSeparator=","
                                         prefix="R$ "
@@ -812,7 +812,7 @@ const Troca = () => {
                         <div className="card-body">
                             {isReativacao && (
                                 <Alert variant="info">
-                                    <strong>Modo de Reativação:</strong> Você está a consignar um automóvel que já existe no sistema. Os dados principais não podem ser alterados. Por favor, atualize a **Quilometragem** e o novo **Valor de Venda**.
+                                    <strong>Modo de Reativação:</strong> Você está a reativar um automóvel que já existe no sistema. Os dados com permissão para atualização são: Quilometragem, Cor e Valor de Venda.
                                 </Alert>
                             )}
                             <div className="row g-3">

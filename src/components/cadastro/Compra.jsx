@@ -604,7 +604,7 @@ const Compra = () => {
                             {/* ALERTA DE REATIVAÇÃO */}
                             {isReativacao && (
                                 <Alert variant="info">
-                                    <strong>Modo de Reativação:</strong> Você está a consignar um automóvel que já existe no sistema. Os dados principais não podem ser alterados. Por favor, atualize a **Quilometragem** e o novo **Valor de Venda**.
+                                    <strong>Modo de Reativação:</strong> Você está a reativar um automóvel que já existe no sistema. Os dados com permissão para atualização são: Quilometragem, Cor e Valor de Venda.
                                 </Alert>
                             )}
 

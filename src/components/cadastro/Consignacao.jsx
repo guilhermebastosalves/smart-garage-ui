@@ -188,9 +188,9 @@ const Consignacao = () => {
             setJuridica(juridica.data);
         }).catch((err) => {
             console.error("Erro ao carregar dados:", err);
-            setLoading(false); // Garante que o loading não fica travado
+            setLoading(false);
         }).finally(() => {
-            setLoading(false); // Esconde o loading quando tudo terminar
+            setLoading(false);
             clearTimeout(timeout);
         });
     }, []);
@@ -357,27 +357,19 @@ const Consignacao = () => {
 
 
         try {
-
-            // Esta variável guardará o ID do automóvel, seja ele novo ou reativado.
             let automovelIdParaConsignacao;
 
-            // --- AQUI COMEÇA A BIFURCAÇÃO LÓGICA ---
-
             if (isReativacao) {
-                // --- CAMINHO 1: REATIVAÇÃO DE AUTOMÓVEL EXISTENTE ---
 
-                // 1. Prepara os dados para a atualização. Apenas os campos que podem mudar.
                 const dadosUpdate = {
                     ativo: true,
                     km: automovel.km,
                     valor: automovel.valor,
-                    origem: automovel.origem// Atualiza a origem para a nova operação
+                    origem: automovel.origem
                 };
 
-                // 2. Chama o serviço de 'update' para reativar o automóvel no banco.
                 await AutomovelDataService.update(automovel.id, dadosUpdate);
 
-                // 3. Guarda o ID do automóvel que já existia.
                 automovelIdParaConsignacao = automovel.id;
 
             } else {
@@ -415,7 +407,6 @@ const Consignacao = () => {
                         console.error("Erro ao cadastrar automovel:", e.response?.data || e.message);
                     });
 
-                // 4. Guarda o ID do automóvel que acabou de ser criado.
                 automovelIdParaConsignacao = automovelResp.data.id;
             }
 
@@ -614,7 +605,7 @@ const Consignacao = () => {
                             {/* ALERTA DE REATIVAÇÃO */}
                             {isReativacao && (
                                 <Alert variant="info">
-                                    <strong>Modo de Reativação:</strong> Você está a consignar um automóvel que já existe no sistema. Os dados principais não podem ser alterados. Por favor, atualize a **Quilometragem** e o novo **Valor de Venda**.
+                                    <strong>Modo de Reativação:</strong> Você está a consignar um automóvel que já existe no sistema. Os dados com permissão para atualização são: Quilometragem, Cor e Valor de Venda.
                                 </Alert>
                             )}
 
