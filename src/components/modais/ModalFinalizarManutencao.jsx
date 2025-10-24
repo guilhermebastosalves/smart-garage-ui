@@ -50,6 +50,7 @@ const ModalFinalizarManutencao = ({ show, onHide, manutencao, onSuccess }) => {
                 <Form.Group>
                     <Form.Label className="fw-bold">Data de Retorno</Form.Label>
                     <DatePicker
+                        calendarClassName="custom-datepicker-container"
                         className="form-control"
                         selected={dataRetorno}
                         onChange={(date) => setDataRetorno(date)}
