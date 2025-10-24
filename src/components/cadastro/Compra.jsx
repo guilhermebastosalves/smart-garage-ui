@@ -130,7 +130,8 @@ const Compra = () => {
     // Event Handlers 
     const handleInputChangeAutomovel = event => {
         const { name, value } = event.target;
-        setAutomovel({ ...automovel, [name]: value });
+        const finalValue = name === 'placa' ? value.toUpperCase() : value;
+        setAutomovel({ ...automovel, [name]: finalValue });
     };
 
 

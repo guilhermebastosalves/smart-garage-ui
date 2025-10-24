@@ -65,10 +65,10 @@ const EditarAutomovel = () => {
     const [modelosOptions, setModelosOptions] = useState([]);
     const [isModelosLoading, setIsModelosLoading] = useState(false);
 
-
-    const handleInputChange = (event) => {
+    const handleInputChange = event => {
         const { name, value } = event.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const finalValue = name === 'placa' ? value.toUpperCase() : value;
+        setFormData(prev => ({ ...prev, [name]: finalValue }));
     };
 
 

@@ -64,7 +64,7 @@ const Manutencao = () => {
 
     const handleInputChangePlaca = event => {
         const { value } = event.target;
-        setPlaca(value);
+        setPlaca(value.toUpperCase());
     }
 
     const [loading, setLoading] = useState(true);
@@ -329,7 +329,7 @@ const Manutencao = () => {
                     <div className="row">
                         <div className="col-md-8">
                             <label for="valor" class="form-label">Placa</label>
-                            <input type="text" className={`form-control`} id="placa" name="placa" aria-describedby="placaHelp" onChange={handleInputChangePlaca} />
+                            <input type="text" className={`form-control`} id="placa" name="placa" aria-describedby="placaHelp" onChange={handleInputChangePlaca} value={placa} />
                         </div>
                         <div className="col-md-4 d-flex align-items-end">
                             <button
