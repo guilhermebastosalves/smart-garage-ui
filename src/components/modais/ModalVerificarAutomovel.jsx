@@ -82,7 +82,7 @@ function ModalVerificarAutomovel({ show, onHide, onAutomovelVerificado }) {
                             <Form.Control
                                 type="text"
                                 value={identificador}
-                                onChange={(e) => setIdentificador(e.target.value)}
+                                onChange={(e) => setIdentificador(e.target.value.toLocaleUpperCase())}
                                 placeholder='Digite a Placa ou Renavam...'
                                 autoFocus
                             />
