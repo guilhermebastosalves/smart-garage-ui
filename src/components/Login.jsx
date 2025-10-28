@@ -78,7 +78,7 @@ const Login = () => {
                         <div className={`text-center ${!erro ? "mb-5" : "mb-2"}`}>
                             <img src="/static/img/logoapenas.png" alt="Smart Garage Logo" className="navbar-logo mb-1" />
                             {/* <div className="d-flex align-items-center justify-content-center"> */}
-                            <h1 className="fw-bold">Smart Garage</h1>
+                            <h1 className="fw-bold">Smart Garage TESTE</h1>
 
                             {/* </div> */}
                             <p className="text-muted">Faça login para continuar</p>
