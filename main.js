@@ -4,6 +4,6 @@ const app = express();
 const port = process.env.PORT;
 app.listen(port)
 
-const baseDir = `${process.env.DIR_NAME}/build/`
+const baseDir = `${process.env.DIR_NAME}/dist/`
 app.use(express.static(`${baseDir}`))
 app.get('/', (req, res) => res.sendfile('index.html', { root: baseDir }))
