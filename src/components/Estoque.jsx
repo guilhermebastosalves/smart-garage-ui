@@ -13,7 +13,7 @@ import VendaDataService from "../services/vendaDataService";
 const Estoque = () => {
 
     const navigate = useNavigate();
-    const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || "http://localhost:3000";
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
     const [automovel, setAutomovel] = useState([]);
     const [automovelInativo, setAutomovelInativo] = useState([]);
