@@ -3,7 +3,7 @@ import AuthService from "./services/authDataService";
 
 const apiClient = axios.create({
 
-    baseURL: process.env.VITE_REACT_APP_API_URL || "http://localhost:3000",
+    baseURL: process.env.VITE_API_URL || "http://localhost:3000",
     headers: {
         "Content-type": "application/json"
     }
