@@ -34,7 +34,6 @@ const DetalhesCompra = () => {
 
     useEffect(() => {
         setLoading(true);
-        // Carrega todos os dados em paralelo para melhor performance
         Promise.all([
             EnderecoDataService.getAll(),
             CidadeDataService.getAll(),

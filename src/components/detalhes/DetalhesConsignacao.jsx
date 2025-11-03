@@ -36,7 +36,6 @@ const DetalhesConsignacao = () => {
 
     useEffect(() => {
         setLoading(true);
-        // Carrega todos os dados em paralelo para melhor performance
         Promise.all([
             FuncionarioDataService.getAll(),
             EnderecoDataService.getAll(),

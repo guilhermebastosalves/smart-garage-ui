@@ -11,16 +11,16 @@ const processarDadosTemporais = (dados, tipo, periodo) => {
     switch (periodo) {
         case 'ultimos_3_meses':
             formatKey = 'yyyy-ww'; // Agrupa por Ano-Semana (ex: 2025-37)
-            formatLabel = (date) => `Semana ${format(date, 'ww')}`; // Exibe "Semana 37"
+            formatLabel = (date) => `Semana ${format(date, 'ww')}`;
             break;
         case 'ultimo_semestre':
             formatKey = 'yyyy-MM'; // Agrupa por Ano-Mês (ex: 2025-09)
-            formatLabel = (date) => format(date, 'MMM/yy'); // Exibe "Set/25"
+            formatLabel = (date) => format(date, 'MMM/yy');
             break;
         case 'ultimo_mes':
         default:
             formatKey = 'yyyy-MM-dd'; // Agrupa por Ano-Mês-Dia
-            formatLabel = (date) => format(date, 'dd/MM'); // Exibe "09/09"
+            formatLabel = (date) => format(date, 'dd/MM');
             break;
     }
 

@@ -254,15 +254,6 @@ const Vendas = () => {
                                                         >
                                                             <i className="bi bi-pencil-fill"></i>
                                                         </button>}
-
-                                                    {/* {user.role === "gerente" &&
-                                                        <button
-                                                            className='btn btn-outline-danger btn-sm'
-                                                            onClick={() => handleAbrirModalConfirmacao(d)}
-                                                            title="Cancelar Venda"
-                                                        >
-                                                            <i className="bi bi-trash-fill"></i>
-                                                        </button>} */}
                                                 </td>
                                             </tr>
 

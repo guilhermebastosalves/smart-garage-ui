@@ -4,7 +4,6 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import html2canvas from 'html2canvas';
 
-// Assumindo que você tem um logo na pasta public
 const logoUrl = '/static/img/logo.png';
 
 const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
@@ -48,8 +47,8 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
             doc.setTextColor(128, 128, 128);
             doc.text(
                 `Página ${i} de ${pageCount}`,
-                pageWidth - margin.right, // Alinha à margem direita
-                margin.top - 10, // Posiciona acima do conteúdo do header
+                pageWidth - margin.right,
+                margin.top - 10,
                 { align: 'right' }
             );
         }
@@ -57,12 +56,11 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
 
     // --- CABEÇALHO ---
     const addHeader = () => {
-        // Adicione o logo. Carregue-o como base64 ou a partir de uma URL pública
-        // Para este exemplo, o logo deve estar na pasta /public
+
         try {
             const img = new Image();
             img.src = logoUrl;
-            doc.addImage(img, 'PNG', margin.left, margin.top - 8, 25, 10); // x, y, width, height
+            doc.addImage(img, 'PNG', margin.left, margin.top - 8, 25, 10);
         } catch (e) {
             console.error("Logo não encontrado. Verifique o caminho.", e);
         }
@@ -76,7 +74,7 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
         doc.text(`Data: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`, pageWidth - margin.right, margin.top + 5, { align: 'right' });
 
         finalY += 10; // Espaçamento após o cabeçalho
-        doc.line(margin.left, finalY, pageWidth - margin.right, finalY); // Linha horizontal
+        doc.line(margin.left, finalY, pageWidth - margin.right, finalY);
         finalY += 10; // Espaçamento para o título
     };
 
@@ -99,8 +97,7 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
         finalY += 12;
     };
 
-    // --- NOVA FUNÇÃO: SUMÁRIO ---
-    // Esta função desenha os cards de resumo
+    // --- SUMÁRIO ---
     const addSummaryCards = () => {
         if (!sumario) return;
 
@@ -110,20 +107,19 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
         let currentX = margin.left;
         const cardGap = 4;;
 
-        // Função auxiliar para desenhar um card
         const drawCard = (title, value, cardWidth = 45, valueColor = [0, 0, 0]) => {
-            doc.setDrawColor(200, 200, 200); // Borda cinza claro
+            doc.setDrawColor(200, 200, 200);
             doc.rect(currentX, cardY, cardWidth, cardHeight);
 
-            doc.setTextColor(128, 128, 128); // Título cinza
+            doc.setTextColor(128, 128, 128);
             doc.setFont('helvetica', 'normal');
             doc.text(title, currentX + cardWidth / 2, cardY + 7, { align: 'center' });
 
-            doc.setTextColor(valueColor[0], valueColor[1], valueColor[2]); // Cor do valor
+            doc.setTextColor(valueColor[0], valueColor[1], valueColor[2]);
             doc.setFont('helvetica', 'bold');
             doc.text(value, currentX + cardWidth / 2, cardY + 15, { align: 'center' });
 
-            currentX += cardWidth + 5; // Move para a posição do próximo card
+            currentX += cardWidth + 5;
         };
 
         switch (filtros.tipo) {
@@ -153,7 +149,7 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
                 break;
         }
 
-        finalY = cardY + cardHeight + 12; // Atualiza a posição Y para depois dos cards
+        finalY = cardY + cardHeight + 12;
     };
 
 
@@ -161,7 +157,6 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
     const addContentTable = () => {
         let headers, body;
 
-        // Formata os dados para a tabela dependendo do tipo de relatório
         switch (filtros.tipo) {
             case 'Venda':
                 headers = [["Data", "Cliente", "Automóvel (Placa)", "Valor", "Comissão", "Lucro"]];
@@ -203,7 +198,7 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
                     item.ativo ? "Ativa" : "Inativa"
                 ]);
                 break;
-            // Adicione outros cases para 'Gasto', 'Troca', etc.
+
             default:
                 headers = [["Data", "Descrição", "Automóvel (Placa)", "Valor"]];
                 body = dados.map(item => [
@@ -231,20 +226,18 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
         finalY = doc.lastAutoTable.finalY + 10;
     };
 
-    // --- CONTEÚDO: GRÁFICO ---
+    // --- GRÁFICO ---
     const addChart = async () => {
         if (!graficoElement) {
             console.warn("Elemento do gráfico não encontrado para gerar o PDF.");
             return;
         }
 
-        // Verifica se precisa de uma nova página
         if (finalY + 80 > pageHeight - margin.bottom) {
             doc.addPage();
             finalY = margin.top;
         }
 
-        // Adiciona um pequeno atraso (500ms) para garantir que a animação do gráfico terminou
         await new Promise(resolve => setTimeout(resolve, 500));
 
         try {
@@ -257,31 +250,25 @@ const gerarPDF = async (dados, sumario, filtros, graficoElement) => {
             const pdfWidth = doc.internal.pageSize.getWidth();
             const margin = 15;
 
-            // Calcula a largura e altura para manter a proporção
             const imgWidth = pdfWidth - margin * 2;
             const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
-            // Adiciona um espaço entre a tabela e o título do gráfico
             const chartTitleY = finalY + 15;
             doc.text("Desempenho no Período", margin, chartTitleY);
 
-            // Posição Y final do gráfico
-            const chartY = chartTitleY + 5; // Pequeno espaço após o título
+            const chartY = chartTitleY + 5;
 
-            // Verificação para evitar que o gráfico quebre a página (opcional, mas recomendado)
             if (chartY + imgHeight > doc.internal.pageSize.getHeight() - margin) {
                 doc.addPage();
-                finalY = margin; // Reseta a posição Y para o topo da nova página
-                // Adicione o título novamente se desejar
+                finalY = margin;
                 doc.text("Desempenho no Período", margin, finalY + 5);
                 doc.addImage(imgData, 'PNG', margin, finalY + 10, imgWidth, imgHeight);
             } else {
-                // 5. Use a variável `lastY` (atualizada) para posicionar o gráfico
                 doc.addImage(imgData, 'PNG', margin, chartY, imgWidth, imgHeight);
             }
 
             // doc.addImage(imgData, 'PNG', margin.left, finalY, usableWidth, 80);
-            // doc.addImage(imgData, 'PNG', margin, 150, imgWidth, imgHeight); // Ajuste a posição Y (150) conforme necessário
+            // doc.addImage(imgData, 'PNG', margin, 150, imgWidth, imgHeight);
 
             finalY += 90;
 

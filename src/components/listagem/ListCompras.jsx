@@ -15,25 +15,20 @@ const Compras = () => {
     const location = useLocation();
 
     const compraLocalStorage = { negocio: "Compra" };
-    // const [showModal, setShowModal] = useState(false);
 
     const [showClienteModal, setShowClienteModal] = useState(false);
     const [showAutomovelModal, setShowAutomovelModal] = useState(false);
     const [clienteSelecionadoId, setClienteSelecionadoId] = useState(null);
 
     useEffect(() => {
-        // Pega os dados enviados pela página de cadastro de cliente
         const { startAutomovelCheck, clienteId } = location.state || {};
 
-        // Se o sinal para iniciar a verificação do automóvel foi recebido...
         if (startAutomovelCheck && clienteId) {
-            // ...guarda o ID do cliente que acabámos de criar...
+
             setClienteSelecionadoId(clienteId);
 
-            // ...e abre o modal de verificação do automóvel para continuar o fluxo.
             setShowAutomovelModal(true);
 
-            // Limpa o estado da navegação para evitar que o modal reabra se a página for atualizada
             navigate(location.pathname, { replace: true, state: {} });
         }
     }, [location.state, navigate]);
@@ -48,26 +43,23 @@ const Compras = () => {
         setShowClienteModal(true);
     };
 
-    // Etapa 1: Chamado quando o cliente é encontrado ou selecionado no primeiro modal
     const handleClienteVerificado = (clienteId) => {
-        setClienteSelecionadoId(clienteId); // Guarda o ID do cliente
-        setShowClienteModal(false);         // Fecha o modal de cliente
-        setShowAutomovelModal(true);        // Abre o modal de automóvel
+        setClienteSelecionadoId(clienteId);
+        setShowClienteModal(false);
+        setShowAutomovelModal(true);
     };
 
-    // Etapa 2: Chamado quando o automóvel é verificado no segundo modal
     const handleAutomovelVerificado = (resultado) => {
-        setShowAutomovelModal(false); // Fecha o modal de automóvel
+        setShowAutomovelModal(false);
 
         const statePayload = {
-            clienteId: clienteSelecionadoId // Passa o ID do cliente da primeira etapa
+            clienteId: clienteSelecionadoId
         };
 
         if (resultado.status === 'inativo') {
-            statePayload.automovelExistente = resultado.automovel; // Passa os dados do carro para reativação
+            statePayload.automovelExistente = resultado.automovel;
         }
 
-        // Navega para o formulário final com todos os dados necessários
         navigate('/compra', { state: statePayload });
     };
 
@@ -267,13 +259,6 @@ const Compras = () => {
                                                         <i className="bi bi-pencil-fill"></i>
                                                     </button>
 
-                                                    {/* <button
-                                                        className='btn btn-outline-danger btn-sm'
-                                                        onClick={() => handleAbrirModalConfirmacao(d)}
-                                                        title="Excluir Compra"
-                                                    >
-                                                        <i className="bi bi-trash-fill"></i>
-                                                    </button> */}
                                                 </td>
                                             </tr>
 

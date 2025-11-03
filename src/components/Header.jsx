@@ -15,21 +15,18 @@ const Header = () => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-            // Verifica se a tecla pressionada foi F1
-            if (event.key === 'F1') {
-                event.preventDefault(); // Impede a ação padrão do navegador (abrir a ajuda)
 
-                // Procura pelo elemento de ajuda na página atual
+            if (event.key === 'F1') {
+                event.preventDefault();
+
                 const helpIcon = document.getElementById('page-help-popover');
 
-                // Se encontrar, simula um clique nele
                 if (helpIcon) {
                     helpIcon.click();
                 }
             }
         };
 
-        // Adiciona o ouvinte de evento ao documento
         document.addEventListener('keydown', handleKeyDown);
 
         // Função de limpeza para remover o ouvinte quando o componente for desmontado

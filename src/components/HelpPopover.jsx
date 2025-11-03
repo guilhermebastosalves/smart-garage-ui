@@ -3,11 +3,10 @@ import { FaQuestionCircle } from 'react-icons/fa';
 import React, { forwardRef } from 'react';
 
 /**
- * Um componente de ajuda reutilizável que exibe um Popover ao ser clicado.
  * @param {object} props
- * @param {string} props.title - O título que aparecerá no cabeçalho do popover.
- * @param {React.ReactNode} props.content - O conteúdo (pode ser texto, JSX, etc.) a ser exibido no corpo do popover.
- * @param {string} props.id - Um ID único para o elemento de gatilho.
+ * @param {string} props.title
+ * @param {React.ReactNode} props.content -
+ * @param {string} props.id 
  */
 const HelpPopover = ({ title, content, id }) => {
 
@@ -19,10 +18,7 @@ const HelpPopover = ({ title, content, id }) => {
     );
 
     return (
-        // OverlayTrigger é o componente do React Bootstrap que controla a exibição.
-        // trigger="click" - abre ao clicar.
-        // rootClose - fecha ao clicar em qualquer lugar fora do popover.
-        // placement="auto" - posiciona o popover de forma inteligente.
+        // OverlayTrigger -> componente do React Bootstrap que controla a exibição.
         <OverlayTrigger trigger="click" rootClose placement="auto" overlay={popover}>
             <span
                 id={id}

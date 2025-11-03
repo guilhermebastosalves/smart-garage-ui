@@ -46,7 +46,6 @@ const GerenciarComissoes = () => {
         if (field === 'valor_minimo' || field === 'valor_maximo' || field === 'valor_comissao') {
             const valorNumerico = parseFloat(valorInput);
             if (!isNaN(valorNumerico) && valorNumerico < 0) {
-                // Força o valor para '0' se for negativo
                 valorInput = '0';
             }
         }
@@ -54,12 +53,10 @@ const GerenciarComissoes = () => {
         // Atualiza o valor do campo que foi modificado
         novasRegras[index][field] = valorInput === '' && field === 'valor_maximo' ? null : valorInput;
 
-        // --- NOVA LÓGICA DE ATUALIZAÇÃO EM CASCATA ---
         // Se o campo alterado foi um 'valor_maximo' e não é a última faixa
         if (field === 'valor_maximo' && index < novasRegras.length - 1) {
             const valorMaximoNumerico = parseFloat(valorInput);
 
-            // Verifica se o valor é um número válido para evitar erros
             if (!isNaN(valorMaximoNumerico) && valorMaximoNumerico >= 0) {
                 // Calcula o novo valor mínimo para a próxima faixa e formata com 2 casas decimais
                 novasRegras[index + 1].valor_minimo = (valorMaximoNumerico + 0.01).toFixed(2);
