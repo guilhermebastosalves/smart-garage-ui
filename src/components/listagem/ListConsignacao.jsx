@@ -224,7 +224,7 @@ const Consignacoes = () => {
                                 }
                             />
                         </div>
-                        <p className="text-muted">Listagem e gerenciamento de consignações ativas.</p>
+                        <p className="text-muted">Listagem e gerenciamento de consignações.</p>
                     </div>
                     <button className='btn btn-primary btn-lg' onClick={handleNovaConsignacaoClick}>
                         <i className="bi bi-plus-circle-fill me-2"></i>
@@ -234,7 +234,7 @@ const Consignacoes = () => {
 
                 <div className="card shadow-sm mb-4">
                     <div className="card-header bg-light d-flex justify-content-between align-items-center">
-                        <h5 className="mb-0">Consignações Ativas</h5>
+                        <h5 className="mb-0">Consignações {opcao === "ativas" ? "Ativas" : "Finalizadas"}</h5>
                         <div className="d-flex align-items-center gap-2">
                             <select name="opcao" id="opcao" className="form-select w-auto" onChange={handleInputChangeOpcao}>
                                 <option value="ativas">Ativas</option>
